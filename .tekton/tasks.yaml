@@ -1,0 +1,103 @@
+# These are custom tasks that are not on Tekton Hub
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-image
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: openshift, deploy
+    tekton.dev/displayName: "deploy image"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  workspaces:
+  - name: source  
+  description: >-
+    This task will update the deployment.yaml with the latest image name
+    and then apply that yaml file and it's service file.
+  params:
+  - name: image-name
+    description: The fully qualified name of the new image to deploy
+    type: string
+  - name: manifest-dir
+    description: The directory in source that contains yaml manifests
+    type: string
+    default: "k8s"
+  - name: wait-for-pod-label
+    description: The pod label value for the label "app" for the pod you want to wait the deploy-task till it gets ready.
+    type: string
+  steps:
+    - name: deploy
+      image: quay.io/openshift/origin-cli:latest
+      workingDir: /workspace/source 
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          #!/bin/bash
+          set -e
+
+          echo Applying manifests in $(inputs.params.manifest-dir) directory
+
+          echo "**********************************************************************"
+          echo "Installing YQ..."
+          echo "**********************************************************************"
+          wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod a+x /usr/bin/yq
+
+          echo "*********************  DEPLOYMENT  ***********************"
+          echo "Deploying $(inputs.params.image-name) ..."
+
+          yq -e -i '.spec.template.spec.containers[0].image="$(inputs.params.image-name)"' $(inputs.params.manifest-dir)/deployment.yaml
+          cat $(inputs.params.manifest-dir)/deployment.yaml
+
+          echo "************************************************************"
+          echo "OC APPLY..."
+          oc apply -f $(inputs.params.manifest-dir)/deployment.yaml
+          oc apply -f $(inputs.params.manifest-dir)/service.yaml
+
+          echo "************************************************************"
+          sleep 3
+
+          echo "***** Waiting For Service Ready *****"
+          oc wait --for=condition=ready pod -l app=$(inputs.params.wait-for-pod-label) --timeout=360s 
+          
+          echo "Pods:"
+          oc get pods
+          echo ""
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: apply-manifests
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: openshift, deploy
+    tekton.dev/displayName: "deploy"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  workspaces:
+  - name: source  
+  description: >-
+    This task will deploy all of the yaml files in the manifest folder.
+  params:
+  - name: manifest-dir
+    description: The directory in source that contains yaml manifests
+    type: string
+    default: "k8s"
+  steps:
+    - name: apply
+      image: quay.io/openshift/origin-cli:latest
+      workingDir: /workspace/source 
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          echo Applying manifests in $(inputs.params.manifest-dir) directory
+          oc apply -f $(inputs.params.manifest-dir)
+          echo -----------------------------------

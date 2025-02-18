@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-team-sp25
+  labels:
+    app: dev-team-sp25
+spec:
+  selector:
+    app: dev-team-sp25
+  type: ClusterIP
+  internalTrafficPolicy: Cluster
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

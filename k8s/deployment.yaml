@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-team-sp25
+  labels:
+    app: dev-team-sp25
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0%
+      maxUnavailable: 50%
+  selector:
+    matchLabels:
+      app: dev-team-sp25
+  template:
+    metadata:
+      labels:
+        app: dev-team-sp25
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: dev-team-sp25
+        image: cluster-registry:5000/dev-team-sp25:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+          - name: RETRY_COUNT
+            value: "10"
+          # - name: DATABASE_URI
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: postgres-creds
+          #       key: database_uri
+        readinessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 60
+          httpGet:
+            path: /api/health
+            port: 8080
+        resources:
+          limits:
+            cpu: "0.50"
+            memory: "128Mi"
+          requests:
+            cpu: "0.25"
+            memory: "64Mi"

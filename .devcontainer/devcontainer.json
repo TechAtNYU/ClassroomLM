@@ -62,10 +62,18 @@
 			]
 		}
 	},
-	"postCreateCommand": "pnpm dev",
+	"postCreateCommand": "pnpm install",
+	"waitFor": "postCreateCommand",
+	"postAttachCommand": "pnpm dev",
 	// "postCreateCommand": "bash /app/.devcontainer/scripts/post-install.sh",
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"portsAttributes": {
+        "8080": {
+            "label": "Application",
+            "onAutoForward": "openPreview"
+        }
+    },
 	"forwardPorts": [8080],
 
 	// Features to add to the dev container. More info: https://containers.dev/features.

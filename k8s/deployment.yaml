@@ -22,7 +22,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: dev-team-sp25
-        image: cluster-registry:5000/dev-team-sp25:1.0
+        image: k3d-cluster-registry.localhost:5000/dev-team-sp25:1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

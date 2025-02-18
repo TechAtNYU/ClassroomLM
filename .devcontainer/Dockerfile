@@ -7,8 +7,9 @@ RUN apt-get update && \
     apt-get clean -y
 
 # [Optional] Uncomment if you want to install more global node modules
-RUN su node -c "npm install -g pnpm"
-
+WORKDIR /app
+RUN su node -c "npm install -g pnpm" \
+    && pnpm install
 # # Create a user for VSCode development
 # ARG USERNAME=vscode
 # ARG USER_UID=1000
@@ -27,8 +28,8 @@ RUN su node -c "npm install -g pnpm"
 # RUN python -m pip install --upgrade pip wheel pipenv poetry && \
 #     poetry config virtualenvs.create false
 
-WORKDIR /app
-RUN pnpm install
+
+
 ENV PORT=8080
 EXPOSE $PORT
 

@@ -8,6 +8,7 @@ RUN apt-get update && \
 
 # [Optional] Uncomment if you want to install more global node modules
 WORKDIR /app
+COPY package-lock.json package.json pnpm-lock.yaml ./
 RUN su node -c "npm install -g pnpm" \
     && pnpm install
 # # Create a user for VSCode development

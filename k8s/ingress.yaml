@@ -28,6 +28,6 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: github-webhook
+            name: el-cd-listener
             port:
               number: 8080

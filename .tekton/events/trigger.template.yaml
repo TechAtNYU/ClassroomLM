@@ -17,7 +17,7 @@ spec:
     metadata:
       generateName: cd-pipeline-$(tt.params.git-repo-name)-
     spec:
-      serviceAccountName: pipeline
+      serviceAccountName: default
       pipelineRef:
         name: cd-pipeline
       params:

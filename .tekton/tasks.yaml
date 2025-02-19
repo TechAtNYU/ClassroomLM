@@ -48,15 +48,14 @@ spec:
 
           echo "************************************************************"
           echo "KC APPLY..."
-          kubectl apply -f $(inputs.params.manifest-dir)/deployment.yaml
-          kubectl apply -f $(inputs.params.manifest-dir)/service.yaml
+          kubectl rollout restart deployment.apps/$(inputs.params.wait-for-pod-label)
 
           echo "************************************************************"
           sleep 3
 
           echo "***** Waiting For Service Ready *****"
-          oc wait --for=condition=ready pod -l app=$(inputs.params.wait-for-pod-label) --timeout=360s 
+          kubectl wait --for=condition=ready pod -l app=$(inputs.params.wait-for-pod-label) --timeout=360s 
           
           echo "Pods:"
-          oc get pods
+          kubectl get pods
           echo ""

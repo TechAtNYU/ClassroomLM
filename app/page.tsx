@@ -21,6 +21,7 @@ export default function Home() {
             .
           </li>
           <li>Save and see your changes instantly.</li>
+          <li>This is automatically deployed with tekton CD</li>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
@@ -93,7 +94,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Go to nextjs.org (tested pipeline)→
+          Go to nextjs.org →
         </a>
       </footer>
     </div>

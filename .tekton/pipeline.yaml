@@ -49,6 +49,8 @@ spec:
           value: ''
         - name: SKIP_PUSH
           value: 'false'
+        - name: TLSVERIFY
+          value: 'false'
       runAfter:
         - git-clone
       taskRef:

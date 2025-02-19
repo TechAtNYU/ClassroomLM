@@ -40,15 +40,22 @@ spec:
 
           echo Applying manifests in $(inputs.params.manifest-dir) directory
 
-          # echo "*********************  DEPLOYMENT  ***********************"
-          # echo "Deploying $(inputs.params.image-name) ..."
+          echo "**********************************************************************"
+          echo "Installing YQ..."
+          echo "**********************************************************************"
+          wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod a+x /usr/bin/yq
 
-          # yq -e -i '.spec.template.spec.containers[0].image="$(inputs.params.image-name)"' $(inputs.params.manifest-dir)/deployment.yaml
-          # cat $(inputs.params.manifest-dir)/deployment.yaml
+          echo "*********************  DEPLOYMENT  ***********************"
+          echo "Deploying $(inputs.params.image-name) ..."
+
+          yq -e -i '.spec.template.spec.containers[0].image="$(inputs.params.image-name)"' $(inputs.params.manifest-dir)/deployment.yaml
+          cat $(inputs.params.manifest-dir)/deployment.yaml
 
           echo "************************************************************"
           echo "KC APPLY..."
-          kubectl rollout restart deployment.apps/$(inputs.params.wait-for-pod-label)
+          kubectl apply -f $(inputs.params.manifest-dir)/deployment.yaml
+          kubectl apply -f $(inputs.params.manifest-dir)/service.yaml
 
           echo "************************************************************"
           sleep 3

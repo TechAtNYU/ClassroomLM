@@ -4,7 +4,8 @@ kind: Ingress
 metadata:
   name: dev-team-sp25
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
   - http:
@@ -23,3 +24,10 @@ spec:
             name: tekton-dashboard
             port:
               number: 9097
+      - path: /webhook
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: github-webhook
+            port:
+              number: 8080

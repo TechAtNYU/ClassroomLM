@@ -1,0 +1,33 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: cd-template
+spec:
+  params:
+  - name: git-repo-url
+    description: The git repository url
+  - name: git-revision
+    description: The git revision
+  - name: git-repo-name
+    description: The name of the deployment to be created / patched
+
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: cd-pipeline-$(tt.params.git-repo-name)-
+    spec:
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: cd-pipeline
+      params:
+      - name: APP_NAME
+        value: $(tt.params.git-repo-name)
+      - name: GIT_REPO
+        value: $(tt.params.git-repo-url)
+      - name: IMAGE_NAME
+        value: dev.techatnyu.org:5000/$(context.pipelineRun.namespace)/$(tt.params.git-repo-name):$(tt.params.git-revision)
+      workspaces:
+      - name: pipeline-workspace
+        persistentVolumeClaim:
+          claimName: pipeline-pvc

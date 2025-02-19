@@ -3,6 +3,6 @@ kind: EventListener
 metadata:
   name: cd-listener
 spec:
-  serviceAccountName: pipeline
+  serviceAccountName: default
   triggers:
     - triggerRef: cd-trigger

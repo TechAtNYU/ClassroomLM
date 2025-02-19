@@ -3,7 +3,7 @@ kind: Trigger
 metadata:
   name: cd-trigger
 spec:
-  serviceAccountName: pipeline
+  serviceAccountName: default
   bindings:
     - ref: cd-binding
   template:

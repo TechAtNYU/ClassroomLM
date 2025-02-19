@@ -30,7 +30,7 @@ spec:
     type: string
   steps:
     - name: deploy
-      image: bitnami/kubectl
+      image: openshift/origin-cli
       workingDir: /workspace/source 
       command: ["/bin/bash", "-c"]
       args:

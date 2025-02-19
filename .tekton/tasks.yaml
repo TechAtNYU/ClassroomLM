@@ -11,7 +11,6 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/tags: openshift, deploy
     tekton.dev/displayName: "deploy image"
-    tekton.dev/platforms: "linux/amd64"
 spec:
   workspaces:
   - name: source  
@@ -31,7 +30,7 @@ spec:
     type: string
   steps:
     - name: deploy
-      image: quay.io/openshift/origin-cli:latest
+      image: bitnami/kubectl
       workingDir: /workspace/source 
       command: ["/bin/bash", "-c"]
       args:
@@ -41,22 +40,16 @@ spec:
 
           echo Applying manifests in $(inputs.params.manifest-dir) directory
 
-          echo "**********************************************************************"
-          echo "Installing YQ..."
-          echo "**********************************************************************"
-          wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          chmod a+x /usr/bin/yq
+          # echo "*********************  DEPLOYMENT  ***********************"
+          # echo "Deploying $(inputs.params.image-name) ..."
 
-          echo "*********************  DEPLOYMENT  ***********************"
-          echo "Deploying $(inputs.params.image-name) ..."
-
-          yq -e -i '.spec.template.spec.containers[0].image="$(inputs.params.image-name)"' $(inputs.params.manifest-dir)/deployment.yaml
-          cat $(inputs.params.manifest-dir)/deployment.yaml
+          # yq -e -i '.spec.template.spec.containers[0].image="$(inputs.params.image-name)"' $(inputs.params.manifest-dir)/deployment.yaml
+          # cat $(inputs.params.manifest-dir)/deployment.yaml
 
           echo "************************************************************"
-          echo "OC APPLY..."
-          oc apply -f $(inputs.params.manifest-dir)/deployment.yaml
-          oc apply -f $(inputs.params.manifest-dir)/service.yaml
+          echo "KC APPLY..."
+          kubectl apply -f $(inputs.params.manifest-dir)/deployment.yaml
+          kubectl apply -f $(inputs.params.manifest-dir)/service.yaml
 
           echo "************************************************************"
           sleep 3
@@ -67,37 +60,3 @@ spec:
           echo "Pods:"
           oc get pods
           echo ""
-
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: apply-manifests
-  labels:
-    app.kubernetes.io/version: "0.1"
-  annotations:
-    tekton.dev/categories: Deployment
-    tekton.dev/pipelines.minVersion: "0.17.0"
-    tekton.dev/tags: openshift, deploy
-    tekton.dev/displayName: "deploy"
-    tekton.dev/platforms: "linux/amd64"
-spec:
-  workspaces:
-  - name: source  
-  description: >-
-    This task will deploy all of the yaml files in the manifest folder.
-  params:
-  - name: manifest-dir
-    description: The directory in source that contains yaml manifests
-    type: string
-    default: "k8s"
-  steps:
-    - name: apply
-      image: quay.io/openshift/origin-cli:latest
-      workingDir: /workspace/source 
-      command: ["/bin/bash", "-c"]
-      args:
-        - |-
-          echo Applying manifests in $(inputs.params.manifest-dir) directory
-          oc apply -f $(inputs.params.manifest-dir)
-          echo -----------------------------------

@@ -12,7 +12,7 @@ spec:
     - name: GIT_REF
       description: The reference (branch or ref)
       type: string
-      default: master
+      default: main
     - name: APP_NAME
       description: Name of the application
       type: string

@@ -20,7 +20,7 @@ spec:
     - name: IMAGE_NAME
       description: The name of the image to build
       type: string
-      default: 'k3d-cluster-registry.localhost:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):latest'
+      default: 'k3d-cluster-registry.localhost:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):1.0'
   tasks:
     - name: git-clone
       params:

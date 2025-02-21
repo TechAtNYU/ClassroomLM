@@ -44,7 +44,7 @@
 				// 	"**/__pycache__": true,
 				// 	"**/.pytest_cache": true
 				// }
-				"npm.packageManager": "npm"
+				"npm.packageManager": "pnpm"
 			},
 			"extensions": [
 				"ms-python.python",

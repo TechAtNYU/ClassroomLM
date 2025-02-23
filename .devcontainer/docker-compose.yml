@@ -5,7 +5,7 @@ services:
   app:
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile    
+      dockerfile: .devcontainer/Dockerfile
     hostname: dev-team
     container_name: dev-team-sp25
     volumes:

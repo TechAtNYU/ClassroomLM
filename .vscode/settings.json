@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["bitnami"]
+  "cSpell.words": ["bitnami"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }

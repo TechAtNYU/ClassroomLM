@@ -1,10 +1,5 @@
 {
-    "cSpell.words": [
-        "bitnami",
-        "pipelinerun",
-        "taskrun",
-        "tekton"
-    ],
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+  "cSpell.words": ["bitnami", "pipelinerun", "taskrun", "tekton"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }

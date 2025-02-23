@@ -6,7 +6,7 @@ on:
   # pull_request:
   #   branches: [main]
 # https://pnpm.io/continuous-integration#github-actions
-# 
+#
 jobs:
   build:
     runs-on: ubuntu-latest

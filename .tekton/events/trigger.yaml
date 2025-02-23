@@ -5,23 +5,23 @@ metadata:
 spec:
   serviceAccountName: default
   interceptors:
-  - ref:
-      name: "github"
-      kind: ClusterInterceptor
-      apiVersion: triggers.tekton.dev
-    params:
-    - name: "eventTypes"
-      value: ["push"]
-    # - name: "addChangedFiles"
-    #   value:
-    #     enabled: true
-  - ref:
-      name: cel
-    params:
-    - name: filter
-      # execute only when a file within the controllers directory has changed
-      # value: extensions.changed_files.matches('controllers/')
-      value: "body.ref == 'refs/heads/main'"
+    - ref:
+        name: "github"
+        kind: ClusterInterceptor
+        apiVersion: triggers.tekton.dev
+      params:
+        - name: "eventTypes"
+          value: ["push"]
+      # - name: "addChangedFiles"
+      #   value:
+      #     enabled: true
+    - ref:
+        name: cel
+      params:
+        - name: filter
+          # execute only when a file within the controllers directory has changed
+          # value: extensions.changed_files.matches('controllers/')
+          value: "body.ref == 'refs/heads/main'"
   bindings:
     - ref: cd-binding
   template:

@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
-        "bitnami"
+        "bitnami",
+        "pipelinerun",
+        "taskrun",
+        "tekton"
     ]
 }

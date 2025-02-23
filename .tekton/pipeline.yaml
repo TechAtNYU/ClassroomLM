@@ -9,6 +9,7 @@ spec:
     - name: GIT_REPO
       description: The URL to the git repo
       type: string
+      default: https://github.com/TechAtNYU/dev-team-spring-25.git
     - name: GIT_REF
       description: The reference (branch or ref)
       type: string

@@ -16,13 +16,6 @@ spec:
             name: dev-team-sp25
             port:
               number: 8080
-      # - path: /tekton(/|$)(.*)
-      #   pathType: ImplementationSpecific
-      #   backend:
-      #     service:
-      #       name: tekton-dashboard
-      #       port:
-      #         number: 9097
       - path: /webhook
         pathType: ImplementationSpecific
         backend:

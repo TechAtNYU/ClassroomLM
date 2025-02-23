@@ -2,9 +2,6 @@ name: CI
 
 on:
   push:
-  #   branches: [main]
-  # pull_request:
-  #   branches: [main]
 # https://pnpm.io/continuous-integration#github-actions
 #
 jobs:
@@ -14,7 +11,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - uses: actions/cache@v4
+        with:
+          # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
@@ -25,6 +32,7 @@ jobs:
         with:
           node-version: 22
           cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install
 

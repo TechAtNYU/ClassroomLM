@@ -13,25 +13,25 @@ metadata:
     tekton.dev/displayName: "deploy image"
 spec:
   workspaces:
-  - name: source  
+    - name: source
   description: >-
     This task will update the deployment.yaml with the latest image name
     and then apply that yaml file and it's service file.
   params:
-  - name: image-name
-    description: The fully qualified name of the new image to deploy
-    type: string
-  - name: manifest-dir
-    description: The directory in source that contains yaml manifests
-    type: string
-    default: "k8s"
-  - name: wait-for-pod-label
-    description: The pod label value for the label "app" for the pod you want to wait the deploy-task till it gets ready.
-    type: string
+    - name: image-name
+      description: The fully qualified name of the new image to deploy
+      type: string
+    - name: manifest-dir
+      description: The directory in source that contains yaml manifests
+      type: string
+      default: "k8s"
+    - name: wait-for-pod-label
+      description: The pod label value for the label "app" for the pod you want to wait the deploy-task till it gets ready.
+      type: string
   steps:
     - name: deploy
       image: openshift/origin-cli
-      workingDir: /workspace/source 
+      workingDir: /workspace/source
       command: ["/bin/bash", "-c"]
       args:
         - |-
@@ -62,7 +62,7 @@ spec:
 
           echo "***** Waiting For Service Ready *****"
           kubectl wait --for=condition=ready pod -l app=$(inputs.params.wait-for-pod-label) --timeout=360s 
-          
+
           echo "Pods:"
           kubectl get pods
           echo ""

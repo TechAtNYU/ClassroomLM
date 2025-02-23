@@ -2,10 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+# https://pnpm.io/continuous-integration#github-actions
+# 
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,13 +19,12 @@ jobs:
         name: Install pnpm
         with:
           run_install: false
-
+          version: 10
       - name: Set up Node.js with cache
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "pnpm"
-
       - name: Install dependencies
         run: pnpm install
 

@@ -21,7 +21,7 @@ spec:
     - name: IMAGE_NAME
       description: The name of the image to build
       type: string
-      default: 'dev.techatnyu.org:5000/$(params.APP_NAME):1.0'
+      default: "dev.techatnyu.org:5000/$(params.APP_NAME):1.0"
   tasks:
     - name: git-clone
       params:
@@ -30,7 +30,7 @@ spec:
         - name: revision
           value: $(params.GIT_REF)
         - name: verbose
-          value: 'true'
+          value: "true"
       taskRef:
         name: git-clone
       workspaces:
@@ -45,13 +45,13 @@ spec:
         - name: CONTEXT
           value: .
         - name: BUILD_EXTRA_ARGS
-          value: ''
+          value: ""
         - name: PUSH_EXTRA_ARGS
-          value: ''
+          value: ""
         - name: SKIP_PUSH
-          value: 'false'
+          value: "false"
         - name: TLSVERIFY
-          value: 'false'
+          value: "false"
       runAfter:
         - git-clone
       taskRef:

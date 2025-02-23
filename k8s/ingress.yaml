@@ -7,19 +7,19 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: dev-team-sp25
-            port:
-              number: 8080
-      - path: /webhook
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: el-cd-listener
-            port:
-              number: 8080
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dev-team-sp25
+                port:
+                  number: 8080
+          - path: /webhook
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: el-cd-listener
+                port:
+                  number: 8080

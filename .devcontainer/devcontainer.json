@@ -22,65 +22,61 @@
 // }
 
 {
-	"name": "Dev Team SP25 Project",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/app",
-	"remoteUser": "node",
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"cSpell.words": [
-					"tekton",
-					"creds",
-					"virtualenvs"
-				],
-				"git.mergeEditor": true,
-				"markdown-preview-github-styles.colorTheme": "light",
-				// "files.exclude": {
-				// 	"**/.git": true,
-				// 	"**/.DS_Store": true,
-				// 	"**/*.pyc": true,
-				// 	"**/__pycache__": true,
-				// 	"**/.pytest_cache": true
-				// }
-				"npm.packageManager": "pnpm"
-			},
-			"extensions": [
-				"ms-python.python",
-				"yzhang.markdown-all-in-one",
-				"DavidAnson.vscode-markdownlint",
-				"bierner.github-markdown-preview",
-				"hnw.vscode-auto-open-markdown-preview",
-				"bierner.markdown-preview-github-styles",
-				"donjayamanne.githistory",
-				"GitHub.vscode-pull-request-github",
-				"redhat.vscode-yaml",
-				"streetsidesoftware.code-spell-checker",
-                "dbaeumer.vscode-eslint",
-                "esbenp.prettier-vscode",
-                "ms-vscode-remote.remote-containers"
-			]
-		}
-	},
-	"postCreateCommand": "pnpm install",
-	"waitFor": "postCreateCommand",
-	"postAttachCommand": "pnpm dev",
-	// "postCreateCommand": "bash /app/.devcontainer/scripts/post-install.sh",
+  "name": "Dev Team SP25 Project",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/app",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "cSpell.words": ["tekton", "creds", "virtualenvs"],
+        "git.mergeEditor": true,
+        "markdown-preview-github-styles.colorTheme": "light",
+        // "files.exclude": {
+        // 	"**/.git": true,
+        // 	"**/.DS_Store": true,
+        // 	"**/*.pyc": true,
+        // 	"**/__pycache__": true,
+        // 	"**/.pytest_cache": true
+        // }
+        "npm.packageManager": "pnpm"
+      },
+      "extensions": [
+        "ms-python.python",
+        "yzhang.markdown-all-in-one",
+        "DavidAnson.vscode-markdownlint",
+        "bierner.github-markdown-preview",
+        "hnw.vscode-auto-open-markdown-preview",
+        "bierner.markdown-preview-github-styles",
+        "donjayamanne.githistory",
+        "GitHub.vscode-pull-request-github",
+        "redhat.vscode-yaml",
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode-remote.remote-containers"
+      ]
+    }
+  },
+  "postCreateCommand": "pnpm install",
+  "waitFor": "postCreateCommand",
+  "postAttachCommand": "pnpm dev",
+  // "postCreateCommand": "bash /app/.devcontainer/scripts/post-install.sh",
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"portsAttributes": {
-        "8080": {
-            "label": "Application",
-            "onAutoForward": "openPreview"
-        }
-    },
-	"forwardPorts": [8080],
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "portsAttributes": {
+    "8080": {
+      "label": "Application",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "forwardPorts": [8080],
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	"features": {
-		"ghcr.io/devcontainers/features/git:1": "os-provided",
-		// "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		// "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
-	}
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": "os-provided"
+    // "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    // "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+  }
 }

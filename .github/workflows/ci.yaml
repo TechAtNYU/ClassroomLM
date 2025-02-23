@@ -3,15 +3,16 @@ name: CI
 on:
   push:
 # https://pnpm.io/continuous-integration#github-actions
-#
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 💾 Checkout code
         uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - name: 📦 Cache NextJS
+        uses: actions/cache@v4
         with:
           # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
           path: |
@@ -23,24 +24,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - uses: pnpm/action-setup@v4
-        name: Install pnpm
+        name: 📦 Install pnpm
         with:
           run_install: false
           version: 10
-      - name: Set up Node.js with cache
+      - name: 📦 Set up Node.js with cache
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: pnpm install
 
-      - name: Run formatter
+      - name: 🧹 Run formatter
         run: pnpm format:check
 
-      - name: Run linter
+      - name: 🧹 Run linter
         run: pnpm lint
 
-      - name: Run tests
+      - name: 🧪 Run tests
         run: pnpm test:run

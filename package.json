@@ -46,7 +46,7 @@
     "vitest": "^3.0.6"
   },
   "imports": {
-    "#*": "./app/*"
+    "#*": "./*"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

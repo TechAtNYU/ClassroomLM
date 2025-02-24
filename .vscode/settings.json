@@ -1,5 +1,7 @@
 {
   "cSpell.words": ["bitnami", "pipelinerun", "taskrun", "tekton"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "git.allowNoVerifyCommit": true,
+  "git.commandsToLog": ["push"]
 }

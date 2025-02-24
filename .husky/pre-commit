@@ -1,2 +1,2 @@
 pnpm exec lint-staged
-pnpm format
+pnpm format:check

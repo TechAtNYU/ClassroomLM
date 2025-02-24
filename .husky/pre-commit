@@ -1,2 +1,2 @@
+echo "If popup: hook failed, click \"command output\", fix with \"pnpm format\" or \"pnpm lint:fix\". Use VSCode's \"Commit (no verify)\" or \"git commit -n -m [message] \" to commit anyway"
 pnpm exec lint-staged
-pnpm format

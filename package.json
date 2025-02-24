@@ -2,6 +2,7 @@
   "name": "dev-team-spring-25",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "husky",
     "dev": "next dev --turbopack -p 8080",
@@ -15,15 +16,6 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "next lint",
-      "prettier --check"
-    ],
-    "*.{json,yml,yaml,md}": [
-      "prettier --check"
-    ]
   },
   "dependencies": {
     "next": "15.1.7",

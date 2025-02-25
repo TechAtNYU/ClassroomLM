@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-// The client you created from the Server-Side Auth instructions
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 // Get allowed domains from environment variables
 const allowedDomains = process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS?.split(
@@ -32,15 +32,24 @@ export async function GET(request: Request) {
       );
 
       if (!isAllowedDomain) {
-        // Not an allowed email, sign them out
+        // Not an allowed email, sign them out and delete the user
+        try {
+          // HACK: This is a workaround solution as there's currently no way (that I am aware of) to prevent
+          // OAuth users from being added to the database before we can check their email domain.
+          // Ideally, we would validate the email domain before creating the user account,
+          // but Supabase OAuth flow creates the user first, then gives us access to their details via callback.
+          // So we have to delete unauthorized users after they've already been created.
+          const adminClient = createAdminClient();
+          if (data.user.id) {
+            await adminClient.auth.admin.deleteUser(data.user.id);
+          }
+        } catch (deleteError) {
+          console.error("Error deleting unauthorized user:", deleteError);
+        }
         await supabase.auth.signOut();
-
-        // Create a response with the redirect
-        const response = NextResponse.redirect(
+        return NextResponse.redirect(
           `${origin}/auth/unauthorized?message=ORGANIZATION_EMAIL_REQUIRED`
         );
-
-        return response;
       }
 
       // User has an allowed email domain, proceed

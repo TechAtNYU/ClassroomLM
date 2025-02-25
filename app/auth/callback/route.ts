@@ -24,27 +24,15 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error && data?.user) {
+    if (!error && data?.user?.email) {
       // Check if the user's email domain is allowed
       const userEmail = data.user.email;
+      const isAllowedDomain = allowedDomains.some((domain) =>
+        userEmail.endsWith(`@${domain}`)
+      );
 
-      if (
-        userEmail &&
-        allowedDomains.some((domain) => userEmail.endsWith(`@${domain}`))
-      ) {
-        // User has an allowed email domain, proceed
-        const forwardedHost = request.headers.get("x-forwarded-host");
-        const isLocalEnv = process.env.NODE_ENV === "development";
-
-        if (isLocalEnv) {
-          return NextResponse.redirect(`${origin}${next}`);
-        } else if (forwardedHost) {
-          return NextResponse.redirect(`https://${forwardedHost}${next}`);
-        } else {
-          return NextResponse.redirect(`${origin}${next}`);
-        }
-      } else {
-        // Not an allowed email, get the user ID before signing out
+      if (!isAllowedDomain) {
+        // Not an allowed email, sign them out
         await supabase.auth.signOut();
 
         // Create a response with the redirect
@@ -53,6 +41,18 @@ export async function GET(request: Request) {
         );
 
         return response;
+      }
+
+      // User has an allowed email domain, proceed
+      const forwardedHost = request.headers.get("x-forwarded-host");
+      const isLocalEnv = process.env.NODE_ENV === "development";
+
+      if (isLocalEnv) {
+        return NextResponse.redirect(`${origin}${next}`);
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+      } else {
+        return NextResponse.redirect(`${origin}${next}`);
       }
     }
   }

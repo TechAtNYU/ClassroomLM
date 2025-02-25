@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     console.error(
       "NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS must be set in the environment variables"
     );
-    return;
+    return NextResponse.redirect(`${origin}/error`);
   }
 
   if (code) {
@@ -57,5 +57,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  return NextResponse.redirect(`${origin}/error`);
 }

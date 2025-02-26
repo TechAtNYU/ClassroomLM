@@ -30,8 +30,6 @@ spec:
           envFrom:
             - secretRef:
                 name: next-secret
-            - configMapRef:
-                name: next-config
             # - name: DATABASE_URI
             #   valueFrom:
             #     secretKeyRef:
@@ -48,3 +46,14 @@ spec:
             requests:
               cpu: "0.25"
               memory: "64Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/.env
+              subPath: .env
+      volumes:
+        - name: config-volume
+          configMap:
+            name: next-config
+            items:
+              - key: .env
+                path: .env

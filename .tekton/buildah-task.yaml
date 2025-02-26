@@ -58,6 +58,18 @@ spec:
       type: array
       default:
         - ""
+    - name: CONFIG_MAP_NAME
+      description: Name of a ConfigMap to copy data into workspace
+      type: string
+      default: ""
+    - name: CONFIG_MAP_KEY_VALUE
+      description: Key value of file name to copy
+      type: string
+      default: ""
+    - name: CONFIG_DATA_WORKSPACE_DEST
+      description: Destination path for ConfigMap's data in workspace
+      type: string
+      default: ""
   workspaces:
     - name: source
     - name: sslcertdir
@@ -99,6 +111,10 @@ spec:
       args:
         - $(params.BUILD_ARGS[*])
       script: |
+        if [ -n "$(params.CONFIG_MAP_NAME)" ]; then
+          cp /var/confmap $(params.CONFIG_DATA_WORKSPACE_DEST)
+          ls $(params.CONFIG_DATA_WORKSPACE_DEST)
+          echo Copied config map file with key $(params.CONFIG_MAP_KEY_VALUE) to $(params.CONFIG_DATA_WORKSPACE_DEST)
         BUILD_ARGS=()
         for buildarg in "$@"
         do
@@ -122,8 +138,17 @@ spec:
       volumeMounts:
         - name: varlibcontainers
           mountPath: /var/lib/containers
+        - name: "conf-$(params.CONFIG_MAP_NAME)"
+          mountPath: /var/conf/confmap.conf
+          subPath: confmap.conf
       securityContext:
         privileged: true
   volumes:
     - name: varlibcontainers
       emptyDir: {}
+    - name: "conf-$(params.CONFIG_MAP_NAME)"
+      configMap:
+        name: "$(params.CONFIG_MAP_NAME)"
+        items:
+          - key: $(params.CONFIG_MAP_KEY_VALUE)
+            path: confmap.conf

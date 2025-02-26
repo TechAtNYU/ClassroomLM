@@ -16,12 +16,12 @@ export default function UnauthorizedPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <h1 className="mb-4 text-2xl font-bold">Access Denied</h1>
       <p className="mb-6">{errorMessage}</p>
       <Link
         href="/login"
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
       >
         Return to Login
       </Link>

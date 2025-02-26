@@ -27,17 +27,15 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
-          env:
-            - name: RETRY_COUNT
-              value: "10"
+          envFrom:
+            - secretRef:
+                name: next-secret
             # - name: DATABASE_URI
             #   valueFrom:
             #     secretKeyRef:
             #       name: postgres-creds
             #       key: database_uri
           readinessProbe:
-            initialDelaySeconds: 10
-            periodSeconds: 60
             httpGet:
               path: /api/health
               port: 8080
@@ -48,3 +46,14 @@ spec:
             requests:
               cpu: "0.25"
               memory: "64Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/.env
+              subPath: .env
+      volumes:
+        - name: config-volume
+          configMap:
+            name: next-config
+            items:
+              - key: .env
+                path: .env

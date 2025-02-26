@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 
 export async function signInWithGoogle() {
   const supabase = await createClient();
+  const hostedDomain = process.env.NEXT_PUBLIC_HOSTED_DOMAIN;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -13,6 +14,7 @@ export async function signInWithGoogle() {
       redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       queryParams: {
         prompt: "select_account",
+        ...(hostedDomain && { hd: hostedDomain }), // only add if orgName defined
       },
     },
   });

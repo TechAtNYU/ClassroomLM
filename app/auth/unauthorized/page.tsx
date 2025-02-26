@@ -2,10 +2,19 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const orgName = process.env.NEXT_PUBLIC_ORGANIZATION_NAME + " " || "";
 
 export default function UnauthorizedPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccessDeniedWithMessage />
+    </Suspense>
+  );
+}
+
+function AccessDeniedWithMessage() {
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
 

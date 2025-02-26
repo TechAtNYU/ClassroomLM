@@ -22,6 +22,9 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
           <li>This is automatically deployed with tekton CD 3</li>
+          <li>
+            Org name from env: {process.env.NEXT_PUBLIC_ORGANIZATION_NAME}
+          </li>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">

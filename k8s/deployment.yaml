@@ -29,9 +29,9 @@ spec:
               protocol: TCP
           envFrom:
             - secretRef:
-              name: next-secret
+                name: next-secret
             - configMapRef:
-              name: next-config
+                name: next-config
             # - name: DATABASE_URI
             #   valueFrom:
             #     secretKeyRef:

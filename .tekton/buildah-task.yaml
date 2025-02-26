@@ -138,7 +138,7 @@ spec:
       volumeMounts:
         - name: varlibcontainers
           mountPath: /var/lib/containers
-        - name: "conf-$(params.CONFIG_MAP_NAME)"
+        - name: config-volume
           mountPath: /var/conf/confmap.conf
           subPath: confmap.conf
       securityContext:
@@ -146,7 +146,7 @@ spec:
   volumes:
     - name: varlibcontainers
       emptyDir: {}
-    - name: "conf-$(params.CONFIG_MAP_NAME)"
+    - name: config-volume
       configMap:
         name: "$(params.CONFIG_MAP_NAME)"
         items:

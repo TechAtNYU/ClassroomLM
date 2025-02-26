@@ -54,6 +54,8 @@ spec:
           value: "false"
         - name: CONFIG_MAP_NAME
           value: "next-config"
+        - name: CONFIG_MAP_KEY_VALUE
+          value: ".env"
         - name: CONFIG_DATA_WORKSPACE_DEST
           value: "./.env"
       runAfter:

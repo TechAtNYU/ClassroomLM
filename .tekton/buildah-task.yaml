@@ -115,6 +115,7 @@ spec:
           cp /var/confmap $(params.CONFIG_DATA_WORKSPACE_DEST)
           ls $(params.CONFIG_DATA_WORKSPACE_DEST)
           echo Copied config map file with key $(params.CONFIG_MAP_KEY_VALUE) to $(params.CONFIG_DATA_WORKSPACE_DEST)
+        fi
         BUILD_ARGS=()
         for buildarg in "$@"
         do

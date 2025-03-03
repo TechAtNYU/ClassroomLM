@@ -1,2 +1,2 @@
-echo "If popup: hook failed, click \"command output\", fix with \"pnpm format\" or \"pnpm lint:fix\". Use VSCode's \"Commit (no verify)\" or \"git commit -n -m [message] \" to commit anyway"
+echo "If you want to override the pre-commit hook and commit anyway, use VSCode's \"Commit (no verify)\" or \"git commit -n -m [message]\""
 pnpm exec lint-staged

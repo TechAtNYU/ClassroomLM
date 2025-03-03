@@ -14,7 +14,14 @@ export default function UploadPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!file) return;
-    console.log("File submitted");
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await response.json();
+    console.log(data);
   }
 
   return (

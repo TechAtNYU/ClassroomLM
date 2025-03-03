@@ -1,2 +1,1 @@
-echo "If you want to override the pre-commit hook and commit anyway, use VSCode's \"Commit (no verify)\" or \"git commit -n -m [message]\""
-pnpm exec lint-staged
+pnpm exec lint-staged || (echo "If you want to override the pre-commit hook and commit anyway, use VSCode's \"Commit (no verify)\" or \"git commit -n -m [message]\""; false)

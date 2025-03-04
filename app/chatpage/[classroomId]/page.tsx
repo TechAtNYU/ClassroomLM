@@ -5,14 +5,14 @@ import chatController from "@/controllers/chatController";
 import { UUID } from "crypto";
 //import { getCurrentUserId } from "../lib/supabase-api";
 
-export default function Home({ params }: { params: { classroomId: number } }) {
+export default function Home({ params }: { params: { classroomId: string } }) {
   let sessionID: UUID;
 
   async function startSession() {
     // get the two params
     //What should be implemented later
     // const userID = getCurrentUserId();
-    const classroomID = params.classroomId;
+    const classroomID = decodeURI(params.classroomId);
 
     const userID = document.getElementById("userId");
 

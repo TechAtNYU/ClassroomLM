@@ -31,6 +31,11 @@ export async function POST(request: NextRequest) {
   });
 }
 
+// ====================================================
+// RAGFlow API functions
+// TODO: Move these to a separate RAGFlow client file
+// ====================================================
+
 // TODO: Give the option to pass in other optional arguments
 // See more at: https://ragflow.dev.techatnyu.org/user-setting/api#list-datasets
 async function listDatasets(name: string) {
@@ -53,7 +58,7 @@ async function uploadDocuments(datasetId: string, formData: FormData) {
     {
       method: "POST",
       headers: {
-        ContentType: "multipart/form-data",
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${RAGFLOW_API_KEY}`,
       },
       body: formData,

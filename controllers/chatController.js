@@ -1,8 +1,8 @@
 import { ragflow } from '../services/ragflowService.js';
 
-export async function chatController(req, res) {
+export default async function chatController(sessionId, prompt) {
     try {
-        const { sessionId, prompt } = req.body;
+        // const { sessionId, prompt } = req.body;
 
         if (!sessionId || !prompt) {
             return res.status(400).json({ error: "Missing sessionId or prompt" });
@@ -13,13 +13,15 @@ export async function chatController(req, res) {
         const response = await ragflow(sessionId, prompt);
 
         if (!response) {
-            return res.status(500).json({ error: "Failed to process request with RAGFlow" });
+            return {session: 0, error: 1};
+            // return res.status(500).json({ error: "Failed to process request with RAGFlow" });
         }
 
-        return res.json({ sessionId, response });
+        return json({ sessionId, response });
 
     } catch (error) {
         console.error("Error in chatController:", error);
-        return res.status(500).json({ error: "Internal server error" });
+        return {session: 0, error: 1};
+        // return res.status(500).json({ error: "Internal server error" });
     }
 }

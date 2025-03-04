@@ -1,13 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
+
+
 dotenv.config();
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+// const supabase = createClient("https://ixpqbkoedadzmydvyfvo.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cHFia29lZGFkem15ZHZ5ZnZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA1MzExOTgsImV4cCI6MjA1NjEwNzE5OH0._gOWyrWDqueM8_AMhPoYU2Fkhhs49PXi3tjXZ71mjgg");
+
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 
-export async function getOrCreateChatSession(req, res) {
+export default async function getOrCreateChatSession(userId, classroomId) {
     try {
-        const { userId, classroomId } = req.body;
+        // const { userId, classroomId } = req.body;
 
         if (!userId || !classroomId) {
             return res.status(400).json({ error: "Missing required fields" });
@@ -22,7 +27,8 @@ export async function getOrCreateChatSession(req, res) {
 
         if (error && error.code !== 'PGRST116') {
             console.error("Error fetching session:", error);
-            return res.status(500).json({ error: "Failed to fetch session" });
+            return {session: 0, error: 1};
+            // return res.status(500).json({ error: "Failed to fetch session" });
         }
 
         if (!data) {
@@ -34,7 +40,8 @@ export async function getOrCreateChatSession(req, res) {
 
             if (newSessionError) {
                 console.error("Error creating session:", newSessionError);
-                return res.status(500).json({ error: "Failed to create session" });
+                return {session: 0, error: 1};
+                // return res.status(500).json({ error: "Failed to create session" });
             }
             data = newSession;
         }
@@ -42,6 +49,6 @@ export async function getOrCreateChatSession(req, res) {
         return res.json(data);
     } catch (error) {
         console.error("Unexpected error:", error);
-        return res.status(500).json({ error: "Internal server error" });
+        return {session: 0, error: 1};
     }
 }

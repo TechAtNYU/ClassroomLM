@@ -1,24 +1,24 @@
 "use client";
 
-import getOrCreateChatSession from "@/controllers/getChatController";
+import { getChatSession } from "@/controllers/getChatController";
 import chatController from "@/controllers/chatController";
 import { UUID } from "crypto";
-import { getCurrentUserId } from "/app/app/lib/supabase-api";
+import { getCurrentUserId } from "../../lib/supabase-api";
 
 export default function Home({ params }: { params: { classroomId: string } }) {
   let sessionID: UUID;
+  const userID = getCurrentUserId();
+  const classroomID = decodeURI(params.classroomId);
 
   async function startSession() {
     // get the two params
     //What should be implemented later
-    const userID = getCurrentUserId();
-    const classroomID = decodeURI(params.classroomId);
 
     //const userID = document.getElementById("userId");
 
     //let classroomID = document.getElementById("classroomID");
 
-    const sessionIDResponse = await getOrCreateChatSession(userID, classroomID);
+    const sessionIDResponse = await getChatSession(userID, classroomID);
 
     sessionID = sessionIDResponse.session;
 
@@ -39,7 +39,7 @@ export default function Home({ params }: { params: { classroomId: string } }) {
     // get the two params
     const prompt = document.getElementById("prompt");
 
-    const promptResponse = await chatController(sessionID, prompt);
+    const promptResponse = await chatController(classroomID, sessionID, prompt);
 
     const response = promptResponse.response;
 

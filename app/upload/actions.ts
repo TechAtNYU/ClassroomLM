@@ -1,34 +1,20 @@
-import { NextResponse, NextRequest } from "next/server";
+"use server";
 
 const RAGFLOW_API_KEY: string = process.env.NEXT_RAGFLOW_API_KEY || "";
 const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
 
-export async function GET() {
-  // TODO: Return the JSON output that RAGFlow API returns on documents from "upload_documents_test"?
-  return NextResponse.json({
-    status: "FROG",
-  });
-}
-
-export async function POST(request: NextRequest) {
+export async function uploadFile(formData: FormData) {
   if (!RAGFLOW_API_KEY) {
-    return NextResponse.json({
-      status: "ERROR",
-      message:
-        "You need to get a RAGFlow API key from: https://ragflow.dev.techatnyu.org/user-setting/api and set it in your .env.local file as NEXT_RAGFLOW_API_KEY.",
-    });
+    console.log(
+      "You need to get a RAGFlow API key from: https://ragflow.dev.techatnyu.org/user-setting/api and set it in your .env.local file as NEXT_RAGFLOW_API_KEY."
+    );
+    return;
   }
-
+  console.log(formData);
   const datasetResponse = await listDatasets("upload_documents_test");
   const datasetId = datasetResponse.data[0].id;
-  const formData = await request.formData();
-  const result = await uploadDocuments(datasetId, formData);
-  // TODO: Immediately parse the document right after upload for now
-  return NextResponse.json({
-    status: "SUCCESS",
-    datasetId,
-    result,
-  });
+  const result = uploadDocuments(datasetId, formData);
+  return result;
 }
 
 // ====================================================
@@ -58,7 +44,6 @@ async function uploadDocuments(datasetId: string, formData: FormData) {
     {
       method: "POST",
       headers: {
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${RAGFLOW_API_KEY}`,
       },
       body: formData,

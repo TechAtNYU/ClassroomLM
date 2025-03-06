@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, ChangeEvent, FormEvent } from "react";
+import { uploadFile } from "./actions";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -16,11 +17,7 @@ export default function UploadPage() {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json();
+    const data = await uploadFile(formData);
     console.log(data);
   }
 
@@ -34,7 +31,7 @@ export default function UploadPage() {
             <input
               type="file"
               onChange={handleFileChange}
-              className="bw-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+              className="w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
             />
           </div>
 

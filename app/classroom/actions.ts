@@ -18,6 +18,18 @@ export async function insertRandom() {
   console.log(error);
 }
 
+export async function deleteClassroom(classroom_id: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("Classroom")
+    .delete()
+    .eq("id", classroom_id);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data || [];
+}
+
 export async function getUserClassrooms() {
   const supabase = await createClient();
   const { data, error } = await supabase.from("Classroom").select(`

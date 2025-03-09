@@ -1,5 +1,6 @@
 "use server";
 import { createServiceClient } from "@/utils/supabase/service-server";
+import { createClient } from "@/utils/supabase/server";
 
 // TODO: add complex server tasks to this area and call them from your page when necessary
 
@@ -15,4 +16,20 @@ export async function insertRandom() {
     user_id: "05929f55-42bb-42d4-86bd-ddc0c7d12685",
   });
   console.log(error);
+}
+
+export async function getUserClassrooms() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("Classroom").select(`
+      id,
+      ragflow_dataset_id,
+      Classroom_Members (
+        id,
+        user_id
+      )
+    `);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data || [];
 }

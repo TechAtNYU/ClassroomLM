@@ -10,5 +10,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "git.allowNoVerifyCommit": true,
-  "git.commandsToLog": ["push"]
+  "git.commandsToLog": ["push"],
+  "npm.packageManager": "pnpm"
 }

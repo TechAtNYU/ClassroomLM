@@ -45,3 +45,44 @@ export async function getUserClassrooms() {
   }
   return data || [];
 }
+
+export async function inviteMemberToClassroom(
+  email: string,
+  classroom_id: number
+) {
+  const supabase = createServiceClient();
+
+  const { data: users, error: userError } = await supabase
+    .from("Users")
+    .select("id")
+    .eq("email", email)
+    .single();
+
+  if (userError || !users) {
+    throw new Error("User does not exist");
+  }
+
+  //checks for duplicate
+  const { data: member } = await supabase
+    .from("Classroom_Members")
+    .select("id")
+    .eq("classroom_id", classroom_id)
+    .eq("user_id", users.id);
+
+  if (member && member.length > 0) {
+    throw new Error("User already in the classroom");
+  }
+
+  //insert if no errors
+  const { error: insertError } = await supabase
+    .from("Classroom_Members")
+    .insert({
+      classroom_id: classroom_id,
+      user_id: users.id,
+    });
+
+  if (insertError) {
+    throw new Error("Error inserting classroom member");
+  }
+  return true;
+}

@@ -1,6 +1,6 @@
 // import { createClient } from "@/utils/supabase/server"; // notice how it uses the server one since we don't have "useclient" so the default is server side component
 import { deleteClassroom, getUserClassrooms, insertRandom } from "./actions";
-
+import InviteMember from "./inviteMember";
 export default async function ClassroomPage() {
   const classrooms = await getUserClassrooms();
 
@@ -32,6 +32,7 @@ export default async function ClassroomPage() {
               >
                 Delete Classroom
               </button>
+              <InviteMember classroomId={classroom.id} />
               <hr className="my-8 h-px border-0 bg-gray-200 dark:bg-gray-700" />
             </div>
           );

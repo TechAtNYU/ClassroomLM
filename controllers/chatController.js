@@ -1,4 +1,5 @@
 export default async function chatController(classroom_id, sessionId, prompt) {
+  //change classroom_id to map to agent_id
   const RAGFLOW_API_URL = `https://ragflow.dev.techatnyu.org//api/v1/chats/${classroom_id}/completions`;
   const API_KEY = process.env.API_KEY;
 

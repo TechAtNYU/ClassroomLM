@@ -1,12 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
-import { createRagflowSession } from "createRagflowSession";
-import dotenv from "dotenv";
+"use server";
 
-dotenv.config();
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+import { createClient } from "@/utils/supabase/server";
+import { createRagflowSession } from "createRagflowSession";
+
+const supabase = createClient();
 
 export async function getChatSession(req, res) {
   try {

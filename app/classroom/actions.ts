@@ -45,3 +45,12 @@ export async function getUserClassrooms() {
   }
   return data || [];
 }
+
+export async function getUserID() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data.user.id || [];
+}

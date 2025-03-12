@@ -19,7 +19,7 @@ export default function UploadPage() {
 
   useEffect(() => {
     async function fetchFiles() {
-      const datasetId = "upload_documents_test";
+      const datasetId = "219c4448f7cc11efadaa0242ac130006";
       const response = await listDocuments(datasetId);
       if (response.success) {
         setUploadedFiles(response.files);

@@ -1,6 +1,6 @@
 "use server";
 
-const RAGFLOW_API_KEY: string = process.env.NEXT_RAGFLOW_API_KEY || "";
+const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
 const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
 
 export async function uploadFile(formData: FormData) {
@@ -9,13 +9,16 @@ export async function uploadFile(formData: FormData) {
   }
 
   console.log("Uploading file...", formData);
-  const datasetResponse = await listDatasets("upload_documents_test");
+  const datasetResponse = await listDatasets(
+    "219c4448f7cc11efadaa0242ac130006"
+  );
 
   if (!datasetResponse?.data?.length) {
     return { success: false, message: "Dataset not found", files: [] };
   }
 
   const datasetId = datasetResponse.data[0].id;
+  console.log(datasetId);
   const uploadResult = await uploadDocuments(datasetId, formData);
 
   console.log("Upload API Response:", uploadResult);

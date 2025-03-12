@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 import { getCurrentUserId } from "../../lib/supabase-api";
 import { getChatSession } from "@/controllers/getChatController";
 //import { getUserID } from "@/app/classroom/actions";
-//import { useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 
 export default function Home({ params }: { params: { classroomId: string } }) {

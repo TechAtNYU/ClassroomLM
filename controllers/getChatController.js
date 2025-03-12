@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { createRagflowSession } from "createRagflowSession";
+import { createRagflowSession } from "./createRagflowSession";
 
 const supabase = createClient();
 

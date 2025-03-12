@@ -1,10 +1,35 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
-import { uploadFile } from "./actions";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { uploadFile, listDocuments } from "./actions";
+
+type UploadedFile = {
+  id: string;
+  datasetId: string;
+  name: string;
+  size: number;
+  type: string;
+  status: string;
+};
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchFiles() {
+      const datasetId = "upload_documents_test";
+      const response = await listDocuments(datasetId);
+      if (response.success) {
+        setUploadedFiles(response.files);
+      }
+    }
+
+    fetchFiles();
+    const interval = setInterval(fetchFiles, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -15,14 +40,32 @@ export default function UploadPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!file) return;
+    setLoading(true);
+
     const formData = new FormData();
     formData.append("file", file);
-    const data = await uploadFile(formData);
-    console.log(data);
+
+    const response = await uploadFile(formData);
+    console.log("Upload Response:", response);
+
+    setLoading(false);
+
+    // if (!response || typeof response !== "object") {
+    //   setErrorMessage("Invalid response from server.");
+    //   return;
+    // }
+
+    if (response.success) {
+      setUploadedFiles(response.files);
+      setFile(null);
+    }
+    // } else {
+    //   setErrorMessage(response.message || "Failed to upload file.");
+    // }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 text-black">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 text-black">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
         <h1 className="mb-4 text-xl font-bold">File Upload</h1>
 
@@ -37,24 +80,27 @@ export default function UploadPage() {
 
           <button
             type="submit"
-            disabled={!file}
+            disabled={!file || loading}
             className="w-full rounded-md bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
-            Upload
+            {loading ? "Uploading..." : "Upload"}
           </button>
         </form>
 
-        {file && (
-          <div className="mt-4 rounded-md bg-gray-100 p-3">
-            <p>
-              <strong>Selected file:</strong> {file.name}
-            </p>
-            <p>
-              <strong>Size:</strong> {(file.size / 1024).toFixed(2)} KB
-            </p>
-            <p>
-              <strong>Type:</strong> {file.type}
-            </p>
+        {uploadedFiles.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold">Uploaded Files</h2>
+            <ul className="mt-2 space-y-2">
+              {uploadedFiles.map((file) => (
+                <li key={file.id} className="rounded-md bg-gray-100 p-3">
+                  <p className="font-medium">{file.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
+                    <strong>{file.status}</strong>
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>

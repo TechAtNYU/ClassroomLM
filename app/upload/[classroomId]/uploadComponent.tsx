@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { uploadFile, listDocuments } from "./actions";
+import { uploadFile, listDocuments, getDatasetByClassroomId } from "./actions";
 
 type UploadedFile = {
   id: string;
@@ -12,14 +12,18 @@ type UploadedFile = {
   status: string;
 };
 
-export default function UploadPage() {
+export default function UploadComponent({
+  classroomId,
+}: {
+  classroomId: string;
+}) {
   const [file, setFile] = useState<File | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchFiles() {
-      const datasetId = "219c4448f7cc11efadaa0242ac130006";
+      const datasetId = await getDatasetByClassroomId(Number(classroomId));
       const response = await listDocuments(datasetId);
       if (response.success) {
         setUploadedFiles(response.files);
@@ -29,7 +33,7 @@ export default function UploadPage() {
     fetchFiles();
     const interval = setInterval(fetchFiles, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [classroomId]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -40,12 +44,13 @@ export default function UploadPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!file) return;
+
     setLoading(true);
 
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await uploadFile(formData);
+    const response = await uploadFile(classroomId, formData);
     console.log("Upload Response:", response);
 
     setLoading(false);
@@ -87,23 +92,32 @@ export default function UploadPage() {
           </button>
         </form>
 
-        {uploadedFiles.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold">Uploaded Files</h2>
-            <ul className="mt-2 space-y-2">
-              {uploadedFiles.map((file) => (
-                <li key={file.id} className="rounded-md bg-gray-100 p-3">
-                  <p className="font-medium">{file.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
-                    <strong>{file.status}</strong>
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {/* Move to component with files passed in as props so that newly fetch data doesn't trigger a rerender (and thus another fetch) infinitely so*/}
+        <FileList uploadedFiles={uploadedFiles} />
       </div>
     </div>
+  );
+}
+
+function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
+  return (
+    <>
+      {uploadedFiles.length > 0 && (
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold">Uploaded Files</h2>
+          <ul className="mt-2 space-y-2">
+            {uploadedFiles.map((file) => (
+              <li key={file.id} className="rounded-md bg-gray-100 p-3">
+                <p className="font-medium">{file.name}</p>
+                <p className="text-sm text-gray-500">
+                  {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
+                  <strong>{file.status}</strong>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
   );
 }

@@ -1,24 +1,27 @@
 "use server";
 
+import { createClient } from "@/utils/supabase/server";
+
 const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
 const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
 
-export async function uploadFile(formData: FormData) {
+export async function uploadFile(classroomId: string, formData: FormData) {
+  const datasetId = await getDatasetByClassroomId(Number(classroomId));
+  console.log("Found datasetId from classroomId", datasetId);
+
   if (!RAGFLOW_API_KEY) {
     return { success: false, message: "Missing API key", files: [] };
   }
 
   console.log("Uploading file...", formData);
-  const datasetResponse = await listDatasets(
-    "219c4448f7cc11efadaa0242ac130006"
-  );
+  const datasetResponse = await listDatasets(datasetId);
+  // const datasetResponse = await listDocuments(datasetId);
 
   if (!datasetResponse?.data?.length) {
     return { success: false, message: "Dataset not found", files: [] };
   }
 
-  const datasetId = datasetResponse.data[0].id;
-  console.log(datasetId);
+  // const datasetId = datasetResponse.data[0].id;
   const uploadResult = await uploadDocuments(datasetId, formData);
 
   console.log("Upload API Response:", uploadResult);
@@ -150,8 +153,8 @@ export async function deleteDocument(datasetId: string, fileId: string) {
 // Helper functions for Dataset and Uploading
 // ====================================================
 
-async function listDatasets(name: string) {
-  const params = new URLSearchParams({ name });
+async function listDatasets(id: string) {
+  const params = new URLSearchParams({ id });
   const response = await fetch(
     `${RAGFLOW_SERVER_URL}/api/v1/datasets?${params.toString()}`,
     {
@@ -176,4 +179,17 @@ async function uploadDocuments(datasetId: string, formData: FormData) {
     }
   );
   return await response.json();
+}
+
+export async function getDatasetByClassroomId(classroom_id: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("Classroom")
+    .select("ragflow_dataset_id")
+    .eq("id", classroom_id)
+    .limit(1);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data[0].ragflow_dataset_id || [];
 }

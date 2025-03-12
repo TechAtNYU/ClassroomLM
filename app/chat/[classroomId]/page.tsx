@@ -3,14 +3,14 @@ import { getCurrentUserId, getRagflowDatasetId } from "./actions";
 export default async function ChatPage({
   params,
 }: {
-  params: { classroomId: string };
+  params: Promise<{ classroomId: string }>;
 }) {
   const userId = await getCurrentUserId();
-  const classroomId = decodeURI(params.classroomId);
+  const { classroomId } = await params;
   const datasetId = getRagflowDatasetId(classroomId);
 
   return (
-    <div className="p-4 text-white">
+    <div className="p-4 text-gray-800 dark:text-white">
       <p>
         <strong>Classroom ID:</strong> {classroomId}
       </p>

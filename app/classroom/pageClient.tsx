@@ -2,7 +2,6 @@
 "use client";
 import { createClient } from "@/utils/supabase/client"; // Notice we use the client one here
 import { useEffect, useState } from "react";
-import { insertRandom } from "./actions";
 
 // THIS IS THE BAD WAY TO DO THIS, CLASSROOM SHOULD DELETE THIS LATER
 //  WE WANT TO DO THE SERVER SIDE COMPONENTS AS MUCH AS POSSIBLE
@@ -31,9 +30,6 @@ export default function ClassroomPage() {
           return x.id;
         })}
       </div>
-      {/* I added this button with the server action (see action.ts in this directory
-        in order to show how an action might be triggered from a  */}
-      <button onClick={insertRandom}>test</button>
     </>
   );
 }

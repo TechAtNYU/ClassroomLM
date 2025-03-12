@@ -181,15 +181,22 @@ async function uploadDocuments(datasetId: string, formData: FormData) {
   return await response.json();
 }
 
-export async function getDatasetByClassroomId(classroom_id: number) {
+export async function getDatasetByClassroomId(classroomId: number) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("Classroom")
     .select("ragflow_dataset_id")
-    .eq("id", classroom_id)
-    .limit(1);
+    .eq("id", classroomId)
+    .single();
+
   if (error) {
-    throw new Error(error.message);
+    console.error("Error fetching classroom:", error);
+    throw new Error(`Failed to fetch classroom: ${error.message}`);
   }
-  return data[0].ragflow_dataset_id || [];
+
+  if (!data) {
+    throw new Error(`No classroom found with id: ${classroomId}`);
+  }
+
+  return data.ragflow_dataset_id;
 }

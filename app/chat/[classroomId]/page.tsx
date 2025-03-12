@@ -7,7 +7,7 @@ export default async function ChatPage({
 }) {
   const userId = await getCurrentUserId();
   const { classroomId } = await params;
-  const datasetId = getRagflowDatasetId(classroomId);
+  const datasetId = getRagflowDatasetId(Number(classroomId));
 
   return (
     <div className="p-4 text-gray-800 dark:text-white">

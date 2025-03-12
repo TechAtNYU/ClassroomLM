@@ -14,7 +14,7 @@ export async function getCurrentUserId() {
   return user.id;
 }
 
-export async function getRagflowDatasetId(classroomId) {
+export async function getRagflowDatasetId(classroomId: number) {
   const supabase = await createClient();
 
   const { data, error } = await supabase

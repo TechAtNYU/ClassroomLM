@@ -40,9 +40,7 @@ const API_URL = "https://ragflow.dev.techatnyu.org/api";
 const API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function getOrCreateAssistant(datasetId: string) {
-  //console.log(datasetId);
   const existingChat = await findChatAssistant(datasetId);
-  //console.log(existingChat);
   if (existingChat) {
     return existingChat;
   }

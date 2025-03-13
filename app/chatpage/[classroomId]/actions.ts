@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { UUID } from "crypto";
+// import { UUID } from "crypto";
 
 export async function getCurrentUserId() {
   const supabase = await createClient();
@@ -36,7 +36,7 @@ export async function getRagflowDatasetId(classroomId: number) {
   return data.ragflow_dataset_id;
 }
 
-const API_URL = "https://ragflow.dev.techatnyu.org/api";
+const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
 const API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function getOrCreateAssistant(datasetId: string) {

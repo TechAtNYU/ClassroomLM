@@ -1,10 +1,18 @@
-import { UUID } from "crypto";
+// import { UUID } from "crypto";
 import {
   getCurrentUserId,
   getRagflowDatasetId,
   getOrCreateAssistant,
   getOrCreateSession,
 } from "./actions";
+import MessageList from "./messageList";
+
+export type RagFlowMessage = {
+  content: string;
+  role: string; // change this to literal "assistant" or "user"?
+};
+
+export type RagFlowMessages = Array<RagFlowMessage>;
 
 export default async function Home({
   params,
@@ -16,13 +24,13 @@ export default async function Home({
   const datasetID = await getRagflowDatasetId(classroomID);
   const assistantID = await getOrCreateAssistant(datasetID);
   const sessionID = await getOrCreateSession(userID, assistantID.id);
-  //console.log(sessionID);
-  const message = sessionID.messages;
-  console.log(message);
+  console.log(sessionID);
+  const messages: RagFlowMessages = sessionID.messages;
+  // console.log(message);
   //const sessionIDResponse = getChatSession(userID, classroomID);
 
   return (
-    <div className="p-4 text-white">
+    <div className="p-4 dark:text-white">
       <p>
         <strong>Classroom ID:</strong> {classroomID}
       </p>
@@ -38,20 +46,7 @@ export default async function Home({
       <p>
         <strong>Session ID:</strong> {sessionID.id}
       </p>
-      <div className="min-h-screen bg-gray-100 p-4">
-        {message.map((msg) => (
-          <div
-            key={msg.id}
-            className={`my-2 max-w-md rounded-lg p-3 shadow-md ${
-              msg.role === "assistant"
-                ? "self-start bg-blue-200"
-                : "self-end bg-green-200"
-            }`}
-          >
-            <p className="font-medium text-gray-800">{msg.content}</p>
-          </div>
-        ))}
-      </div>
+      <MessageList messages={messages} />
     </div>
   );
 }

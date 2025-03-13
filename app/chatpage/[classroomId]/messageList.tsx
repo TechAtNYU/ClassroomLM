@@ -1,11 +1,17 @@
-import React from "react";
+"use client";
 
-const MessageList = ({ messages }) => {
+import { RagFlowMessages } from "./page";
+
+export default function MessageList({
+  messages,
+}: {
+  messages: RagFlowMessages;
+}) {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      {messages.map((msg) => (
+      {messages.map((msg, idx) => (
         <div
-          key={msg.id}
+          key={idx}
           className={`my-2 max-w-md rounded-lg p-3 shadow-md ${
             msg.role === "assistant"
               ? "self-start bg-blue-200"
@@ -17,6 +23,4 @@ const MessageList = ({ messages }) => {
       ))}
     </div>
   );
-};
-
-export default MessageList;
+}

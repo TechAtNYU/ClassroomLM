@@ -99,7 +99,7 @@ export default function UploadComponent({
   );
 }
 
-function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
+function FileList({ uploadedFiles }: { uploadedFiles }) {
   return (
     <>
       {uploadedFiles.length > 0 && (

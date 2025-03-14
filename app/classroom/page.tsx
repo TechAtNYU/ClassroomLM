@@ -3,7 +3,6 @@ import {
   deleteClassroom,
   getUserClassrooms,
   getCurrentUserId,
-  getClassroomAdminID,
 } from "./actions";
 import InviteMember from "./inviteMember";
 export default async function ClassroomPage() {

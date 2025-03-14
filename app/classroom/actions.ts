@@ -76,19 +76,19 @@ export async function deleteClassroom(classroom_id: number) {
   return data || [];
 }
 
-export async function getClassroomAdminID(classroom_id: number) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("Classroom")
-    .select("admin_user_id")
-    .eq("id", classroom_id);
+// export async function getClassroomAdminID(classroom_id: number) {
+//   const supabase = await createClient();
+//   const { data, error } = await supabase
+//     .from("Classroom")
+//     .select("admin_user_id")
+//     .eq("id", classroom_id);
 
-  if (error) {
-    throw new Error(error.message);
-  }
+//   if (error) {
+//     throw new Error(error.message);
+//   }
 
-  return data[0]?.admin_user_id || null;
-}
+//   return data[0]?.admin_user_id || null;
+// }
 
 export async function getUserClassrooms() {
   const supabase = await createClient();

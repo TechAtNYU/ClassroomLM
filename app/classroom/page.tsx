@@ -1,4 +1,7 @@
 // import { createClient } from "@/utils/supabase/server"; // notice how it uses the server one since we don't have "useclient" so the default is server side component
+// "use client";
+
+import Link from "next/link";
 import {
   deleteClassroom,
   getUserClassrooms,
@@ -90,6 +93,15 @@ export default async function ClassroomPage() {
             </div>
           );
         })}
+
+        <Link href="newClassroom/">
+          <button
+            type="button"
+            className="mb-2 me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+          >
+            Create a Classroom
+          </button>
+        </Link>
       </div>
     </>
   );

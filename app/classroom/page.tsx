@@ -13,19 +13,35 @@ export default async function ClassroomPage() {
     return <div>No classrooms found!</div>;
   }
 
-  const userId = getCurrentUserId();
+  const userId = await getCurrentUserId();
   // const userId2 = classrooms[0].Classroom_Members[0].user_id;
 
-  const num = getClassroomAdminID(41);
+  const adminId = await getClassroomAdminID(41);
+
+  const adminClasses = await Promise.all(
+    classrooms.map(async (classroom) => {
+      const adminId = await getClassroomAdminID(classroom.id); // Wait for the admin_user_id
+      return adminId === userId ? classroom : null; // Return the classroom if admin matches, or null
+    })
+  );
+
+  const validAdminClasses = adminClasses.filter(
+    (classroom) => classroom !== null
+  );
+
+  let tf = "false";
+
+  if (userId == adminId) tf = "true";
 
   return (
     <>
       <div style={{ padding: 20 }}>
         <h1>User ID: {userId}</h1>
+        <h1>Classroom Admin ID: {adminId}</h1>
+        <h1>{tf}</h1>
         <h1 className={"text-2xl"}>My Classrooms</h1>
 
-        <h1>{num}</h1>
-        {classrooms.map((classroom) => {
+        {validAdminClasses.map((classroom) => {
           // TODO: should probably move classroom list out to a client component since we need the
           // interactivity of the list changing with updates (eg. delete)
           const deleteClassroomWithId = deleteClassroom.bind(

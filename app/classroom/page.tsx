@@ -14,35 +14,19 @@ export default async function ClassroomPage() {
   }
 
   const userId = await getCurrentUserId();
-  const adminId = await getClassroomAdminID(41);
 
-  const adminClasses = await Promise.all(
-    classrooms.map(async (classroom) => {
-      const adminId = await getClassroomAdminID(classroom.id); // Wait for the admin_user_id
-      return adminId === userId ? classroom : null; // Return the classroom if admin matches, or null
-    })
+  const validAdminClasses = classrooms.filter(
+    (classroom) => classroom.admin_user_id == userId
   );
 
-  const validAdminClasses = adminClasses.filter(
-    (classroom) => classroom !== null
-  );
-
-  const nonAdminClasses = await Promise.all(
-    classrooms.map(async (classroom) => {
-      const adminId = await getClassroomAdminID(classroom.id); // Wait for the admin_user_id
-      return adminId !== userId ? classroom : null; // Return the classroom if admin matches, or null
-    })
-  );
-
-  const validNonAdminClasses = nonAdminClasses.filter(
-    (classroom) => classroom !== null
+  const validNonAdminClasses = classrooms.filter(
+    (classroom) => classroom.admin_user_id != userId
   );
 
   return (
     <>
       <div style={{ padding: 20 }}>
         <h1>User ID: {userId}</h1>
-        <h1>Classroom Admin ID: {adminId}</h1>
         <h1 className={"text-2xl"}>My Classrooms</h1>
         <h2 className={"text-2xl"}>Admin Classrooms</h2>
 

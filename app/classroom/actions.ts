@@ -95,6 +95,7 @@ export async function getUserClassrooms() {
   const { data, error } = await supabase.from("Classroom").select(`
       id,
       ragflow_dataset_id,
+      admin_user_id,
       Classroom_Members (
         id,
         user_id

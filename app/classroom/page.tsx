@@ -1,5 +1,10 @@
 // import { createClient } from "@/utils/supabase/server"; // notice how it uses the server one since we don't have "useclient" so the default is server side component
-import { deleteClassroom, getUserClassrooms } from "./actions";
+import {
+  deleteClassroom,
+  getUserClassrooms,
+  getCurrentUserId,
+  getClassroomAdminID,
+} from "./actions";
 import InviteMember from "./inviteMember";
 export default async function ClassroomPage() {
   const classrooms = await getUserClassrooms();
@@ -8,10 +13,18 @@ export default async function ClassroomPage() {
     return <div>No classrooms found!</div>;
   }
 
+  const userId = getCurrentUserId();
+  // const userId2 = classrooms[0].Classroom_Members[0].user_id;
+
+  const num = getClassroomAdminID(41);
+
   return (
     <>
       <div style={{ padding: 20 }}>
+        <h1>User ID: {userId}</h1>
         <h1 className={"text-2xl"}>My Classrooms</h1>
+
+        <h1>{num}</h1>
         {classrooms.map((classroom) => {
           // TODO: should probably move classroom list out to a client component since we need the
           // interactivity of the list changing with updates (eg. delete)

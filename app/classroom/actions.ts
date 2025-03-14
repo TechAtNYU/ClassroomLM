@@ -18,6 +18,52 @@ import { createClient } from "@/utils/supabase/server";
 //   console.log(error);
 // }
 
+// export async function getCurrentUserID2() {
+//   const supabase = createServiceClient();
+
+//   const { data: { user } } = await supabase.auth.getUser()
+
+//   // // Get the current user using the updated method
+//   // const { data: user, error } = await supabase.auth.getUser();
+
+//   // if (error) {
+//   //   throw new Error(error.message);
+//   // }
+
+//   // if (!user) {
+//   //   throw new Error("No user is logged in");
+//   // }
+
+//   // return user.id; // Return the current user's ID
+// }
+export async function getCurrentUserId() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw Error("No authenticated user found");
+  }
+  return user.id;
+}
+
+// export async function getCurrentUserID() {
+//   const supabase = await createClient();
+//   const { data, error } = await supabase.from("Classroom").select(`
+//       id,
+//       ragflow_dataset_id,
+//       Classroom_Members (
+//         id,
+//         user_id
+//       )
+//     `);
+//   if (error) {
+//     throw new Error(error.message);
+//   }
+//   return data || [];
+// }
+
 export async function deleteClassroom(classroom_id: number) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -28,6 +74,20 @@ export async function deleteClassroom(classroom_id: number) {
     throw new Error(error.message);
   }
   return data || [];
+}
+
+export async function getClassroomAdminID(classroom_id: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("Classroom")
+    .select("admin_user_id")
+    .eq("id", classroom_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data[0]?.admin_user_id || null;
 }
 
 export async function getUserClassrooms() {

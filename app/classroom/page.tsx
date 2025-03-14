@@ -26,8 +26,8 @@ export default async function ClassroomPage() {
     <>
       <div style={{ padding: 20 }}>
         <h1>User ID: {userId}</h1>
-        <h1 className={"text-2xl"}>My Classrooms</h1>
-        <h2 className={"text-2xl"}>Admin Classrooms</h2>
+        <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
+        <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
 
         {/* ADMIN CLASSES */}
         {validAdminClasses.map((classroom) => {
@@ -39,24 +39,27 @@ export default async function ClassroomPage() {
           );
           return (
             <div key={classroom.id}>
+              <h1 className={"text-xl"}>{classroom.name}</h1>
               <h2>Classroom ID: {classroom.id}</h2>
               <p>
                 Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
               </p>
+              <InviteMember classroomId={classroom.id} />
               <button
                 type="button"
-                className="mb-2 me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
                 onClick={deleteClassroomWithId}
               >
                 Delete Classroom
               </button>
-              <InviteMember classroomId={classroom.id} />
-              <hr className="my-8 h-px border-0 bg-gray-200 dark:bg-gray-700" />
+              <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
             </div>
           );
         })}
 
-        <h2 className={"text-2xl"}>Member Classrooms</h2>
+        <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
+
+        <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
 
         {/* NON-ADMIN CLASSES */}
         {validNonAdminClasses.map((classroom) => {
@@ -68,10 +71,12 @@ export default async function ClassroomPage() {
           // );
           return (
             <div key={classroom.id}>
+              <h1 className={"text-xl"}>{classroom.name}</h1>
               <h2>Classroom ID: {classroom.id}</h2>
               <p>
                 Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
               </p>
+              <InviteMember classroomId={classroom.id} />
               <button
                 type="button"
                 className="mb-2 me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
@@ -85,8 +90,8 @@ export default async function ClassroomPage() {
               >
                 Delete Classroom
               </button> */}
-              <InviteMember classroomId={classroom.id} />
-              <hr className="my-8 h-px border-0 bg-gray-200 dark:bg-gray-700" />
+
+              <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
             </div>
           );
         })}

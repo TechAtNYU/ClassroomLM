@@ -57,7 +57,8 @@
         "esbenp.prettier-vscode",
         "ms-vscode-remote.remote-containers",
         "ms-kubernetes-tools.vscode-kubernetes-tools",
-        "redhat.vscode-tekton-pipelines"
+        "redhat.vscode-tekton-pipelines",
+        "bradlc.vscode-tailwindcss"
       ]
     }
   },

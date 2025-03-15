@@ -7,12 +7,28 @@ export async function newClassroom(name: string, id: string) {
   const { data, error } = await supabase
     .from("Classroom")
     .insert([{ name: name, admin_user_id: id }])
-    .select();
+    .select("id");
 
   if (error) {
     console.error("Error inserting classroom:", error);
     return null;
   }
+
+  // add yourself to member list
+  if (data && data.length > 0) {
+    const classroomId = data[0].id; // Access the classroom_id from the first inserted row
+    console.log("Classroom ID:", classroomId);
+    const { error } = await supabase
+      .from("Classroom_Members")
+      .insert([{ classroom_id: classroomId, user_id: id }])
+      .select();
+
+    if (error) {
+      console.error("Error inserting admin to classroom member list:", error);
+      return null;
+    }
+  }
+
   return data;
 }
 

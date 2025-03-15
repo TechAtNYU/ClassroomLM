@@ -15,6 +15,18 @@ export async function newClassroom(name: string, id: string) {
   return data;
 }
 
+export async function getCurrentUserId() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw Error("No authenticated user found");
+  }
+  return user.id;
+}
+
 // export async function deleteClassroom(classroom_id: number) {
 //   const supabase = await createClient();
 //   const { data, error } = await supabase

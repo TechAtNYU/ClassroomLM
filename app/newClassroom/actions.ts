@@ -16,7 +16,7 @@ export async function newClassroom(name: string, id: string) {
 
   // add yourself to member list
   if (data && data.length > 0) {
-    const classroomId = data[0].id; // Access the classroom_id from the first inserted row
+    const classroomId = data[0].id;
     console.log("Classroom ID:", classroomId);
     const { error } = await supabase
       .from("Classroom_Members")

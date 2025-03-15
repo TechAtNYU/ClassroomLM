@@ -1,8 +1,9 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
+import { createServiceClient } from "@/utils/supabase/service-server";
 
 export async function newClassroom(name: string, id: string) {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
   const { data, error } = await supabase
     .from("Classroom")
     .insert([{ name: name, admin_user_id: id }])
@@ -26,15 +27,3 @@ export async function getCurrentUserId() {
   }
   return user.id;
 }
-
-// export async function deleteClassroom(classroom_id: number) {
-//   const supabase = await createClient();
-//   const { data, error } = await supabase
-//     .from("Classroom")
-//     .delete()
-//     .eq("id", classroom_id);
-//   if (error) {
-//     throw new Error(error.message);
-//   }
-//   return data || [];
-// }

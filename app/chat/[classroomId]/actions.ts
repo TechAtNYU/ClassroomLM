@@ -141,7 +141,7 @@ export async function getOrCreateSession(
     return existingSession;
   }
 
-  return await createSession(chatAssistantId, userID, classroomId);
+  return await createSession(chatAssistantId, userID); //, classroomId);
 }
 
 async function findSessionID(classroomId: string, userID: string) {
@@ -169,8 +169,8 @@ async function findSessionID(classroomId: string, userID: string) {
 
 async function createSession(
   assistantID: string,
-  userID: string,
-  classroomID: string
+  userID: string
+  // classroomID: string
 ) {
   const newSession = {
     assistant_id: assistantID,

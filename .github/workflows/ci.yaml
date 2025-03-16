@@ -35,11 +35,14 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install
 
-      - name: 🧹 Run formatter
-        run: pnpm format:check
+      - name: 🔍 Compile check
+        run: tsc --skipLibCheck --noEmit
 
       - name: 🧹 Run linter
         run: pnpm lint
+
+      - name: 🧹 Run formatter
+        run: pnpm format:check
 
       - name: 🧪 Run tests
         run: pnpm test:run

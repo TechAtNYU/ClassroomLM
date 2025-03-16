@@ -12,6 +12,11 @@ const buildPrettierCommand = (filenames) =>
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  "*.{js,jsx,ts,tsx}": [buildEslintCommand, buildPrettierCommand],
+  "*.{js,jsx}": [buildEslintCommand, buildPrettierCommand],
+  "*.{ts,tsx}": [
+    () => "tsc --skipLibCheck --noEmit",
+    buildEslintCommand,
+    buildPrettierCommand,
+  ],
   "*.{json,yml,yaml,md}": [buildPrettierCommand],
 };

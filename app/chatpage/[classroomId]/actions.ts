@@ -48,7 +48,7 @@ export async function getOrCreateAssistant(datasetId: string) {
   return await createChatAssistant(datasetId);
 }
 
-async function findChatAssistant(datasetId: string) {
+export async function findChatAssistant(datasetId: string) {
   try {
     const res = await fetch(
       `${API_URL}/v1/chats?page=1&page_size=10&orderby=create_time&desc=true&name=${datasetId}`,

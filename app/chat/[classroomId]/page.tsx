@@ -1,4 +1,10 @@
-import { getCurrentUserId, getRagflowDatasetId } from "./actions";
+import {
+  getCurrentUserId,
+  getRagflowDatasetId,
+  getOrCreateAssistant,
+} from "./actions";
+
+import MessageBox from "@/components/MessageBox";
 
 export default async function ChatPage({
   params,
@@ -7,19 +13,20 @@ export default async function ChatPage({
 }) {
   const userId = await getCurrentUserId();
   const { classroomId } = await params;
-  const datasetId = getRagflowDatasetId(Number(classroomId));
+  const datasetId = await getRagflowDatasetId(Number(classroomId));
 
+  const chatAssistant = await getOrCreateAssistant(datasetId, userId);
+
+  // console.log("chatAssistant", chatAssistant);
   return (
     <div className="p-4 text-gray-800 dark:text-white">
       <p>
-        <strong>Classroom ID:</strong> {classroomId}
+        <strong>Classroom ID:</strong> {classroomId}, <strong>User ID:</strong>{" "}
+        {userId}, <strong>Ragflow Dataset ID:</strong> {datasetId},{" "}
+        <strong>Chat Assistant ID:</strong> {chatAssistant}
       </p>
-      <p>
-        <strong>User ID:</strong> {userId}
-      </p>
-      <p>
-        <strong>Ragflow Dataset ID:</strong> {datasetId}
-      </p>
+
+      <MessageBox assistantID={chatAssistant}></MessageBox>
     </div>
   );
 }

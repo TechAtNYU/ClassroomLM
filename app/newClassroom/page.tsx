@@ -5,10 +5,16 @@ import Link from "next/link";
 
 export default function NewClassroomPage() {
   const [className, setClassName] = useState("");
+  const [resultText, setResultText] = useState("");
   const addClassroom = async () => {
     try {
       const userId = await getCurrentUserId();
-      await newClassroom(className, userId);
+      const result = await newClassroom(className, userId);
+      if (!result) {
+        setResultText(`Error while making classroom!`);
+        return;
+      }
+      setResultText(`Created classroom ${className} successfully!`);
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {
@@ -47,7 +53,7 @@ export default function NewClassroomPage() {
             }}
           />
         </div>
-
+        {resultText && <div>{resultText}</div>}
         <div style={{ paddingTop: "20px" }}>
           <button
             onClick={addClassroom}

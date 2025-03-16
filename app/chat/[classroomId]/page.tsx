@@ -4,7 +4,7 @@ import {
   getOrCreateAssistant,
 } from "./actions";
 
-import MessageBox from "@/components/MessageBox";
+import MessageBox from "./MessageBox";
 
 export default async function ChatPage({
   params,

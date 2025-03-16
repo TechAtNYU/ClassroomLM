@@ -39,20 +39,24 @@ export async function getRagflowDatasetId(classroomId: number) {
 const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
 const API_KEY = process.env.RAGFLOW_API_KEY;
 
-export async function getOrCreateAssistant(datasetId: string, userId: string) {
-  const existingChat = await findChatAssistant(datasetId);
+export async function getOrCreateAssistant(
+  classroomId: string,
+  datasetId: string,
+  userId: string
+) {
+  const existingChat = await findChatAssistant(classroomId);
   if (existingChat) {
     return existingChat;
   }
 
-  console.log("Get or create: didn't find an assistant, creating a new one");
+  // console.log("Get or create: didn't find an assistant, creating a new one");
 
   const newAssistant = await createChatAssistant(datasetId, userId);
 
   return newAssistant.data.id;
 }
 
-export async function findChatAssistant(datasetId: string) {
+export async function findChatAssistant(classroomId: string) {
   try {
     // const res = await fetch(
     //   `${API_URL}/v1/chats?page=1&page_size=10&orderby=create_time&desc=true&name=${datasetId}`,
@@ -70,14 +74,14 @@ export async function findChatAssistant(datasetId: string) {
     const res = await supabase
       .from("Classroom")
       .select("chat_assistant_id")
-      .eq("ragflow_dataset_id", datasetId)
+      .eq("id", classroomId)
       .single();
 
     if (res.error) throw new Error(`Failed to fetch chats: ${res.error}`);
 
     const data = await res.data.chat_assistant_id;
 
-    console.log(data);
+    // console.log(data);
 
     return data;
   } catch (error) {
@@ -118,7 +122,7 @@ async function createChatAssistant(datasetId: string, userId: string) {
       throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
     }
 
-    console.log("creator", res);
+    // console.log("creator", res);
     return resJson;
   } catch (error) {
     console.error("Error creating chat assistant:", error);
@@ -126,48 +130,48 @@ async function createChatAssistant(datasetId: string, userId: string) {
   }
 }
 
-export async function getOrCreateSession(userID: string, assistantID: string) {
-  const existingSession = await findSessionID(assistantID, userID);
+export async function getOrCreateSession(
+  userID: string,
+  chatAssistantId: string,
+  classroomId: string
+) {
+  const existingSession = await findSessionID(classroomId, userID);
   //console.log(existingSession);
   if (existingSession) {
     return existingSession;
   }
 
-  return await createSession(assistantID, userID);
+  return await createSession(chatAssistantId, userID, classroomId);
 }
 
-async function findSessionID(assistantID: string, userID: string) {
+async function findSessionID(classroomId: string, userID: string) {
   try {
-    const res = await fetch(
-      `${API_URL}/v1/chats/${assistantID}/sessions?page=1&page_size=10&orderby=create_time&desc=true&user_id=${userID}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // find it from the supabase
+    const supabase = await createClient();
 
-    if (!res.ok) throw new Error(`Failed to fetch sessions: ${res.statusText}`);
+    const sessionID = await supabase
+      .from("Classroom_Members")
+      .select("ragflow_session_id")
+      .eq("classroom_id", classroomId)
+      .eq("user_id", userID);
 
-    const data = await res.json();
-
-    if (data.code === 102 || !data.data?.length) {
-      console.warn(
-        `No session found for assistant ${assistantID} and user ${userID}`
-      );
+    if (sessionID.error) {
+      console.error("Error fetching session:", sessionID.error);
       return null;
     }
 
-    return data.data[0]; // Return the first session if available
+    return sessionID.data[0].ragflow_session_id; // Return the first session if available
   } catch (error) {
     console.error("Error fetching session:", error);
     return null;
   }
 }
 
-async function createSession(assistantID: string, userID: string) {
+async function createSession(
+  assistantID: string,
+  userID: string,
+  classroomID: string
+) {
   const newSession = {
     assistant_id: assistantID,
     user_id: userID,
@@ -186,47 +190,78 @@ async function createSession(assistantID: string, userID: string) {
 
     if (!res.ok) throw new Error("Failed to create session");
 
-    return await res.json();
+    const resJson = await res.json();
+
+    return resJson.data.id;
   } catch (error) {
     console.error("Error creating session:", error);
     return null;
   }
 }
 
-export async function sendMessage(message: string, assistantID: string) {
-  console.log("Message sent: ", message);
-  console.log("Assistant ID: ", assistantID);
+export async function sendMessage(
+  message: string,
+  assistantID: string,
+  userID: string,
+  chatSessionID: string
+) {
+  // console.log("Message sent: ", message);
+  // console.log("Assistant ID: ", assistantID);
 
   const params = {
-    model: "model",
-    messages: [{ role: "user", content: message }],
+    question: message,
+    session_id: chatSessionID,
+    user_id: userID,
     stream: false,
   };
 
   try {
-    const res = await fetch(
-      `${API_URL}/v1/chats_openai/${assistantID}/chat/completions`,
-      {
-        method: "POST",
-        body: JSON.stringify(params),
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          "Content-type": "application/json; charset=UTF-8",
-        },
-      }
-    );
+    const res = await fetch(`${API_URL}/v1/chats/${assistantID}/completions`, {
+      method: "POST",
+      body: JSON.stringify(params),
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
 
     if (!res) throw new Error("Failed to send message");
 
     const resp = await res.json();
 
+    // console.log("ANS", resp.data.answer);
+
     // console.log(resp.choices[0].message.content);
 
-    const resJson = resp.choices[0].message.content;
+    const resAnswer = resp.data.answer;
 
-    return resJson;
+    return resAnswer;
   } catch (error) {
     console.error("Error sending message:", error);
     return null;
   }
+}
+
+export async function getDisplayInfo(classroomId: string, userId: string) {
+  const supabase = await createClient();
+
+  const classroomNameResponse = await supabase
+    .from("Classroom")
+    .select("name")
+    .eq("id", classroomId);
+
+  const userEmailResponse = await supabase
+    .from("Users")
+    .select("email")
+    .eq("id", userId);
+
+  if (classroomNameResponse.error || userEmailResponse.error) {
+    throw new Error("Failed to fetch details");
+  }
+
+  // console.log(classroomNameResponse.data[0].name);
+
+  // console.log(userEmailResponse.data[0].email);
+
+  return [classroomNameResponse.data[0].name, userEmailResponse.data[0].email];
 }

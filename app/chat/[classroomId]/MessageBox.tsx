@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { sendMessage } from "./actions";
 
-function MessageBox(props: { assistantID: string }) {
+function MessageBox(props: {
+  assistantId: string;
+  userId: string;
+  chatSessionId: string;
+}) {
   const [value, setValue] = useState("");
 
   const [messages, setMessage] = useState<{ type: string; message: string }[]>(
@@ -16,7 +20,12 @@ function MessageBox(props: { assistantID: string }) {
 
     setValue("");
 
-    const response: string = await sendMessage(value, props.assistantID);
+    const response: string = await sendMessage(
+      value,
+      props.assistantId,
+      props.userId,
+      props.chatSessionId
+    );
 
     // alert(response);
     // alert("can we even print anything");
@@ -37,8 +46,8 @@ function MessageBox(props: { assistantID: string }) {
             key={aMessage.message}
             className={`my-2 max-w-md rounded-lg p-3 shadow-md ${
               aMessage.type != "assistant"
-                ? "justify-self-end bg-green-200 hover:bg-green-300"
-                : "justify-self-start bg-blue-200 hover:bg-blue-300"
+                ? "justify-items-end bg-green-200 hover:bg-green-300"
+                : "justify-items-start bg-blue-200 hover:bg-blue-300"
             }`}
           >
             <p className="font-medium text-gray-800">{aMessage.message}</p>

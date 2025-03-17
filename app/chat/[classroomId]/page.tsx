@@ -16,10 +16,15 @@ export default async function ChatPage({
 }) {
   const userId = await getCurrentUserId();
   const { classroomId } = await params;
-  const datasetId = await getRagflowDatasetId(Number(classroomId));
+  const classroomIdNum = Number(classroomId);
+  const datasetId = await getRagflowDatasetId(classroomIdNum);
+
+  if (!datasetId) {
+    return <h1>No dataset found!</h1>;
+  }
 
   const chatAssistantId = await getOrCreateAssistant(
-    classroomId,
+    Number(classroomId),
     datasetId,
     userId
   );
@@ -27,7 +32,7 @@ export default async function ChatPage({
   const chatSessionId = await getOrCreateSession(
     userId,
     chatAssistantId,
-    classroomId
+    classroomIdNum
   );
 
   const messageHistory = await retrieveMessageHistory(
@@ -36,7 +41,7 @@ export default async function ChatPage({
     chatSessionId
   );
 
-  const displayInfo = await getDisplayInfo(classroomId, userId);
+  const displayInfo = await getDisplayInfo(classroomIdNum, userId);
 
   // console.log("chatAssistant", chatAssistant);
   return (

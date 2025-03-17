@@ -8,6 +8,8 @@ export type RagFlowMessage = {
   role: string; // change this to literal "assistant" or "user"?
 };
 
+type ClassroomId = number;
+
 export type RagFlowMessages = RagFlowMessage[];
 
 // import { UUID } from "crypto";
@@ -24,7 +26,7 @@ export async function getCurrentUserId() {
   return user.id;
 }
 
-export async function getRagflowDatasetId(classroomId: number) {
+export async function getRagflowDatasetId(classroomId: ClassroomId) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -49,7 +51,7 @@ const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
 const API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function getOrCreateAssistant(
-  classroomId: string,
+  classroomId: number,
   datasetId: string,
   userId: string
 ) {
@@ -69,7 +71,7 @@ export async function getOrCreateAssistant(
   return newAssistant.data.id;
 }
 
-export async function findChatAssistant(classroomId: string) {
+export async function findChatAssistant(classroomId: ClassroomId) {
   try {
     // const res = await fetch(
     //   `${API_URL}/v1/chats?page=1&page_size=10&orderby=create_time&desc=true&name=${datasetId}`,
@@ -104,7 +106,7 @@ export async function findChatAssistant(classroomId: string) {
 }
 
 async function createChatAssistant(
-  classroomId: string,
+  classroomId: ClassroomId,
   datasetId: string,
   userId: string
 ) {
@@ -151,7 +153,7 @@ async function createChatAssistant(
 export async function getOrCreateSession(
   userID: string,
   chatAssistantId: string,
-  classroomId: string
+  classroomId: ClassroomId
 ) {
   const existingSession = await findSessionID(classroomId, userID);
   console.log("Found an existing session:", existingSession);
@@ -162,7 +164,7 @@ export async function getOrCreateSession(
   return await createSession(chatAssistantId, userID, classroomId);
 }
 
-async function findSessionID(classroomId: string, userID: string) {
+async function findSessionID(classroomId: ClassroomId, userID: string) {
   try {
     // find it from the supabase
     const supabase = await createClient();
@@ -188,7 +190,7 @@ async function findSessionID(classroomId: string, userID: string) {
 async function createSession(
   assistantID: string,
   userID: string,
-  classroomId: string
+  classroomId: ClassroomId
 ) {
   const newSession = {
     assistant_id: assistantID,
@@ -274,7 +276,7 @@ export async function sendMessage(
   }
 }
 
-export async function getDisplayInfo(classroomId: string, userId: string) {
+export async function getDisplayInfo(classroomId: ClassroomId, userId: string) {
   const supabase = await createClient();
 
   const classroomNameResponse = await supabase

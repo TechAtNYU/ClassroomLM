@@ -4,6 +4,7 @@ import {
   getOrCreateAssistant,
   getOrCreateSession,
   getDisplayInfo,
+  retrieveMessageHistory,
 } from "./actions";
 
 import MessageBox from "./MessageBox";
@@ -29,6 +30,12 @@ export default async function ChatPage({
     classroomId
   );
 
+  const messageHistory = await retrieveMessageHistory(
+    chatAssistantId,
+    userId,
+    chatSessionId
+  );
+
   const displayInfo = await getDisplayInfo(classroomId, userId);
 
   // console.log("chatAssistant", chatAssistant);
@@ -46,12 +53,16 @@ export default async function ChatPage({
       </p> */}
       <p>
         <strong>Welcome to: </strong>
-        {displayInfo[0]}, <strong>{displayInfo[1]}</strong>
+        {displayInfo[0]}, <strong>{displayInfo[1]}</strong> <br />
+        <strong>Ragflow Dataset ID:</strong> {datasetId} <br />
+        <strong>Chat Assistant ID:</strong> {chatAssistantId} <br />
+        <strong>Chat Session ID:</strong> {chatSessionId}
       </p>{" "}
       <MessageBox
         assistantId={chatAssistantId}
         userId={userId}
         chatSessionId={chatSessionId}
+        messageHistory={messageHistory}
       ></MessageBox>
     </div>
   );

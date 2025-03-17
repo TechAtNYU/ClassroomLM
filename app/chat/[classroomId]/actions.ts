@@ -1,6 +1,15 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { createServiceClient } from "@/utils/supabase/service-server";
+
+export type RagFlowMessage = {
+  content: string;
+  role: string; // change this to literal "assistant" or "user"?
+};
+
+export type RagFlowMessages = RagFlowMessage[];
+
 // import { UUID } from "crypto";
 
 export async function getCurrentUserId() {
@@ -49,9 +58,13 @@ export async function getOrCreateAssistant(
     return existingChat;
   }
 
-  // console.log("Get or create: didn't find an assistant, creating a new one");
+  console.log("Get or create: didn't find an assistant, creating a new one");
 
-  const newAssistant = await createChatAssistant(datasetId, userId);
+  const newAssistant = await createChatAssistant(
+    classroomId,
+    datasetId,
+    userId
+  );
 
   return newAssistant.data.id;
 }
@@ -90,7 +103,11 @@ export async function findChatAssistant(classroomId: string) {
   }
 }
 
-async function createChatAssistant(datasetId: string, userId: string) {
+async function createChatAssistant(
+  classroomId: string,
+  datasetId: string,
+  userId: string
+) {
   const newAssistant = {
     dataset_ids: [datasetId],
     name: `${datasetId}-${userId}`,
@@ -111,12 +128,13 @@ async function createChatAssistant(datasetId: string, userId: string) {
     const resJson = await res.json();
 
     // update that in supabase
-    const supabase = await createClient();
+    const supabase = await createServiceClient();
 
     const supabaseRes = await supabase
       .from("Classroom")
       .update({ chat_assistant_id: resJson.data.id })
-      .eq("ragflow_dataset_id", datasetId);
+      .eq("id", classroomId)
+      .select();
 
     if (supabaseRes.error) {
       throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
@@ -136,12 +154,12 @@ export async function getOrCreateSession(
   classroomId: string
 ) {
   const existingSession = await findSessionID(classroomId, userID);
-  //console.log(existingSession);
+  console.log("Found an existing session:", existingSession);
   if (existingSession) {
     return existingSession;
   }
 
-  return await createSession(chatAssistantId, userID); //, classroomId);
+  return await createSession(chatAssistantId, userID, classroomId);
 }
 
 async function findSessionID(classroomId: string, userID: string) {
@@ -169,8 +187,8 @@ async function findSessionID(classroomId: string, userID: string) {
 
 async function createSession(
   assistantID: string,
-  userID: string
-  // classroomID: string
+  userID: string,
+  classroomId: string
 ) {
   const newSession = {
     assistant_id: assistantID,
@@ -191,6 +209,20 @@ async function createSession(
     if (!res.ok) throw new Error("Failed to create session");
 
     const resJson = await res.json();
+
+    // update that in supabase
+    const supabase = await createServiceClient();
+
+    const supabaseRes = await supabase
+      .from("Classroom_Members")
+      .update({ ragflow_session_id: resJson.data.id })
+      .eq("classroom_id", classroomId)
+      .eq("user_id", userID)
+      .select();
+
+    if (supabaseRes.error) {
+      throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
+    }
 
     return resJson.data.id;
   } catch (error) {
@@ -264,4 +296,47 @@ export async function getDisplayInfo(classroomId: string, userId: string) {
   // console.log(userEmailResponse.data[0].email);
 
   return [classroomNameResponse.data[0].name, userEmailResponse.data[0].email];
+}
+
+export async function retrieveMessageHistory(
+  assistantID: string,
+  userID: string,
+  chatSessionID: string
+): Promise<RagFlowMessages | null> {
+  // console.log("Message sent: ", message);
+  // console.log("Assistant ID: ", assistantID);
+
+  const params = new URLSearchParams();
+  params.append("id", chatSessionID);
+  params.append("user_id", userID);
+  try {
+    const res = await fetch(
+      `${API_URL}/v1/chats/${assistantID}/sessions${params.size != 0 ? "?" + params : ""}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    );
+
+    if (!res) throw new Error("Failed to retrieve message history");
+
+    const resp = await res.json();
+
+    if (!resp?.data?.[0]?.messages) {
+      throw new Error("Message history invalid or empty");
+    }
+    // console.log("ANS", resp.data.answer);
+
+    // console.log(resp.choices[0].message.content);
+
+    const resAnswer = resp.data[0].messages;
+
+    return resAnswer;
+  } catch (error) {
+    console.error("Error sending message:", error);
+    return null;
+  }
 }

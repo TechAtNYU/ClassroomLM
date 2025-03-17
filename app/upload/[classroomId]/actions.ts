@@ -7,6 +7,10 @@ const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
 
 export async function uploadFile(classroomId: string, formData: FormData) {
   const datasetId = await getDatasetByClassroomId(Number(classroomId));
+  if (!datasetId) {
+    console.log("Error finding datasetId for ", classroomId);
+    return { success: false, message: "Dataset ID not found", files: [] };
+  }
   console.log("Found datasetId from classroomId", datasetId);
 
   if (!RAGFLOW_API_KEY) {
@@ -58,7 +62,7 @@ export async function listDocuments(datasetId: string) {
   );
 
   const result = await response.json();
-  console.log("Fetched documents:", result);
+  // console.log("Fetched documents:", result);
 
   if (result.code !== 0) {
     return {

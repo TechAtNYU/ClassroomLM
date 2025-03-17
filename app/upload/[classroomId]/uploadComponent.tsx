@@ -24,6 +24,9 @@ export default function UploadComponent({
   useEffect(() => {
     async function fetchFiles() {
       const datasetId = await getDatasetByClassroomId(Number(classroomId));
+      if (!datasetId) {
+        return;
+      }
       const response = await listDocuments(datasetId);
       if (response.success) {
         setUploadedFiles(response.files);

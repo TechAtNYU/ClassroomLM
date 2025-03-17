@@ -1,12 +1,10 @@
 "use client";
 
-import type React from "react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { io, type Socket } from "socket.io-client";
 import { Send } from "lucide-react";
 import styles from "./collaborative-chat.module.css";
 
-// Define message type
 interface ChatMessage {
   id: string;
   text: string;
@@ -15,12 +13,11 @@ interface ChatMessage {
   isCurrentUser: boolean;
 }
 
-// Generate a random user ID for this session
 const currentUser = `user_${Math.random().toString(36).substring(2, 8)}`;
 
 let socket: Socket;
 
-const CollaborativeChat: React.FC = () => {
+const CollaborativeChat = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -37,21 +34,16 @@ const CollaborativeChat: React.FC = () => {
   }, [scrollToBottom]);
 
   useEffect(() => {
-    // Initialize socket connection
     const initSocket = async () => {
       try {
-        // 1. Call /api/socket to ensure the Socket.IO server is initialized
         await fetch("/api/socket");
 
-        // 2. Connect to the separate Socket.IO server on port 3001
-        socket = io("http://localhost:3001");
+        const url = `${process.env.NEXT_PUBLIC_SOCKET_URL}:${process.env.NEXT_PUBLIC_SOCKET_PORT}`;
+        socket = io(url);
 
         socket.on("connect", () => {
           setIsConnected(true);
           setIsConnecting(false);
-
-          // Request chat history when connected
-          socket.emit("getHistory");
         });
 
         socket.on("disconnect", () => {

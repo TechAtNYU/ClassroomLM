@@ -6,7 +6,7 @@ export const config = {
   runtime: "nodejs",
 };
 
-const port = process.env.SOCKET_PORT;
+const port = process.env.NEXT_PUBLIC_SOCKET_PORT;
 
 const messages: string[] = [];
 
@@ -19,6 +19,8 @@ function initSocketServer() {
     io = new Server(httpServer, {
       cors: {
         origin: "*",
+        methods: ["GET", "POST"],
+        credentials: true,
       },
     });
 
@@ -35,6 +37,7 @@ function initSocketServer() {
 
     httpServer.listen(port, () => {
       console.log(`Socket.IO server listening on port ${port}`);
+      serverStarted = true;
     });
   }
 }
@@ -42,7 +45,6 @@ function initSocketServer() {
 export async function GET() {
   if (!serverStarted) {
     initSocketServer();
-    serverStarted = true;
   }
 
   return NextResponse.json({

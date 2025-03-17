@@ -75,7 +75,11 @@ export async function deleteClassroom(classroom_id: number) {
   }
   return data || [];
 }
-
+export async function leaveClassroom(classroom_id: number, user_id: string) {
+  //TODO: need to implement this
+  console.log("UNIMPLEMENTED LEAVE FOR: ", classroom_id, user_id);
+  return;
+}
 // export async function getClassroomAdminID(classroom_id: number) {
 //   const supabase = await createClient();
 //   const { data, error } = await supabase
@@ -92,20 +96,29 @@ export async function deleteClassroom(classroom_id: number) {
 
 export async function getUserClassrooms() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("Classroom").select(`
-      id,
-      name,
-      ragflow_dataset_id,
-      admin_user_id,
-      Classroom_Members (
-        id,
-        user_id
-      )
-    `);
+  const { data, error } = await supabase.from("Classroom").select();
   if (error) {
     throw new Error(error.message);
   }
   return data || [];
+}
+
+export async function retrieveClassroomData(userId: string) {
+  const classrooms = await getUserClassrooms();
+
+  if (!classrooms || classrooms.length === 0) {
+    return;
+  }
+
+  const validAdminClasses = classrooms.filter(
+    (classroom) => classroom.admin_user_id == userId
+  );
+
+  const validNonAdminClasses = classrooms.filter(
+    (classroom) => classroom.admin_user_id != userId
+  );
+
+  return { validAdminClasses, validNonAdminClasses };
 }
 
 export async function inviteMemberToClassroom(

@@ -40,9 +40,34 @@ export default function ClassroomList({
     }
   };
 
+  const handleChangeClassroomName = async (classroomId: number) => {
+    const newName = window.prompt("Enter new class name:");
+    if (newName !== null && newName !== "") {
+      setAdminClassrooms((prevClasses) =>
+        prevClasses.map((classroom) =>
+          classroom.id === classroomId
+            ? { ...classroom, name: newName }
+            : classroom
+        )
+      );
+
+      try {
+        await changeClassroomName(classroomId, newName);
+      } catch (error) {
+        console.error("Error changing classroom name:", error);
+        setAdminClassrooms((prevClasses) =>
+          prevClasses.map((classroom) =>
+            classroom.id === classroomId
+              ? { ...classroom, name: classroom.name }
+              : classroom
+          )
+        );
+      }
+    }
+  };
+
   const leaveClassroomAndFetch = async (classroomId: number) => {
     try {
-      // TODO: leaveClassroom is still unimplemented in actions
       await leaveClassroom(classroomId, userId);
       const adClass = await retrieveClassroomData(userId);
       if (adClass) {
@@ -94,13 +119,7 @@ export default function ClassroomList({
 
           {isAdmin && (
             <button
-              onClick={() => {
-                // Show the prompt when the button is clicked
-                const newName = window.prompt("Enter new class name:");
-                if (newName !== null && newName !== "") {
-                  changeClassroomName(classroom.id, newName);
-                }
-              }}
+              onClick={() => handleChangeClassroomName(classroom.id)}
               type="button"
               className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
             >

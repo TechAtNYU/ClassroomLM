@@ -1,7 +1,16 @@
 "use server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
+import { Tables } from "@/utils/supabase/database.types";
 
+
+export interface ClassroomWithMembers extends Tables<"Classroom"> {
+  Classroom_Members?: Array<{
+    id: number;
+    classroom_id: number;
+    user_id: string;
+  }>;
+}
 const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
@@ -152,7 +161,14 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
 
 export async function getUserClassrooms() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("Classroom").select();
+  const { data, error } = await supabase.from("Classroom").select(`
+      *,
+      Classroom_Members (
+        id,
+        classroom_id,
+        user_id
+      )
+    `);
   if (error) {
     throw new Error(error.message);
   }

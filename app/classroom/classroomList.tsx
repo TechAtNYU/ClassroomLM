@@ -5,6 +5,7 @@ import {
   leaveClassroom,
   retrieveClassroomData,
   changeClassroomName,
+  ClassroomWithMembers
 } from "./actions";
 import { Tables } from "@/utils/supabase/database.types";
 import InviteMember from "./inviteMember";
@@ -40,31 +41,7 @@ export default function ClassroomList({
     }
   };
 
-  const handleChangeClassroomName = async (classroomId: number) => {
-    const newName = window.prompt("Enter new class name:");
-    if (newName !== null && newName !== "") {
-      setAdminClassrooms((prevClasses) =>
-        prevClasses.map((classroom) =>
-          classroom.id === classroomId
-            ? { ...classroom, name: newName }
-            : classroom
-        )
-      );
-
-      try {
-        await changeClassroomName(classroomId, newName);
-      } catch (error) {
-        console.error("Error changing classroom name:", error);
-        setAdminClassrooms((prevClasses) =>
-          prevClasses.map((classroom) =>
-            classroom.id === classroomId
-              ? { ...classroom, name: classroom.name }
-              : classroom
-          )
-        );
-      }
-    }
-  };
+  
 
   const leaveClassroomAndFetch = async (classroomId: number) => {
     try {
@@ -84,15 +61,28 @@ export default function ClassroomList({
   };
 
   function mapToListItem(
-    classroomList: Tables<"Classroom">[],
+    classroomList: ClassroomWithMembers[],
     isAdmin: boolean
   ) {
     return classroomList.map((classroom) => {
       return (
         <div key={classroom.id}>
-          <h1 className={"text-xl"}>{classroom.name}</h1>
+          <h1 className="text-xl">{classroom.name}</h1>
           <h2>Classroom ID: {classroom.id}</h2>
           <p>Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}</p>
+
+          
+          {classroom.Classroom_Members && classroom.Classroom_Members.length > 0 && (
+            <div>
+              <h3>Members:</h3>
+              <ul>
+                {classroom.Classroom_Members.map((member) => (
+                  <li key={member.id}>User ID: {member.user_id}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <InviteMember classroomId={classroom.id} />
           <button
             type="button"
@@ -115,16 +105,6 @@ export default function ClassroomList({
                 Upload Materials
               </button>
             </Link>
-          )}
-
-          {isAdmin && (
-            <button
-              onClick={() => handleChangeClassroomName(classroom.id)}
-              type="button"
-              className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-            >
-              Change Name
-            </button>
           )}
 
           <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />

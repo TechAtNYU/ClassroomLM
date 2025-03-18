@@ -2,8 +2,8 @@
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
 
-const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
-const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
+const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
+const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
 // TODO: add complex server tasks to this area and call them from your page when necessary
 
@@ -52,6 +52,7 @@ export async function getCurrentUserId() {
 }
 
 export async function deleteClassroom(classroom_id: number) {
+  // Deleting Associated Supabase
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("Classroom")
@@ -63,11 +64,39 @@ export async function deleteClassroom(classroom_id: number) {
     throw new Error(error.message);
   }
 
+  // Deleting Associated Chat Assistant
+  const chat_assistant_id = data[0].chat_assistant_id;
+
+  if (!chat_assistant_id) {
+    throw new Error(
+      "No related chat assistant dataset found for this classroom."
+    );
+  }
+
+  const requestChatBody = {
+    ids: [chat_assistant_id],
+  };
+
+  const chatResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/chats`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+    },
+    body: JSON.stringify(requestChatBody),
+  });
+
+  if (!chatResponse.ok) {
+    throw new Error(
+      `Failed to delete dataset from Ragflow: ${chatResponse.statusText}`
+    );
+  }
+
+  // Deleting Associatied RAGFlow
   const ragflow_dataset_id = data[0].ragflow_dataset_id;
-  console.log("RAGFLOW ID:" + ragflow_dataset_id);
 
   if (!ragflow_dataset_id) {
-    throw new Error("No related dataset found for this classroom.");
+    throw new Error("No related RAGFlow dataset found for this classroom.");
   }
 
   //gets ids of ragflow_dataset_id

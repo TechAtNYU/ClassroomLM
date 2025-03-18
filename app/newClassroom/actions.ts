@@ -2,10 +2,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 
-const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
-const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
-// const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
-// const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY; // Getting errors when trying to do this
+const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
+const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function newClassroom(name: string, id: string) {
   //Create a new RAGFlow dataset

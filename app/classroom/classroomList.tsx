@@ -5,6 +5,7 @@ import {
   leaveClassroom,
   retrieveClassroomData,
   changeClassroomName,
+  ClassroomWithMembers,
 } from "./actions";
 import { Tables } from "@/utils/supabase/database.types";
 import InviteMember from "./inviteMember";
@@ -84,15 +85,28 @@ export default function ClassroomList({
   };
 
   function mapToListItem(
-    classroomList: Tables<"Classroom">[],
+    classroomList: ClassroomWithMembers[],
     isAdmin: boolean
   ) {
     return classroomList.map((classroom) => {
       return (
         <div key={classroom.id}>
-          <h1 className={"text-xl"}>{classroom.name}</h1>
+          <h1 className="text-xl">{classroom.name}</h1>
           <h2>Classroom ID: {classroom.id}</h2>
           <p>Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}</p>
+
+          {classroom.Classroom_Members &&
+            classroom.Classroom_Members.length > 0 && (
+              <div>
+                <h3>Members:</h3>
+                <ul>
+                  {classroom.Classroom_Members.map((member) => (
+                    <li key={member.id}>User ID: {member.user_id}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
           <InviteMember classroomId={classroom.id} />
           <button
             type="button"

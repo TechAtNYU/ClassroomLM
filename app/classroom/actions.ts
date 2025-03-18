@@ -188,3 +188,22 @@ export async function inviteMemberToClassroom(
   }
   return true;
 }
+
+export async function changeClassroomName(
+  classroom_id: number,
+  newName: string
+) {
+  const supabase = await createServiceClient();
+  const { data, error } = await supabase
+    .from("Classroom")
+    .update({ name: newName })
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    console.log("Error changing name");
+  }
+
+  //console.log(data[0].name);
+  return data;
+}

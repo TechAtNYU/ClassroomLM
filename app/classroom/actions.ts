@@ -2,6 +2,9 @@
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
 
+const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
+const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
+
 // TODO: add complex server tasks to this area and call them from your page when necessary
 
 // this is just a sample server-side action to show how it's done
@@ -69,12 +72,44 @@ export async function deleteClassroom(classroom_id: number) {
   const { data, error } = await supabase
     .from("Classroom")
     .delete()
-    .eq("id", classroom_id);
+    .eq("id", classroom_id)
+    .select();
+
   if (error) {
     throw new Error(error.message);
   }
+
+  const ragflow_dataset_id = data[0].ragflow_dataset_id;
+  console.log("RAGFLOW ID:" + ragflow_dataset_id);
+
+  if (!ragflow_dataset_id) {
+    throw new Error("No related dataset found for this classroom.");
+  }
+
+  //gets ids of ragflow_dataset_id
+  const requestBody = {
+    ids: [ragflow_dataset_id],
+  };
+
+  //deletes the respective dataset
+  const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!ragflowResponse.ok) {
+    throw new Error(
+      `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
+    );
+  }
+
   return data || [];
 }
+
 export async function leaveClassroom(classroom_id: number, user_id: string) {
   const supabase = await createServiceClient();
   const { data, error } = await supabase

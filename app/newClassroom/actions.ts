@@ -4,10 +4,13 @@ import { createServiceClient } from "@/utils/supabase/service-server";
 
 const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
 const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
+// const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
+// const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY; // Getting errors when trying to do this
 
 export async function newClassroom(name: string, id: string) {
   //Create a new RAGFlow dataset
 
+  // const ragflowName =
   const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
     method: "POST",
     headers: {
@@ -26,6 +29,7 @@ export async function newClassroom(name: string, id: string) {
   }
 
   const ragflowData = await ragflowResponse.json();
+  console.log(ragflowData);
   const ragflowDatasetId = ragflowData.data.id;
 
   const supabase = await createServiceClient();

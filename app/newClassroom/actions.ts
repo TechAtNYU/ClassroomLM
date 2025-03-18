@@ -2,11 +2,38 @@
 import { createClient } from "@/utils/supabase/server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 
+const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
+const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
+
 export async function newClassroom(name: string, id: string) {
+  //Create a new RAGFlow dataset
+
+  const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+    },
+    body: JSON.stringify({
+      name: name, // You can pass the classroom name here
+    }),
+  });
+
+  if (!ragflowResponse.ok) {
+    const error = await ragflowResponse.json();
+    console.error("Error creating dataset in RAGFlow:", error);
+    return null;
+  }
+
+  const ragflowData = await ragflowResponse.json();
+  const ragflowDatasetId = ragflowData.data.id;
+
   const supabase = await createServiceClient();
   const { data, error } = await supabase
     .from("Classroom")
-    .insert([{ name: name, admin_user_id: id }])
+    .insert([
+      { ragflow_dataset_id: ragflowDatasetId, name: name, admin_user_id: id },
+    ])
     .select("id");
 
   if (error) {

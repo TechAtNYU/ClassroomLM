@@ -51,22 +51,6 @@ export async function getCurrentUserId() {
   return user.id;
 }
 
-// export async function getCurrentUserID() {
-//   const supabase = await createClient();
-//   const { data, error } = await supabase.from("Classroom").select(`
-//       id,
-//       ragflow_dataset_id,
-//       Classroom_Members (
-//         id,
-//         user_id
-//       )
-//     `);
-//   if (error) {
-//     throw new Error(error.message);
-//   }
-//   return data || [];
-// }
-
 export async function deleteClassroom(classroom_id: number) {
   const supabase = await createClient();
   const { data, error } = await supabase

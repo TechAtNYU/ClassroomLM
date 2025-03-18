@@ -9,8 +9,8 @@ const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
 
 export async function newClassroom(name: string, id: string) {
   //Create a new RAGFlow dataset
-
-  // const ragflowName =
+  const timestamp = Date.now();
+  const ragflowName = name + " " + timestamp + " " + id.substring(0, 6);
   const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
     method: "POST",
     headers: {
@@ -18,7 +18,7 @@ export async function newClassroom(name: string, id: string) {
       Authorization: `Bearer ${RAGFLOW_API_KEY}`,
     },
     body: JSON.stringify({
-      name: name, // You can pass the classroom name here
+      name: ragflowName,
     }),
   });
 

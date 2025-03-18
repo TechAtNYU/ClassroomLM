@@ -3,7 +3,6 @@ import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
 import { Tables } from "@/utils/supabase/database.types";
 
-
 export interface ClassroomWithMembers extends Tables<"Classroom"> {
   Classroom_Members?: Array<{
     id: number;

@@ -114,9 +114,9 @@ export async function getUserClassrooms() {
 export async function retrieveClassroomData(userId: string) {
   const classrooms = await getUserClassrooms();
 
-  if (!classrooms || classrooms.length === 0) {
-    return;
-  }
+  // if (!classrooms || classrooms.length === 0) {
+  //   return;
+  // }
 
   const validAdminClasses = classrooms.filter(
     (classroom) => classroom.admin_user_id == userId

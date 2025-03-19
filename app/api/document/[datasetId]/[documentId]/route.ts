@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
-const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
+const RAGFLOW_SERVER_URL: string = process.env.RAGFLOW_API_URL || "";
 
 export async function GET(
   _: NextRequest,

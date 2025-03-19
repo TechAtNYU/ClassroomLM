@@ -57,7 +57,7 @@ export async function getOrCreateAssistant(
 ) {
   const existingChat = await findChatAssistant(classroomId);
   if (existingChat) {
-    return existingChat;
+    return { status: "success", id: existingChat };
   }
 
   console.log("Get or create: didn't find an assistant, creating a new one");
@@ -67,8 +67,10 @@ export async function getOrCreateAssistant(
     datasetId,
     userId
   );
-
-  return newAssistant.data.id;
+  if (!newAssistant?.data && newAssistant?.status) {
+    return { status: "empty", id: null };
+  }
+  return { status: "success", id: newAssistant.data.id };
 }
 
 export async function findChatAssistant(classroomId: ClassroomId) {
@@ -128,6 +130,15 @@ async function createChatAssistant(
     if (!res.ok) throw new Error("Failed to create chat assistant");
 
     const resJson = await res.json();
+    if (!resJson?.data) {
+      if (
+        resJson?.message &&
+        resJson.message.includes("doesn't own parsed file")
+      ) {
+        return { status: "empty" };
+      }
+      throw new Error(`Failed to create assistant`);
+    }
 
     // update that in supabase
     const supabase = await createServiceClient();
@@ -262,7 +273,7 @@ export async function sendMessage(
     if (!res) throw new Error("Failed to send message");
 
     const resp = await res.json();
-
+    console.log(resp);
     // console.log("ANS", resp.data.answer);
 
     // console.log(resp.choices[0].message.content);
@@ -328,7 +339,8 @@ export async function retrieveMessageHistory(
     const resp = await res.json();
 
     if (!resp?.data?.[0]?.messages) {
-      throw new Error("Message history invalid or empty");
+      console.log("Message history invalid or empty");
+      return [];
     }
     // console.log("ANS", resp.data.answer);
 

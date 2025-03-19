@@ -117,6 +117,8 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
               <li key={file.id} className="rounded-md bg-gray-100 p-3">
                 <Link
                   href={`${pathname}/preview?documentId=${file.id}&datasetId=${file.datasetId}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
                   className="font-medium"
                 >
                   {file.name}

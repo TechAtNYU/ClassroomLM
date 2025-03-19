@@ -3,18 +3,26 @@
 
 import { getCurrentUserId, retrieveClassroomData } from "./actions";
 import ClassroomList from "./classroomList";
+import NewClassroomButton from "./newClassroomButton";
 export default async function ClassroomPage() {
   const userId = await getCurrentUserId();
 
   const classData = await retrieveClassroomData(userId);
   if (!classData) {
-    return <div>No classrooms found!</div>;
+    return (
+      <>
+        <h1>No classrooms found!</h1>
+        <NewClassroomButton />
+      </>
+    );
   }
   return (
-    <ClassroomList
-      userId={userId}
-      initialAdminData={classData?.validAdminClasses}
-      initialMemberData={classData?.validNonAdminClasses}
-    />
+    <>
+      <ClassroomList
+        userId={userId}
+        initialAdminData={classData?.validAdminClasses}
+        initialMemberData={classData?.validNonAdminClasses}
+      />
+    </>
   );
 }

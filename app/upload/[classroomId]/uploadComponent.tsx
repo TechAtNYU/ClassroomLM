@@ -2,6 +2,8 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { uploadFile, listDocuments, getDatasetByClassroomId } from "./actions";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type UploadedFile = {
   id: string;
@@ -103,6 +105,8 @@ export default function UploadComponent({
 }
 
 function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
+  const pathname = usePathname();
+
   return (
     <>
       {uploadedFiles.length > 0 && (
@@ -111,7 +115,14 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
           <ul className="mt-2 space-y-2">
             {uploadedFiles.map((file) => (
               <li key={file.id} className="rounded-md bg-gray-100 p-3">
-                <p className="font-medium">{file.name}</p>
+                <Link
+                  href={`${pathname}/preview?documentId=${file.id}&datasetId=${file.datasetId}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="font-medium"
+                >
+                  {file.name}
+                </Link>
                 <p className="text-sm text-gray-500">
                   {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
                   <strong>{file.status}</strong>

@@ -2,12 +2,19 @@
 import { useState } from "react";
 import { inviteMemberToClassroom } from "./actions";
 
-export default function InviteMember({ classroomId }: { classroomId: number }) {
+export default function InviteMember({
+  classroomId,
+  onInviteSuccess,
+}: {
+  classroomId: number;
+  onInviteSuccess: () => void;
+}) {
   const [email, setEmail] = useState("");
   const handleInvite = async () => {
     try {
       await inviteMemberToClassroom(email, classroomId);
       setEmail("");
+      onInviteSuccess();
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {

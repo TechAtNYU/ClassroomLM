@@ -1,6 +1,17 @@
 "use server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
+import { Tables } from "@/utils/supabase/database.types";
+
+export interface ClassroomWithMembers extends Tables<"Classroom"> {
+  Classroom_Members?: Array<{
+    id: number;
+    classroom_id: number;
+    user_id: string;
+  }>;
+}
+const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
+const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
 // TODO: add complex server tasks to this area and call them from your page when necessary
 
@@ -48,38 +59,91 @@ export async function getCurrentUserId() {
   return user.id;
 }
 
-// export async function getCurrentUserID() {
-//   const supabase = await createClient();
-//   const { data, error } = await supabase.from("Classroom").select(`
-//       id,
-//       ragflow_dataset_id,
-//       Classroom_Members (
-//         id,
-//         user_id
-//       )
-//     `);
-//   if (error) {
-//     throw new Error(error.message);
-//   }
-//   return data || [];
-// }
-
 export async function deleteClassroom(classroom_id: number) {
+  // Deleting Associated Supabase
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("Classroom")
     .delete()
-    .eq("id", classroom_id);
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  // Deleting Associated Chat Assistant
+  const chat_assistant_id = data[0].chat_assistant_id;
+
+  if (!chat_assistant_id) {
+    throw new Error(
+      "No related chat assistant dataset found for this classroom."
+    );
+  }
+
+  const requestChatBody = {
+    ids: [chat_assistant_id],
+  };
+
+  const chatResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/chats`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+    },
+    body: JSON.stringify(requestChatBody),
+  });
+
+  if (!chatResponse.ok) {
+    throw new Error(
+      `Failed to delete dataset from Ragflow: ${chatResponse.statusText}`
+    );
+  }
+
+  // Deleting Associatied RAGFlow
+  const ragflow_dataset_id = data[0].ragflow_dataset_id;
+
+  if (!ragflow_dataset_id) {
+    throw new Error("No related RAGFlow dataset found for this classroom.");
+  }
+
+  //gets ids of ragflow_dataset_id
+  const requestBody = {
+    ids: [ragflow_dataset_id],
+  };
+
+  //deletes the respective dataset
+  const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!ragflowResponse.ok) {
+    throw new Error(
+      `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
+    );
+  }
+
+  return data || [];
+}
+
+export async function leaveClassroom(classroom_id: number, user_id: string) {
+  const supabase = await createServiceClient();
+  const { data, error } = await supabase
+    .from("Classroom_Members")
+    .delete()
+    .eq("classroom_id", classroom_id)
+    .eq("user_id", user_id);
   if (error) {
     throw new Error(error.message);
   }
   return data || [];
 }
-export async function leaveClassroom(classroom_id: number, user_id: string) {
-  //TODO: need to implement this
-  console.log("UNIMPLEMENTED LEAVE FOR: ", classroom_id, user_id);
-  return;
-}
+
 // export async function getClassroomAdminID(classroom_id: number) {
 //   const supabase = await createClient();
 //   const { data, error } = await supabase
@@ -96,7 +160,14 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
 
 export async function getUserClassrooms() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("Classroom").select();
+  const { data, error } = await supabase.from("Classroom").select(`
+      *,
+      Classroom_Members (
+        id,
+        classroom_id,
+        user_id
+      )
+    `);
   if (error) {
     throw new Error(error.message);
   }
@@ -106,9 +177,9 @@ export async function getUserClassrooms() {
 export async function retrieveClassroomData(userId: string) {
   const classrooms = await getUserClassrooms();
 
-  if (!classrooms || classrooms.length === 0) {
-    return;
-  }
+  // if (!classrooms || classrooms.length === 0) {
+  //   return;
+  // }
 
   const validAdminClasses = classrooms.filter(
     (classroom) => classroom.admin_user_id == userId
@@ -160,4 +231,23 @@ export async function inviteMemberToClassroom(
     throw new Error("Error inserting classroom member");
   }
   return true;
+}
+
+export async function changeClassroomName(
+  classroom_id: number,
+  newName: string
+) {
+  const supabase = await createServiceClient();
+  const { data, error } = await supabase
+    .from("Classroom")
+    .update({ name: newName })
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    console.log("Error changing name");
+  }
+
+  //console.log(data[0].name);
+  return data;
 }

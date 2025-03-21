@@ -55,7 +55,10 @@
         "streetsidesoftware.code-spell-checker",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "ms-vscode-remote.remote-containers"
+        "ms-vscode-remote.remote-containers",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "redhat.vscode-tekton-pipelines",
+        "bradlc.vscode-tailwindcss"
       ]
     }
   },
@@ -67,8 +70,8 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "portsAttributes": {
     "8080": {
-      "label": "Application",
-      "onAutoForward": "openPreview"
+      "label": "Application"
+      // "onAutoForward": "openPreview"
     }
   },
   "forwardPorts": [8080],

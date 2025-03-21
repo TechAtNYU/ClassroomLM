@@ -1,34 +1,14 @@
 "use server";
+
+import { getCurrentUserId } from "@/app/chat/[classroomId]/actions";
 import { createClient } from "@/utils/supabase/server";
 
-const RAGFLOW_API_KEY: string = process.env.NEXT_RAGFLOW_API_KEY || "";
-const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
+const RAGFLOW_API_KEY: string = process.env.RAGFLOW_API_KEY || "";
+const RAGFLOW_SERVER_URL: string = process.env.RAGFLOW_API_URL || "";
 
-export async function isUserAdminForClassroom(
-  classroomId: number,
-  userId: string
-) {
-  const supabase = createClient();
-  const { data, error } = await (await supabase)
-    .from("Classroom")
-    .select("admin_user_id")
-    .eq("id", classroomId)
-    .single();
-
-  if (error || !data) {
-    console.error("Error fetching classroom admin:", error);
-    return false;
-  }
-  return data.admin_user_id === userId;
-}
-
-export async function uploadFile(
-  classroomId: number,
-  userId: string,
-  formData: FormData
-) {
+export async function uploadFile(classroomId: string, formData: FormData) {
   // Check if the user is the admin for this classroom
-  const isAdmin = await isUserAdminForClassroom(classroomId, userId);
+  const isAdmin = await isUserAdminForClassroom(Number(classroomId));
   if (!isAdmin) {
     return {
       success: false,
@@ -37,18 +17,26 @@ export async function uploadFile(
     };
   }
 
+  const datasetId = await getDatasetByClassroomId(Number(classroomId));
+  if (!datasetId) {
+    console.log("Error finding datasetId for ", classroomId);
+    return { success: false, message: "Dataset ID not found", files: [] };
+  }
+  console.log("Found datasetId from classroomId", datasetId);
+
   if (!RAGFLOW_API_KEY) {
     return { success: false, message: "Missing API key", files: [] };
   }
 
   console.log("Uploading file...", formData);
-  const datasetResponse = await listDatasets("upload_documents_test");
+  const datasetResponse = await listDatasets(datasetId);
+  // const datasetResponse = await listDocuments(datasetId);
 
   if (!datasetResponse?.data?.length) {
     return { success: false, message: "Dataset not found", files: [] };
   }
 
-  const datasetId = datasetResponse.data[0].id;
+  // const datasetId = datasetResponse.data[0].id;
   const uploadResult = await uploadDocuments(datasetId, formData);
 
   console.log("Upload API Response:", uploadResult);
@@ -85,7 +73,7 @@ export async function listDocuments(datasetId: string) {
   );
 
   const result = await response.json();
-  console.log("Fetched documents:", result);
+  // console.log("Fetched documents:", result);
 
   if (result.code !== 0) {
     return {
@@ -176,12 +164,30 @@ export async function deleteDocument(datasetId: string, fileId: string) {
   return result;
 }
 
+export async function isUserAdminForClassroom(classroomId: number) {
+  const supabase = createClient();
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await (await supabase)
+    .from("Classroom")
+    .select("admin_user_id")
+    .eq("id", classroomId)
+    .single();
+
+  if (error || !data) {
+    console.error("Error fetching classroom admin:", error);
+    return false;
+  }
+  console.log(data.admin_user_id === userId);
+  return data.admin_user_id === userId;
+}
+
 // ====================================================
 // Helper functions for Dataset and Uploading
 // ====================================================
 
-async function listDatasets(name: string) {
-  const params = new URLSearchParams({ name });
+async function listDatasets(id: string) {
+  const params = new URLSearchParams({ id });
   const response = await fetch(
     `${RAGFLOW_SERVER_URL}/api/v1/datasets?${params.toString()}`,
     {
@@ -206,4 +212,24 @@ async function uploadDocuments(datasetId: string, formData: FormData) {
     }
   );
   return await response.json();
+}
+
+export async function getDatasetByClassroomId(classroomId: number) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("Classroom")
+    .select("ragflow_dataset_id")
+    .eq("id", classroomId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching classroom:", error);
+    throw new Error(`Failed to fetch classroom: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error(`No classroom found with id: ${classroomId}`);
+  }
+
+  return data.ragflow_dataset_id;
 }

@@ -12,25 +12,25 @@ services:
       - 8080:8080
     environment:
       PORT: 8080
-      DATABASE_URI: postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres
+      # DATABASE_URI: postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/postgres
     networks:
       - dev
-    depends_on:
-      - postgres
-  postgres:
-    image: postgres:15-alpine
-    # Uncomment ports to access database from your computer (optional)
-    # ports:
-    #   - 5432:5432
-    environment:
-      POSTGRES_PASSWORD: pgs3cr3t
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    networks:
-      - dev
+    # depends_on:
+    #   - postgres
+  # postgres:
+  #   image: postgres:15-alpine
+  #   # Uncomment ports to access database from your computer (optional)
+  #   # ports:
+  #   #   - 5432:5432
+  #   environment:
+  #     POSTGRES_PASSWORD: pgs3cr3t
+  #   volumes:
+  #     - postgres:/var/lib/postgresql/data
+  #   networks:
+  #     - dev
 
-volumes:
-  postgres:
+# volumes:
+#   postgres:
 
 networks:
   dev:

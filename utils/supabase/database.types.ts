@@ -24,25 +24,64 @@ export type Database = {
         };
         Relationships: [];
       };
-      Chat_Rooms: {
+      Chatroom_Members: {
+        Row: {
+          chatroom_id: string;
+          created_at: string;
+          id: number;
+          member_id: number;
+        };
+        Insert: {
+          chatroom_id: string;
+          created_at?: string;
+          id?: number;
+          member_id: number;
+        };
+        Update: {
+          chatroom_id?: string;
+          created_at?: string;
+          id?: number;
+          member_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "Chatroom_Members_chatroom_id_fkey";
+            columns: ["chatroom_id"];
+            isOneToOne: false;
+            referencedRelation: "Chatrooms";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "Chatroom_Members_member_id_fkey";
+            columns: ["member_id"];
+            isOneToOne: false;
+            referencedRelation: "Classroom_Members";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      Chatrooms: {
         Row: {
           classroom_id: number;
           created_at: string;
-          id: number;
+          id: string;
+          name: string;
         };
         Insert: {
           classroom_id: number;
           created_at?: string;
-          id?: number;
+          id?: string;
+          name: string;
         };
         Update: {
           classroom_id?: number;
           created_at?: string;
-          id?: number;
+          id?: string;
+          name?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "Chat_Rooms_classroom_id_fkey";
+            foreignKeyName: "Chatrooms_classroom_id_fkey";
             columns: ["classroom_id"];
             isOneToOne: false;
             referencedRelation: "Classroom";
@@ -90,25 +129,25 @@ export type Database = {
       };
       Classroom_Members: {
         Row: {
-          classroom_id: number | null;
+          classroom_id: number;
           created_at: string;
           id: number;
           ragflow_session_id: string | null;
-          user_id: string | null;
+          user_id: string;
         };
         Insert: {
-          classroom_id?: number | null;
+          classroom_id: number;
           created_at?: string;
           id?: number;
           ragflow_session_id?: string | null;
-          user_id?: string | null;
+          user_id?: string;
         };
         Update: {
-          classroom_id?: number | null;
+          classroom_id?: number;
           created_at?: string;
           id?: number;
           ragflow_session_id?: string | null;
-          user_id?: string | null;
+          user_id?: string;
         };
         Relationships: [
           {
@@ -127,17 +166,52 @@ export type Database = {
           },
         ];
       };
+      Messages: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          member_id: number;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          member_id: number;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          member_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "Messages_member_id_fkey";
+            columns: ["member_id"];
+            isOneToOne: false;
+            referencedRelation: "Chatroom_Members";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       Users: {
         Row: {
+          avatar_url: string | null;
           email: string;
+          full_name: string | null;
           id: string;
         };
         Insert: {
+          avatar_url?: string | null;
           email: string;
+          full_name?: string | null;
           id?: string;
         };
         Update: {
+          avatar_url?: string | null;
           email?: string;
+          full_name?: string | null;
           id?: string;
         };
         Relationships: [];
@@ -147,7 +221,12 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      user_in_classroom: {
+        Args: {
+          _classroom_id: number;
+        };
+        Returns: boolean;
+      };
     };
     Enums: {
       [_ in never]: never;

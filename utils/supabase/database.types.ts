@@ -29,19 +29,19 @@ export type Database = {
           chatroom_id: string;
           created_at: string;
           id: number;
-          user_id: number;
+          member_id: number;
         };
         Insert: {
           chatroom_id: string;
           created_at?: string;
           id?: number;
-          user_id: number;
+          member_id: number;
         };
         Update: {
           chatroom_id?: string;
           created_at?: string;
           id?: number;
-          user_id?: number;
+          member_id?: number;
         };
         Relationships: [
           {
@@ -52,8 +52,8 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "Chatroom_Members_user_id_fkey";
-            columns: ["user_id"];
+            foreignKeyName: "Chatroom_Members_member_id_fkey";
+            columns: ["member_id"];
             isOneToOne: false;
             referencedRelation: "Classroom_Members";
             referencedColumns: ["id"];
@@ -81,7 +81,7 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "Chat_Rooms_classroom_id_fkey";
+            foreignKeyName: "Chatrooms_classroom_id_fkey";
             columns: ["classroom_id"];
             isOneToOne: false;
             referencedRelation: "Classroom";
@@ -92,6 +92,7 @@ export type Database = {
       Classroom: {
         Row: {
           admin_user_id: string | null;
+          archived: boolean | null;
           chat_assistant_id: string | null;
           created_at: string;
           id: number;
@@ -101,6 +102,7 @@ export type Database = {
         };
         Insert: {
           admin_user_id?: string | null;
+          archived?: boolean | null;
           chat_assistant_id?: string | null;
           created_at?: string;
           id?: number;
@@ -110,6 +112,7 @@ export type Database = {
         };
         Update: {
           admin_user_id?: string | null;
+          archived?: boolean | null;
           chat_assistant_id?: string | null;
           created_at?: string;
           id?: number;
@@ -197,15 +200,21 @@ export type Database = {
       };
       Users: {
         Row: {
+          avatar_url: string | null;
           email: string;
+          full_name: string | null;
           id: string;
         };
         Insert: {
+          avatar_url?: string | null;
           email: string;
+          full_name?: string | null;
           id?: string;
         };
         Update: {
+          avatar_url?: string | null;
           email?: string;
+          full_name?: string | null;
           id?: string;
         };
         Relationships: [];

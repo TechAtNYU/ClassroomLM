@@ -75,29 +75,28 @@ export async function deleteClassroom(classroom_id: number) {
   // Deleting Associated Chat Assistant
   const chat_assistant_id = data[0].chat_assistant_id;
 
-  if (!chat_assistant_id) {
-    throw new Error(
-      "No related chat assistant dataset found for this classroom."
-    );
-  }
+  if (chat_assistant_id) {
+    const requestChatBody = {
+      ids: [chat_assistant_id],
+    };
 
-  const requestChatBody = {
-    ids: [chat_assistant_id],
-  };
+    const chatResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/chats`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+      },
+      body: JSON.stringify(requestChatBody),
+    });
 
-  const chatResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/chats`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
-    },
-    body: JSON.stringify(requestChatBody),
-  });
-
-  if (!chatResponse.ok) {
-    throw new Error(
-      `Failed to delete dataset from Ragflow: ${chatResponse.statusText}`
-    );
+    if (!chatResponse.ok) {
+      throw new Error(
+        `Failed while deleting assistant from Ragflow: ${chatResponse.statusText}`
+      );
+    }
+  } else {
+    // If no chat assistant, we don't want to error out
+    console.log("No chat assistant found for classroom when deleting");
   }
 
   // Deleting Associatied RAGFlow

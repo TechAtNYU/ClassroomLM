@@ -1,9 +1,42 @@
 "use server";
+import { createClient } from "@/utils/supabase/server";
 
 const RAGFLOW_API_KEY: string = process.env.NEXT_RAGFLOW_API_KEY || "";
 const RAGFLOW_SERVER_URL: string = "https://ragflow.dev.techatnyu.org";
 
-export async function uploadFile(formData: FormData) {
+export async function isUserAdminForClassroom(
+  classroomId: number,
+  userId: string
+) {
+  const supabase = createClient();
+  const { data, error } = await (await supabase)
+    .from("Classroom")
+    .select("admin_user_id")
+    .eq("id", classroomId)
+    .single();
+
+  if (error || !data) {
+    console.error("Error fetching classroom admin:", error);
+    return false;
+  }
+  return data.admin_user_id === userId;
+}
+
+export async function uploadFile(
+  classroomId: number,
+  userId: string,
+  formData: FormData
+) {
+  // Check if the user is the admin for this classroom
+  const isAdmin = await isUserAdminForClassroom(classroomId, userId);
+  if (!isAdmin) {
+    return {
+      success: false,
+      message: "User is not authorized to upload material",
+      files: [],
+    };
+  }
+
   if (!RAGFLOW_API_KEY) {
     return { success: false, message: "Missing API key", files: [] };
   }

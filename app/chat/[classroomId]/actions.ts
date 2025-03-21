@@ -115,6 +115,13 @@ async function createChatAssistant(
   const newAssistant = {
     dataset_ids: [datasetId],
     name: `${datasetId}-${userId}`,
+    prompt: {
+      empty_response: "",
+      prompt: `You are a very knowledgeable assistant for students.
+      Your task is to answer students' questions and queries to the best of your abilities, even if the knowledge base does not have the answer.
+      You may generate summaries, exam questions, and study materials if needed.
+      If the knowledge base is relevant for answering the question, use it to enhance responses, but ensure that you try to assist students regardless.`,
+    },
   };
 
   try {
@@ -140,7 +147,6 @@ async function createChatAssistant(
       throw new Error(`Failed to create assistant`);
     }
 
-    // update that in supabase
     const supabase = await createServiceClient();
 
     const supabaseRes = await supabase
@@ -153,7 +159,6 @@ async function createChatAssistant(
       throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
     }
 
-    // console.log("creator", res);
     return resJson;
   } catch (error) {
     console.error("Error creating chat assistant:", error);

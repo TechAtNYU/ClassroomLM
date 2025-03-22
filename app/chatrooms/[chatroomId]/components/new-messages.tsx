@@ -59,11 +59,11 @@ const NewMessages = ({
         </p>
       ) : (
         messages.map((message, index) => {
-          const userId = message.member_id;
+          const memberId = message.member_id;
 
           return (
             <div key={message.id || index} className="rounded border p-2">
-              <div className="font-bold">{userId}</div>
+              <div className="font-bold">{memberId}</div>
               <div>{message.content}</div>
               <div className="text-xs text-gray-500">
                 {new Date(message.created_at).toLocaleString()}

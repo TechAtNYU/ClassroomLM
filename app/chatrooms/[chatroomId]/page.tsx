@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
 import NewMessages from "./components/new-messages";
+import { sendMessageToChatroom } from "../actions";
 
 const ChatroomPage = async ({
   params,
@@ -64,9 +65,17 @@ const ChatroomPage = async ({
     redirect("/chatrooms");
   }
 
-  if (chatroomMemberIds.length === 0) {
-    console.log("No members found for chatroom:", chatroomId);
-    return <NewMessages chatHistory={[]} chatroomId={chatroomId} />;
+  // get current chatroom member id
+  const { data: currentChatroomMember, error: currentChatroomMemberError } =
+    await supabase
+      .from("Chatroom_Members")
+      .select("id")
+      .eq("chatroom_id", chatroomId)
+      .eq("member_id", currentClassroomMember.id)
+      .single();
+
+  if (currentChatroomMemberError) {
+    redirect("/chatrooms");
   }
 
   const { data: messages, error: messagesError } = await supabase
@@ -98,6 +107,29 @@ const ChatroomPage = async ({
       </div>
       <div className="flex-grow overflow-auto">
         <NewMessages chatHistory={messages ?? []} chatroomId={chatroomId} />
+      </div>
+      <div className="border-t p-4 text-black">
+        <form action={sendMessageToChatroom} className="flex gap-2">
+          <input type="hidden" name="chatroomId" value={chatroomId} />
+          <input
+            type="hidden"
+            name="chatroomMemberId"
+            value={currentChatroomMember.id}
+          />
+          <input
+            type="text"
+            name="message"
+            placeholder="Type your message..."
+            className="flex-grow rounded border p-2"
+            required
+          />
+          <button
+            type="submit"
+            className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+          >
+            Send
+          </button>
+        </form>
       </div>
     </div>
   );

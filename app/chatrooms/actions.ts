@@ -90,10 +90,40 @@ export const deleteChatroom = async (chatroomId: string) => {
   revalidatePath("/chatrooms");
 };
 
-// export const sendMessageToChatroom = () => {
-//   // TODO: Implement this function
-// };
-//
+export const sendMessageToChatroom = async (formData: FormData) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No authenticated user found");
+  }
+
+  const chatroomId = formData.get("chatroomId") as string;
+  const content = formData.get("message") as string;
+  const chatroomMemberId = parseInt(formData.get("chatroomMemberId") as string);
+
+  if (!content || !chatroomMemberId || !chatroomId) {
+    throw new Error(
+      "Chatroom ID, chatroom member ID, and message content are required"
+    );
+  }
+
+  // Insert the message
+  const { error: messageError } = await supabase.from("Messages").insert([
+    {
+      content,
+      member_id: chatroomMemberId,
+    },
+  ]);
+
+  if (messageError) {
+    throw new Error(`Failed to send message: ${messageError.message}`);
+  }
+
+  revalidatePath(`/chatrooms/${chatroomId}`);
+};
 
 export const inviteUserToChatroom = async (formData: FormData) => {
   const supabase = await createClient();

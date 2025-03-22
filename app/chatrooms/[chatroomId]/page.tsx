@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
-import NewMessages from "./components/new-messages";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
+import NewMessages from "./components/new-messages";
 
 const ChatroomPage = async ({
   params,
@@ -18,13 +20,29 @@ const ChatroomPage = async ({
     .single();
 
   if (chatroomError) {
-    console.error("Error fetching chatroom:", chatroomError);
-    return <div>Error loading chatroom</div>;
+    redirect("/chatrooms");
   }
+
+  // get user's chatroom member Id
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("No authenticated user found");
+  }
+
+  const currentUser = user.id;
+
+  const { data: currentClassroomMember } = await supabase
+    .from("Classroom_Members")
+    .select("id")
+    .eq("classroom_id", chatroom.classroom_id)
+    .eq("user_id", currentUser)
+    .single();
 
   const { data: chatroomMembers, error: membersError } = await supabase
     .from("Chatroom_Members")
-    .select("id")
+    .select("*")
     .eq("chatroom_id", chatroomId);
 
   if (membersError) {
@@ -32,9 +50,21 @@ const ChatroomPage = async ({
     return <div>Error loading chatroom</div>;
   }
 
-  const memberIds = chatroomMembers?.map((member) => member.id) || [];
+  const classroomMemberIds =
+    chatroomMembers?.map((member) => member.member_id) || [];
+  const chatroomMemberIds = chatroomMembers?.map((member) => member.id) || [];
 
-  if (memberIds.length === 0) {
+  console.log(currentClassroomMember?.id);
+
+  // if user is not in this chatroom redirect to /chatrooms
+  if (
+    !currentClassroomMember ||
+    !classroomMemberIds.includes(currentClassroomMember.id)
+  ) {
+    redirect("/chatrooms");
+  }
+
+  if (chatroomMemberIds.length === 0) {
     console.log("No members found for chatroom:", chatroomId);
     return <NewMessages chatHistory={[]} chatroomId={chatroomId} />;
   }
@@ -42,7 +72,7 @@ const ChatroomPage = async ({
   const { data: messages, error: messagesError } = await supabase
     .from("Messages")
     .select("*")
-    .in("member_id", memberIds)
+    .in("member_id", chatroomMemberIds)
     .order("created_at", { ascending: true });
 
   if (messagesError) {
@@ -53,10 +83,18 @@ const ChatroomPage = async ({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b p-4">
         <h1 className="text-xl font-bold">{chatroom.name}</h1>
-        <LeaveChatroomButton
-          chatroomId={chatroomId}
-          classroomId={chatroom.classroom_id}
-        />
+        <div className="flex gap-2">
+          <LeaveChatroomButton
+            chatroomId={chatroomId}
+            classroomId={chatroom.classroom_id}
+          />
+          <Link
+            href="/chatrooms"
+            className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
+          >
+            Back to Chatrooms
+          </Link>
+        </div>
       </div>
       <div className="flex-grow overflow-auto">
         <NewMessages chatHistory={messages ?? []} chatroomId={chatroomId} />

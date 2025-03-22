@@ -23,6 +23,7 @@ export const createChatroom = async (formData: FormData) => {
       {
         name,
         classroom_id,
+        user_id: user.id,
       },
     ])
     .select("*")
@@ -93,10 +94,109 @@ export const deleteChatroom = async (chatroomId: string) => {
 //   // TODO: Implement this function
 // };
 //
-// export const inviteUserToChatroom = () => {
-//   // TODO: Implement this function
-// };
-//
+
+export const inviteUserToChatroom = async (formData: FormData) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No authenticated user found");
+  }
+
+  const chatroomId = formData.get("chatroom_id") as string;
+  const inviteeEmail = formData.get("email") as string;
+
+  if (!chatroomId || !inviteeEmail) {
+    throw new Error("Chatroom ID and invitee email are required");
+  }
+
+  // Get the chatroom to find its classroom_id
+  const { data: chatroom, error: chatroomError } = await supabase
+    .from("Chatrooms")
+    .select("classroom_id")
+    .eq("id", chatroomId)
+    .single();
+
+  if (chatroomError) {
+    throw new Error(`Failed to find chatroom: ${chatroomError.message}`);
+  }
+
+  // Find the invitee user by email
+  const { data: inviteeUser, error: userError } = await supabase
+    .from("Users")
+    .select("id")
+    .eq("email", inviteeEmail.trim())
+    .single();
+
+  if (userError) {
+    throw new Error(`Failed to find user with email ${inviteeEmail}`);
+  }
+
+  if (!inviteeUser) {
+    throw new Error(`No user found with email ${inviteeEmail}`);
+  }
+
+  // Check if the invitee is already a member of the classroom
+  const { data: existingClassroomMember, error: memberCheckError } =
+    await supabase
+      .from("Classroom_Members")
+      .select("id")
+      .eq("classroom_id", chatroom.classroom_id)
+      .eq("user_id", inviteeUser.id)
+      .maybeSingle();
+
+  if (memberCheckError) {
+    throw new Error(
+      `Failed to check classroom membership: ${memberCheckError.message}`
+    );
+  }
+
+  // If not a classroom member, the member cannot be invited
+  if (!existingClassroomMember) {
+    throw new Error(
+      `Invitee is not in the classroom associates with this chatroom`
+    );
+  }
+
+  const classroomMemberId = existingClassroomMember.id;
+
+  // Check if the user is already a member of the chatroom
+  const { data: existingChatroomMember } = await supabase
+    .from("Chatroom_Members")
+    .select("id")
+    .eq("chatroom_id", chatroomId)
+    .eq("member_id", classroomMemberId)
+    .maybeSingle();
+
+  // If already a member of the chatrrom, cannot invite the invitee
+  if (existingChatroomMember) {
+    throw new Error(`Invitee is already in the chatroom`);
+  }
+
+  // Add the user to the chatroom
+  const { error: addChatroomMemberError } = await supabase
+    .from("Chatroom_Members")
+    .insert([
+      {
+        chatroom_id: chatroomId,
+        member_id: classroomMemberId,
+      },
+    ]);
+
+  if (addChatroomMemberError) {
+    throw new Error(
+      `Failed to add user to chatroom: ${addChatroomMemberError.message}`
+    );
+  }
+
+  revalidatePath("/chatrooms");
+  return {
+    success: true,
+    message: `Successfully invited ${inviteeEmail} to the chatroom`,
+  };
+};
 
 export const leaveChatroom = async (
   chatroomId: string,

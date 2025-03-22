@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { createChatroom } from "./actions";
+import { createChatroom, deleteChatroom } from "./actions";
 
 const ChatroomsPage = async () => {
   const supabase = await createClient();
@@ -97,6 +97,12 @@ const ChatroomsPage = async () => {
           >
             Create Chatroom
           </button>
+          <Link
+            href="/chatrooms/invite"
+            className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
+          >
+            Invite Users
+          </Link>
         </form>
       </div>
 

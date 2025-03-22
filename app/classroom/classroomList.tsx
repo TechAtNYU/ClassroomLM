@@ -11,6 +11,7 @@ import { Tables } from "@/utils/supabase/database.types";
 import InviteMember from "./inviteMember";
 import Link from "next/link";
 import NewClassroomButton from "./newClassroomButton";
+import Image from "next/image";
 
 export default function ClassroomList({
   userId,
@@ -109,7 +110,18 @@ export default function ClassroomList({
                 <h3>Members:</h3>
                 <ul>
                   {classroom.Classroom_Members.map((member) => (
-                    <li key={member.id}>User ID: {member.user_id}</li>
+                    <li key={member.id}>
+                      <div className="flex gap-2">
+                        <Image
+                          src={member.Users.avatar_url}
+                          width={25}
+                          height={25}
+                          alt="Member avatar"
+                        />
+                        {member.Users.full_name} | User ID:{" "}
+                        {member.Users.id}{" "}
+                      </div>{" "}
+                    </li>
                   ))}
                 </ul>
               </div>

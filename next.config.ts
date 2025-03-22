@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   eslint: {
     dirs: ["utils", "app", "components"],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.googleusercontent.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

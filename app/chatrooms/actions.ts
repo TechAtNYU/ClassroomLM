@@ -63,6 +63,32 @@ export const createChatroom = async (formData: FormData) => {
   revalidatePath("/chatrooms");
 };
 
+export const deleteChatroom = async (chatroomId: string) => {
+  const supabase = await createClient();
+
+  const { error: chatroomError } = await supabase
+    .from("Chatrooms")
+    .delete()
+    .eq("id", chatroomId);
+
+  if (chatroomError) {
+    throw new Error(`Failed to delete chatroom: ${chatroomError.message}`);
+  }
+
+  const { error: chatroomMemberError } = await supabase
+    .from("Chatroom_Members")
+    .delete()
+    .eq("chatroom_id", chatroomId);
+
+  if (chatroomMemberError) {
+    throw new Error(
+      `Failed to delete chatroom members: ${chatroomMemberError.message}`
+    );
+  }
+
+  revalidatePath("/chatrooms");
+};
+
 // export const sendMessageToChatroom = () => {
 //   // TODO: Implement this function
 // };

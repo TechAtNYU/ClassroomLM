@@ -106,12 +106,25 @@ const ChatroomsPage = async () => {
             <div key={chatroom.id} className="rounded-lg border p-4 shadow-sm">
               <h2 className="mb-2 text-xl font-semibold">{chatroom.name}</h2>
               <p>{`Classroom_id: ${chatroom.classroom_id}`}</p>
-              <Link
-                href={`/chatrooms/${chatroom.id}`}
-                className="inline-block rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-              >
-                Enter Chatroom
-              </Link>
+              <div className="mt-4 flex gap-2">
+                <Link
+                  href={`/chatrooms/${chatroom.id}`}
+                  className="inline-block rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                >
+                  Enter Chatroom
+                </Link>
+
+                {currentUser === chatroom.user_id && (
+                  <form action={deleteChatroom.bind(null, chatroom.id)}>
+                    <button
+                      type="submit"
+                      className="rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           ))
         ) : (

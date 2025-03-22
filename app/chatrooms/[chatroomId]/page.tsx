@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import NewMessages from "./components/new-messages";
+import LeaveChatroomButton from "./components/leave-chatroom-button";
 
 const ChatroomPage = async ({
   params,
@@ -8,6 +9,18 @@ const ChatroomPage = async ({
 }) => {
   const { chatroomId } = await params;
   const supabase = await createClient();
+
+  // Get current chatroom details
+  const { data: chatroom, error: chatroomError } = await supabase
+    .from("Chatrooms")
+    .select("*")
+    .eq("id", chatroomId)
+    .single();
+
+  if (chatroomError) {
+    console.error("Error fetching chatroom:", chatroomError);
+    return <div>Error loading chatroom</div>;
+  }
 
   const { data: chatroomMembers, error: membersError } = await supabase
     .from("Chatroom_Members")
@@ -36,7 +49,20 @@ const ChatroomPage = async ({
     console.error("Error fetching messages:", messagesError);
   }
 
-  return <NewMessages chatHistory={messages ?? []} chatroomId={chatroomId} />;
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b p-4">
+        <h1 className="text-xl font-bold">{chatroom.name}</h1>
+        <LeaveChatroomButton
+          chatroomId={chatroomId}
+          classroomId={chatroom.classroom_id}
+        />
+      </div>
+      <div className="flex-grow overflow-auto">
+        <NewMessages chatHistory={messages ?? []} chatroomId={chatroomId} />
+      </div>
+    </div>
+  );
 };
 
 export default ChatroomPage;

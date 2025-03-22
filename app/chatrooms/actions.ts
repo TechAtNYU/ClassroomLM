@@ -71,6 +71,57 @@ export const createChatroom = async (formData: FormData) => {
 //   // TODO: Implement this function
 // };
 //
-// export const leaveChatroom = () => {
-//   // TODO: Implement this function
-// };
+
+export const leaveChatroom = async (
+  chatroomId: string,
+  classroomId: number
+) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("No authenticated user found");
+  }
+
+  // Get user classroom member id
+  const { data: classroomMember, error: classroomMemberError } = await supabase
+    .from("Classroom_Members")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("classroom_id", classroomId)
+    .single();
+
+  if (classroomMemberError) {
+    throw new Error(
+      `Failed to find classroom membership: ${classroomMemberError.message}`
+    );
+  }
+
+  // Get the chatroom membership
+  const { data: memberData, error: memberError } = await supabase
+    .from("Chatroom_Members")
+    .select("id")
+    .eq("chatroom_id", chatroomId)
+    .eq("member_id", classroomMember?.id)
+    .single();
+
+  if (memberError) {
+    throw new Error(
+      `Failed to find chatroom membership: ${memberError.message}`
+    );
+  }
+
+  // Delete the membership
+  const { error: deleteError } = await supabase
+    .from("Chatroom_Members")
+    .delete()
+    .eq("id", memberData.id);
+
+  if (deleteError) {
+    throw new Error(`Failed to leave chatroom: ${deleteError.message}`);
+  }
+
+  revalidatePath("/chatrooms");
+};

@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Tables } from "@/utils/supabase/database.types";
 
 export interface ClassroomWithMembers extends Tables<"Classroom"> {
+  archived: boolean;
   Classroom_Members?: Array<{
     id: number;
     classroom_id: number;
@@ -249,4 +250,21 @@ export async function changeClassroomName(
 
   //console.log(data[0].name);
   return data;
+}
+
+export async function archiveClassroom(classroom_id: number) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("Classroom")
+    .update({ archived: true })
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    console.error("Error archiving classroom:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
 }

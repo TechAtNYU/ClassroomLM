@@ -59,7 +59,7 @@ export type Database = {
           metadata: Json | null;
           name: string | null;
           ragflow_dataset_id: string | null;
-          archived: boolean | null;
+          archived: boolean | false;
         };
         Insert: {
           admin_user_id?: string | null;
@@ -69,7 +69,7 @@ export type Database = {
           metadata?: Json | null;
           name?: string | null;
           ragflow_dataset_id?: string | null;
-          archived?: boolean | null;
+          archived?: boolean | false;
         };
         Update: {
           admin_user_id?: string | null;
@@ -79,7 +79,7 @@ export type Database = {
           metadata?: Json | null;
           name?: string | null;
           ragflow_dataset_id?: string | null;
-          archived?: boolean | null;
+          archived?: boolean | false;
         };
         Relationships: [
           {

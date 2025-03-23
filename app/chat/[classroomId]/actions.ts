@@ -1,3 +1,4 @@
+
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
@@ -67,10 +68,10 @@ export async function getOrCreateAssistant(
     datasetId,
     userId
   );
-  if (!newAssistant?.data && newAssistant?.status) {
+  if (!newAssistant?.id) {
     return { status: "empty", id: null };
   }
-  return { status: "success", id: newAssistant.data.id };
+  return { status: "success", id: newAssistant.id };
 }
 
 export async function findChatAssistant(classroomId: ClassroomId) {
@@ -107,21 +108,24 @@ export async function findChatAssistant(classroomId: ClassroomId) {
   }
 }
 
-async function createChatAssistant(
-  classroomId: ClassroomId,
-  datasetId: string,
-  userId: string
-) {
+async function createChatAssistant(classroomId: ClassroomId, datasetId:string, userId: string) {
   const newAssistant = {
     dataset_ids: [datasetId],
     name: `${datasetId}-${userId}`,
+    prompt_type: "simple",
     prompt: {
-      empty_response: "",
       prompt: `You are a very knowledgeable assistant for students.
       Your task is to answer students' questions and queries to the best of your abilities, even if the knowledge base does not have the answer.
       You may generate summaries, exam questions, and study materials if needed.
       If the knowledge base is relevant for answering the question, use it to enhance responses, but ensure that you try to assist students regardless.`,
-    },
+      empty_response: "",
+      opener: "Hi! How can I help you today?",
+      variables: [{ key: "knowledge", optional: true }],
+      keywords_similarity_weight: 0.65,
+      similarity_threshold: 0.2,
+      top_n: 6,
+      show_quote: true
+    }
   };
 
   try {
@@ -130,25 +134,23 @@ async function createChatAssistant(
       body: JSON.stringify(newAssistant),
       headers: {
         Authorization: `Bearer ${API_KEY}`,
-        "Content-type": "application/json; charset=UTF-8",
+        "Content-Type": "application/json; charset=UTF-8",
       },
     });
 
-    if (!res.ok) throw new Error("Failed to create chat assistant");
+    if (!res.ok) {
+      const errorResponse = await res.json();
+      throw new Error(`Failed to create chat assistant: ${errorResponse.message}`);
+    }
 
     const resJson = await res.json();
+    console.log("API Response:", resJson);
+
     if (!resJson?.data) {
-      if (
-        resJson?.message &&
-        resJson.message.includes("doesn't own parsed file")
-      ) {
-        return { status: "empty" };
-      }
-      throw new Error(`Failed to create assistant`);
+      return { status: "empty" };
     }
 
     const supabase = await createServiceClient();
-
     const supabaseRes = await supabase
       .from("Classroom")
       .update({ chat_assistant_id: resJson.data.id })
@@ -159,7 +161,7 @@ async function createChatAssistant(
       throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
     }
 
-    return resJson;
+    return { status: "success", id: resJson.data.id };
   } catch (error) {
     console.error("Error creating chat assistant:", error);
     return null;

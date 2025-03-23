@@ -1,4 +1,3 @@
-
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
@@ -108,7 +107,11 @@ export async function findChatAssistant(classroomId: ClassroomId) {
   }
 }
 
-async function createChatAssistant(classroomId: ClassroomId, datasetId:string, userId: string) {
+async function createChatAssistant(
+  classroomId: ClassroomId,
+  datasetId: string,
+  userId: string
+) {
   const newAssistant = {
     dataset_ids: [datasetId],
     name: `${datasetId}-${userId}`,
@@ -124,8 +127,8 @@ async function createChatAssistant(classroomId: ClassroomId, datasetId:string, u
       keywords_similarity_weight: 0.65,
       similarity_threshold: 0.2,
       top_n: 6,
-      show_quote: true
-    }
+      show_quote: true,
+    },
   };
 
   try {
@@ -140,7 +143,9 @@ async function createChatAssistant(classroomId: ClassroomId, datasetId:string, u
 
     if (!res.ok) {
       const errorResponse = await res.json();
-      throw new Error(`Failed to create chat assistant: ${errorResponse.message}`);
+      throw new Error(
+        `Failed to create chat assistant: ${errorResponse.message}`
+      );
     }
 
     const resJson = await res.json();

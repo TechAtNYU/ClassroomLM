@@ -76,17 +76,6 @@ export const deleteChatroom = async (chatroomId: string) => {
     throw new Error(`Failed to delete chatroom: ${chatroomError.message}`);
   }
 
-  const { error: chatroomMemberError } = await supabase
-    .from("Chatroom_Members")
-    .delete()
-    .eq("chatroom_id", chatroomId);
-
-  if (chatroomMemberError) {
-    throw new Error(
-      `Failed to delete chatroom members: ${chatroomMemberError.message}`
-    );
-  }
-
   revalidatePath("/chatrooms");
 };
 

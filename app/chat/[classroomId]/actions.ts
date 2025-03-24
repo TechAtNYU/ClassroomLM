@@ -137,7 +137,7 @@ async function createChatAssistant(
       presence_penalty: 0.3,
       frequency_penalty: 0.6,
       top_p: 0.3,
-    }
+    },
   };
 
   try {

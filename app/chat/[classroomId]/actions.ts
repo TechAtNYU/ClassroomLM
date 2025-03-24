@@ -132,7 +132,8 @@ async function createChatAssistant(
       top_n: 6,
       show_quote: true,
     },
-    llm: { // liable to fine-tune
+    llm: {
+      // liable to fine-tune
       temperature: 0.5,
       presence_penalty: 0.3,
       frequency_penalty: 0.6,

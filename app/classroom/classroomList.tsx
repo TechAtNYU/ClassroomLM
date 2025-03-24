@@ -30,7 +30,7 @@ export default function ClassroomList({
   const deleteClassroomAndFetch = async (classroomId: number) => {
     try {
       await deleteClassroom(classroomId);
-      fetch();
+      refreshClassrooms();
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {
@@ -51,7 +51,7 @@ export default function ClassroomList({
         )
       );
       await archiveClassroom(classroomId);
-      fetch();
+      refreshClassrooms();
     } catch {
       console.error("Error occurred while archiving the classroom");
     }
@@ -67,17 +67,9 @@ export default function ClassroomList({
         )
       );
       await unarchiveClassroom(classroomId);
-      fetch();
+      refreshClassrooms();
     } catch {
       console.error("Error occurred while archiving the classroom");
-    }
-  };
-
-  const fetch = async () => {
-    const adClass = await retrieveClassroomData(userId);
-    if (adClass) {
-      setAdminClassrooms(adClass.validAdminClasses);
-      setMemberClassrooms(adClass.validNonAdminClasses);
     }
   };
 
@@ -110,7 +102,7 @@ export default function ClassroomList({
   const leaveClassroomAndFetch = async (classroomId: number) => {
     try {
       await leaveClassroom(classroomId, userId);
-      fetch();
+      refreshClassrooms();
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {

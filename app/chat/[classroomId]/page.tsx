@@ -78,7 +78,6 @@ export default async function ChatPage({
       {chatAssistantId && chatSessionId && messageHistory && (
         <MessageBox
           assistantId={chatAssistantId.id}
-          userId={userId}
           chatSessionId={chatSessionId}
           messageHistory={messageHistory}
         ></MessageBox>

@@ -247,7 +247,6 @@ async function createSession(
 export async function sendMessage(
   message: string,
   assistantID: string,
-  userID: string,
   chatSessionID: string
 ) {
   // console.log("Message sent: ", message);
@@ -256,7 +255,6 @@ export async function sendMessage(
   const params = {
     question: message,
     session_id: chatSessionID,
-    user_id: userID,
     stream: false,
   };
 

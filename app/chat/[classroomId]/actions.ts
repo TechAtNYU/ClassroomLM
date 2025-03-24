@@ -117,18 +117,27 @@ async function createChatAssistant(
     name: `${datasetId}-${userId}`,
     prompt_type: "simple",
     prompt: {
-      prompt: `You are a very knowledgeable assistant for students.
+      prompt: `You are a very knowledgeable assistant for students. Your name is 'Classroom LM'.
       Your task is to answer students' questions and queries to the best of your abilities, even if the knowledge base does not have the answer.
       You may generate summaries, exam questions, and study materials if needed.
-      If the knowledge base is relevant for answering the question, use it to enhance responses, but ensure that you try to assist students regardless.`,
+      If the knowledge base is relevant for answering the question, use it to enhance responses, but ensure that you try to assist students regardless.
+      Here is the knowledge base: 
+      {knowledge}`,
+
       empty_response: "",
       opener: "Hi! How can I help you today?",
       variables: [{ key: "knowledge", optional: true }],
-      keywords_similarity_weight: 0.65,
+      keywords_similarity_weight: 0.75,
       similarity_threshold: 0.2,
       top_n: 6,
       show_quote: true,
     },
+    llm: {
+      temperature: 0.2,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.6,
+      top_p: 0.3,
+    }
   };
 
   try {

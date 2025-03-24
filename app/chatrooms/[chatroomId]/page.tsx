@@ -73,7 +73,7 @@ const ChatroomPage = async ({
     .select(
       `
       *,
-      Chatroom_Members (
+      Chatroom_Members!inner (
         id,
         chatroom_id,
         Classroom_Members (
@@ -94,15 +94,17 @@ const ChatroomPage = async ({
     throw new Error("Error fetching messages");
   }
 
-  const messages = messageRaw.map((message) => {
-    const { Chatroom_Members, ...newMessage } = message;
-    return {
-      user_id: Chatroom_Members.Classroom_Members.Users.id,
-      full_name: Chatroom_Members.Classroom_Members.Users.full_name,
-      avatar_url: Chatroom_Members.Classroom_Members.Users.avatar_url,
-      ...newMessage,
-    };
-  });
+  const messages = messageRaw
+    ? messageRaw.map((message) => {
+        const { Chatroom_Members, ...newMessage } = message;
+        return {
+          user_id: Chatroom_Members.Classroom_Members.Users.id,
+          full_name: Chatroom_Members.Classroom_Members.Users.full_name,
+          avatar_url: Chatroom_Members.Classroom_Members.Users.avatar_url,
+          ...newMessage,
+        };
+      })
+    : [];
 
   return (
     <div className="flex h-full flex-col">
@@ -124,7 +126,7 @@ const ChatroomPage = async ({
         </div>
       </div>
       <div className="flex-grow overflow-auto">
-        <NewMessages chatHistory={messages ?? []} chatroomId={chatroomId} />
+        <NewMessages chatHistory={messages} chatroomId={chatroomId} />
       </div>
       <div className="border-t p-4 text-black">
         <form action={sendMessageToChatroom} className="flex gap-2">

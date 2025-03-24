@@ -13,7 +13,7 @@ const ChatroomsPage = async () => {
 
   const currentUser = user.id;
 
-  // get all classrooms that user joiend
+  // get all classrooms that user joined
   const { data: classroomMembers, error: classroomMembersError } =
     await supabase
       .from("Classroom_Members")
@@ -55,7 +55,8 @@ const ChatroomsPage = async () => {
       )
     `
     )
-    .in("member_id", userClassroomMemberIds);
+    .in("member_id", userClassroomMemberIds)
+    .eq("is_active", true);
 
   if (chatroomMembersError) {
     console.error("Error fetching chatrooms:", chatroomMembersError);

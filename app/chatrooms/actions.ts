@@ -214,27 +214,49 @@ export const inviteUserToChatroom = async (formData: FormData) => {
 
   // If already a member of the chatroom, cannot invite the invitee
   const isInChatroom = chatroomMembers.find(
-    (member) => member.member_id === classroomMemberId
+    (member) =>
+      member.member_id === classroomMemberId && member.is_active === true
   );
 
   if (isInChatroom) {
     throw new Error(`Invitee is already in the chatroom`);
   }
 
-  // Add the user to the chatroom
-  const { error: addChatroomMemberError } = await supabase
-    .from("Chatroom_Members")
-    .insert([
-      {
-        chatroom_id: chatroomId,
-        member_id: classroomMemberId,
-      },
-    ]);
+  // Check if the user was previously in the chatroom but is now inactive
+  const inactiveMember = chatroomMembers.find(
+    (member) =>
+      member.member_id === classroomMemberId && member.is_active === false
+  );
 
-  if (addChatroomMemberError) {
-    throw new Error(
-      `Failed to add user to chatroom: ${addChatroomMemberError.message}`
-    );
+  if (inactiveMember) {
+    // Reactivate the member instead of creating a new record
+    const { error: updateError } = await supabase
+      .from("Chatroom_Members")
+      .update({ is_active: true })
+      .eq("id", inactiveMember.id);
+
+    if (updateError) {
+      throw new Error(
+        `Failed to reactivate user in chatroom: ${updateError.message}`
+      );
+    }
+  } else {
+    // Add the user to the chatroom
+    const { error: addChatroomMemberError } = await supabase
+      .from("Chatroom_Members")
+      .insert([
+        {
+          chatroom_id: chatroomId,
+          member_id: classroomMemberId,
+          is_active: true, // Explicitly set is_active to true
+        },
+      ]);
+
+    if (addChatroomMemberError) {
+      throw new Error(
+        `Failed to add user to chatroom: ${addChatroomMemberError.message}`
+      );
+    }
   }
 
   revalidatePath("/chatrooms");
@@ -276,14 +298,14 @@ export const leaveChatroom = async (chatroomId: string) => {
     );
   }
 
-  // Delete the membership
-  const { error: deleteError } = await supabase
+  // Update the membership to set is_active to false instead of deleting
+  const { error: updateError } = await supabase
     .from("Chatroom_Members")
-    .delete()
+    .update({ is_active: false })
     .eq("id", memberData.id);
 
-  if (deleteError) {
-    throw new Error(`Failed to leave chatroom: ${deleteError.message}`);
+  if (updateError) {
+    throw new Error(`Failed to leave chatroom: ${updateError.message}`);
   }
 
   revalidatePath("/chatrooms");

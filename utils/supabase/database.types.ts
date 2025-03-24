@@ -29,18 +29,21 @@ export type Database = {
           chatroom_id: string;
           created_at: string;
           id: number;
+          is_active: boolean;
           member_id: number;
         };
         Insert: {
           chatroom_id: string;
           created_at?: string;
           id?: number;
+          is_active?: boolean;
           member_id: number;
         };
         Update: {
           chatroom_id?: string;
           created_at?: string;
           id?: number;
+          is_active?: boolean;
           member_id?: number;
         };
         Relationships: [

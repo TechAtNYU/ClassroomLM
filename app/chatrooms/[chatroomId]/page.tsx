@@ -41,7 +41,8 @@ const ChatroomPage = async ({
       )
     `
     )
-    .eq("chatroom_id", chatroomId);
+    .eq("chatroom_id", chatroomId)
+    .eq("is_active", true);
 
   if (chatroomMembersError) {
     console.error("Error fetching chatroom members:", chatroomMembersError);
@@ -87,6 +88,7 @@ const ChatroomPage = async ({
     `
     )
     .eq("Chatroom_Members.chatroom_id", chatroomId)
+    .eq("Chatroom_Members.is_active", true)
     .order("created_at", { ascending: true });
 
   if (messagesError) {

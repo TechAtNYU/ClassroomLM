@@ -31,7 +31,8 @@ export default async function InvitePage() {
     const { data, error } = await supabase
       .from("Chatroom_Members")
       .select("chatroom_id")
-      .eq("member_id", memberId);
+      .eq("member_id", memberId)
+      .eq("is_active", true);
 
     if (data && !error) {
       for (const element of data) {

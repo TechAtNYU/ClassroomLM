@@ -8,7 +8,12 @@ export interface ClassroomWithMembers extends Tables<"Classroom"> {
   Classroom_Members?: Array<{
     id: number;
     classroom_id: number;
-    user_id: string;
+    Users: {
+      id: string;
+      email: string;
+      full_name: string;
+      avatar_url: string;
+    };
   }>;
 }
 const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
@@ -165,7 +170,12 @@ export async function getUserClassrooms() {
       Classroom_Members (
         id,
         classroom_id,
-        user_id
+        Users (
+          id, 
+          email,
+          full_name,
+          avatar_url
+        )
       )
     `);
   if (error) {

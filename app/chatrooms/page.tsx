@@ -10,62 +10,60 @@ const ChatroomsPage = async () => {
   if (!user) {
     throw new Error("No authenticated user found");
   }
+
   const currentUser = user.id;
 
-  // get all the classrooms that current user joined
-  const { data: classroomMembers, error: memberError } = await supabase
-    .from("Classroom_Members")
-    .select("id, classroom_id")
-    .eq("user_id", currentUser);
+  // get all classrooms that user joiend
+  const { data: classroomMembers, error: classroomMembersError } =
+    await supabase
+      .from("Classroom_Members")
+      .select(
+        `
+      *,
+      Classroom (
+        id,
+        name
+      )
+    `
+      )
+      .eq("user_id", currentUser);
 
-  if (memberError) {
-    throw new Error(`Failed to get classroom members: ${memberError.message}`);
+  if (classroomMembersError) {
+    console.error("Error fetching classrooms:", classroomMembersError);
+    throw new Error("Error fetching classrooms");
   }
 
-  const memberIds = classroomMembers?.map((element) => element.id) || [];
-  const classroomIds =
-    classroomMembers?.map((element) => element.classroom_id) || [];
+  // take out all the classrooms
+  const classrooms = classroomMembers.map((member) => member.Classroom) || [];
 
-  // Fetch classroom details for user joined classrooms
-  const { data: userClassrooms, error: classroomsError } = await supabase
-    .from("Classroom")
-    .select("id, name")
-    .in("id", classroomIds);
+  // Get all classroom member ids for the current user
+  const userClassroomMemberIds = classroomMembers.map((member) => member.id);
+  console.log(userClassroomMemberIds);
 
-  if (classroomsError) {
-    throw new Error(`Failed to get classrooms: ${classroomsError.message}`);
+  // Get all chatrooms that user joined
+  const { data: chatroomMembers, error: chatroomMembersError } = await supabase
+    .from("Chatroom_Members")
+    .select(
+      `
+      *,
+      Chatrooms(
+        id,
+        name,
+        user_id,
+        Classroom(
+          name
+        )
+      )
+    `
+    )
+    .in("member_id", userClassroomMemberIds);
+
+  if (chatroomMembersError) {
+    console.error("Error fetching chatrooms:", chatroomMembersError);
+    throw new Error("Error fetching chatrooms");
   }
 
-  // get all the chatroomsIds that current user joined
-  const chatroomIds = [];
-
-  for (const memberId of memberIds) {
-    const { data, error } = await supabase
-      .from("Chatroom_Members")
-      .select("chatroom_id")
-      .eq("member_id", memberId);
-
-    if (data && !error) {
-      for (const element of data) {
-        chatroomIds.push(element.chatroom_id);
-      }
-    }
-  }
-
-  // get all the chatrooms that current user joined
-  const chatrooms = [];
-
-  for (const chatroomId of chatroomIds) {
-    const { data, error } = await supabase
-      .from("Chatrooms")
-      .select("*")
-      .eq("id", chatroomId)
-      .single();
-
-    if (data && !error) {
-      chatrooms.push(data);
-    }
-  }
+  const chatrooms = chatroomMembers.map((member) => member.Chatrooms);
 
   return (
     <div className="container mx-auto p-4">
@@ -85,7 +83,7 @@ const ChatroomsPage = async () => {
             required
           >
             <option value="">Select a classroom</option>
-            {userClassrooms.map((classroom) => (
+            {classrooms.map((classroom) => (
               <option key={classroom.id} value={classroom.id}>
                 {classroom.name}
               </option>
@@ -111,7 +109,7 @@ const ChatroomsPage = async () => {
           chatrooms.map((chatroom) => (
             <div key={chatroom.id} className="rounded-lg border p-4 shadow-sm">
               <h2 className="mb-2 text-xl font-semibold">{chatroom.name}</h2>
-              <p>{`Classroom_id: ${chatroom.classroom_id}`}</p>
+              <p>{`Classroom: ${chatroom.Classroom.name}`}</p>
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/chatrooms/${chatroom.id}`}

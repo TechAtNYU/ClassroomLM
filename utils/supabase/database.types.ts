@@ -31,6 +31,7 @@ export type Database = {
           id: number;
           is_active: boolean;
           member_id: number;
+          ragflow_session_id: string | null;
         };
         Insert: {
           chatroom_id: string;
@@ -38,6 +39,7 @@ export type Database = {
           id?: number;
           is_active?: boolean;
           member_id: number;
+          ragflow_session_id?: string | null;
         };
         Update: {
           chatroom_id?: string;
@@ -45,6 +47,7 @@ export type Database = {
           id?: number;
           is_active?: boolean;
           member_id?: number;
+          ragflow_session_id?: string | null;
         };
         Relationships: [
           {
@@ -67,23 +70,23 @@ export type Database = {
         Row: {
           classroom_id: number;
           created_at: string;
+          creater_user_id: string;
           id: string;
           name: string;
-          user_id: string;
         };
         Insert: {
           classroom_id: number;
           created_at?: string;
+          creater_user_id: string;
           id?: string;
           name: string;
-          user_id: string;
         };
         Update: {
           classroom_id?: number;
           created_at?: string;
+          creater_user_id?: string;
           id?: string;
           name?: string;
-          user_id?: string;
         };
         Relationships: [
           {
@@ -94,8 +97,8 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "Chatrooms_user_id_fkey";
-            columns: ["user_id"];
+            foreignKeyName: "Chatrooms_creater_user_id_fkey";
+            columns: ["creater_user_id"];
             isOneToOne: false;
             referencedRelation: "Users";
             referencedColumns: ["id"];

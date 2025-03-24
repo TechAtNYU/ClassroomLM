@@ -23,7 +23,7 @@ export const createChatroom = async (formData: FormData) => {
       {
         name,
         classroom_id,
-        user_id: user.id,
+        creater_user_id: user.id,
       },
     ])
     .select("*")

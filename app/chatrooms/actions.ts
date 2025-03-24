@@ -142,15 +142,22 @@ export const inviteUserToChatroom = async (formData: FormData) => {
     throw new Error("Chatroom ID and invitee email are required");
   }
 
-  // Get the chatroom to find its classroom_id
-  const { data: chatroom, error: chatroomError } = await supabase
-    .from("Chatrooms")
-    .select("classroom_id")
-    .eq("id", chatroomId)
-    .single();
+  // Get the chatroom members
+  const { data: chatroomMembers, error: chatroomMembersError } = await supabase
+    .from("Chatroom_Members")
+    .select(
+      `
+      *,
+      Chatrooms!inner(
+        id,
+        classroom_id
+      )
+    `
+    )
+    .eq("Chatrooms.id", chatroomId);
 
-  if (chatroomError) {
-    throw new Error(`Failed to find chatroom: ${chatroomError.message}`);
+  if (chatroomMembersError) {
+    throw new Error(`Failed to find chatroom: ${chatroomMembersError.message}`);
   }
 
   // Find the invitee user by email
@@ -168,40 +175,60 @@ export const inviteUserToChatroom = async (formData: FormData) => {
     throw new Error(`No user found with email ${inviteeEmail}`);
   }
 
-  // Check if the invitee is already a member of the classroom
-  const { data: existingClassroomMember, error: memberCheckError } =
+  // Get chatroom details
+  const { data: chatroom, error: chatroomError } = await supabase
+    .from("Chatrooms")
+    .select(
+      `
+      *,
+      Classroom(
+        id
+      )
+    `
+    )
+    .eq("id", chatroomId)
+    .single();
+
+  if (chatroomError) {
+    throw new Error(`Failed to find chatroom: ${chatroomError.message}`);
+  }
+
+  // Get classroom members for the classroom associated with this chatroom
+  let classroomMemberId = null;
+
+  const { data: classroomMembers, error: classroomMembersError } =
     await supabase
       .from("Classroom_Members")
-      .select("id")
-      .eq("classroom_id", chatroom.classroom_id)
-      .eq("user_id", inviteeUser.id)
-      .maybeSingle();
+      .select("id, user_id")
+      .eq("classroom_id", chatroom.Classroom.id);
 
-  if (memberCheckError) {
+  if (classroomMembersError) {
     throw new Error(
-      `Failed to check classroom membership: ${memberCheckError.message}`
+      `Failed to get classroom members: ${classroomMembersError.message}`
     );
+  }
+
+  // Check if the invitee is a member of the classroom. If not cannot invite
+  for (const classroomMember of classroomMembers) {
+    if (classroomMember.user_id === inviteeUser.id) {
+      classroomMemberId = classroomMember.id;
+      break;
+    }
   }
 
   // If not a classroom member, the member cannot be invited
-  if (!existingClassroomMember) {
+  if (!classroomMemberId) {
     throw new Error(
-      `Invitee is not in the classroom associates with this chatroom`
+      `Invitee is not in the classroom associated with this chatroom`
     );
   }
 
-  const classroomMemberId = existingClassroomMember.id;
+  // If already a member of the chatroom, cannot invite the invitee
+  const isInChatroom = chatroomMembers.find(
+    (member) => member.member_id === classroomMemberId
+  );
 
-  // Check if the user is already a member of the chatroom
-  const { data: existingChatroomMember } = await supabase
-    .from("Chatroom_Members")
-    .select("id")
-    .eq("chatroom_id", chatroomId)
-    .eq("member_id", classroomMemberId)
-    .maybeSingle();
-
-  // If already a member of the chatrrom, cannot invite the invitee
-  if (existingChatroomMember) {
+  if (isInChatroom) {
     throw new Error(`Invitee is already in the chatroom`);
   }
 

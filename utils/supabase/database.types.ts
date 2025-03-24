@@ -187,18 +187,21 @@ export type Database = {
           content: string;
           created_at: string;
           id: string;
+          is_new: boolean;
           member_id: number;
         };
         Insert: {
           content: string;
           created_at?: string;
           id?: string;
+          is_new?: boolean;
           member_id: number;
         };
         Update: {
           content?: string;
           created_at?: string;
           id?: string;
+          is_new?: boolean;
           member_id?: number;
         };
         Relationships: [

@@ -14,6 +14,13 @@ import InviteMember from "./inviteMember";
 import Link from "next/link";
 import NewClassroomButton from "./newClassroomButton";
 import Image from "next/image";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function ClassroomList({
   userId,
@@ -139,23 +146,38 @@ export default function ClassroomList({
               {classroom.Classroom_Members &&
                 classroom.Classroom_Members.length > 0 && (
                   <div>
-                    <h3>Members:</h3>
-                    <ul>
-                      {classroom.Classroom_Members.map((member) => (
-                        <li key={member.id}>
-                          <div className="flex gap-2">
-                            <Image
-                              src={member.Users.avatar_url}
-                              width={25}
-                              height={25}
-                              alt="Member avatar"
-                            />
-                            {member.Users.full_name} | User ID:{" "}
-                            {member.Users.id}{" "}
-                          </div>{" "}
-                        </li>
-                      ))}
-                    </ul>
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <button>Show Members</button>
+                      </SheetTrigger>
+                      <SheetContent className="!w-[600px] !max-w-[700px]">
+                        {/* for some reason chanding the width doesn't actually do anything */}
+                        <SheetHeader>
+                          <SheetTitle>{classroom.name} Members</SheetTitle>
+                          {/* <SheetDescription>
+                            Make changes to your profile here. Click save when
+                            you're done.
+                          </SheetDescription> */}
+                          {/* <h3>Members:</h3> */}
+                          <ul>
+                            {classroom.Classroom_Members.map((member) => (
+                              <li key={member.id}>
+                                <div className="flex gap-2">
+                                  <Image
+                                    src={member.Users.avatar_url}
+                                    width={28}
+                                    height={28}
+                                    alt="Member avatar"
+                                  />
+                                  {member.Users.full_name} | User ID:{" "}
+                                  {member.Users.id}{" "}
+                                </div>{" "}
+                              </li>
+                            ))}
+                          </ul>
+                        </SheetHeader>
+                      </SheetContent>
+                    </Sheet>
                   </div>
                 )}
 

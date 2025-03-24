@@ -7,6 +7,7 @@ import {
   changeClassroomName,
   ClassroomWithMembers,
   archiveClassroom,
+  unarchiveClassroom,
 } from "./actions";
 import { Tables } from "@/utils/supabase/database.types";
 import InviteMember from "./inviteMember";
@@ -52,6 +53,26 @@ export default function ClassroomList({
         )
       );
       await archiveClassroom(classroomId);
+      const adClass = await retrieveClassroomData(userId);
+      if (adClass) {
+        setAdminClassrooms(adClass.validAdminClasses);
+        setMemberClassrooms(adClass.validNonAdminClasses);
+      }
+    } catch {
+      console.error("Error occurred while archiving the classroom");
+    }
+  };
+
+  const unarchiveClassroomAndFetch = async (classroomId: number) => {
+    try {
+      setAdminClassrooms((prevClasses) =>
+        prevClasses.map((classroom) =>
+          classroom.id === classroomId
+            ? { ...classroom, archived: false }
+            : classroom
+        )
+      );
+      await unarchiveClassroom(classroomId);
       const adClass = await retrieveClassroomData(userId);
       if (adClass) {
         setAdminClassrooms(adClass.validAdminClasses);
@@ -258,6 +279,7 @@ export default function ClassroomList({
                 <button
                   type="button"
                   className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  onClick={() => unarchiveClassroomAndFetch(classroom.id)}
                 >
                   Unarchive
                 </button>

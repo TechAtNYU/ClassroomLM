@@ -268,3 +268,20 @@ export async function archiveClassroom(classroom_id: number) {
 
   return { success: true, data };
 }
+
+export async function unarchiveClassroom(classroom_id: number) {
+  const supabase = await createServiceClient();
+
+  const { data, error } = await supabase
+    .from("Classroom")
+    .update({ archived: false })
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    console.error("Error unarchiving classroom:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+}

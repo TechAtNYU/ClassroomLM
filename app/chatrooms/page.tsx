@@ -38,7 +38,6 @@ const ChatroomsPage = async () => {
 
   // Get all classroom member ids for the current user
   const userClassroomMemberIds = classroomMembers.map((member) => member.id);
-  console.log(userClassroomMemberIds);
 
   // Get all chatrooms that user joined
   const { data: chatroomMembers, error: chatroomMembersError } = await supabase

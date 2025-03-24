@@ -2,15 +2,22 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { Tables } from "@/utils/supabase/database.types";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const supabase = createClient();
+
+interface Message extends Tables<"Messages"> {
+  user_id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+}
 
 const NewMessages = ({
   chatHistory,
   chatroomId,
 }: {
-  chatHistory: Tables<"Messages">[];
+  chatHistory: Message[];
   chatroomId: string;
 }) => {
   const [messages, setMessages] = useState(chatHistory);
@@ -19,25 +26,44 @@ const NewMessages = ({
     const fetchMemberIds = async () => {
       const { data: members } = await supabase
         .from("Chatroom_Members")
-        .select("id")
+        .select(
+          `
+          *,
+          Classroom_Members(
+            Users(
+              id,
+              full_name,
+              avatar_url
+            )
+          )
+        `
+        )
         .eq("chatroom_id", chatroomId);
 
-      return members?.map((member) => member.id) || [];
+      return members || [];
     };
 
-    fetchMemberIds().then((memberIds) => {
+    fetchMemberIds().then((members) => {
       const room = supabase.channel(`chatroom-${chatroomId}`);
-      memberIds.forEach((memberId) => {
+      members.forEach((member) => {
         room.on(
           "postgres_changes",
           {
             event: "INSERT",
             schema: "public",
             table: "Messages",
-            filter: `member_id=eq.${memberId}`,
+            filter: `member_id=eq.${member.id}`,
           },
           (payload) => {
-            const message = payload.new as Tables<"Messages">;
+            const messageRaw = payload.new as Tables<"Messages">;
+
+            const message: Message = {
+              ...messageRaw,
+              user_id: member.Classroom_Members.Users.id,
+              full_name: member.Classroom_Members.Users.full_name,
+              avatar_url: member.Classroom_Members.Users.avatar_url,
+            };
+
             setMessages((prevMessages) => [...prevMessages, message]);
           }
         );
@@ -59,14 +85,33 @@ const NewMessages = ({
         </p>
       ) : (
         messages.map((message, index) => {
-          const memberId = message.member_id;
-
           return (
-            <div key={message.id || index} className="rounded border p-2">
-              <div className="font-bold">{memberId}</div>
-              <div>{message.content}</div>
-              <div className="text-xs text-gray-500">
-                {new Date(message.created_at).toLocaleString()}
+            <div
+              key={message.id || index}
+              className="flex items-start gap-3 rounded border p-3"
+            >
+              {message.avatar_url ? (
+                <Image
+                  src={message.avatar_url}
+                  alt={message.full_name || "User"}
+                  width={25}
+                  height={25}
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600">
+                  {message.full_name?.charAt(0) || "?"}
+                </div>
+              )}
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-medium">
+                    {message.full_name || "Unknown User"}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(message.created_at).toLocaleString()}
+                  </span>
+                </div>
+                <div className="mt-1">{message.content}</div>
               </div>
             </div>
           );

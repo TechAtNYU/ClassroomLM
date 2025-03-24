@@ -24,7 +24,31 @@ const ChatroomPage = async ({
     redirect("/chatrooms");
   }
 
-  // get user's chatroom member Id
+  // get all chatroom members details
+  const { data: chatroomMembers, error: chatroomMembersError } = await supabase
+    .from("Chatroom_Members")
+    .select(
+      `
+      *,
+      Classroom_Members (
+        id,
+        user_id,
+        Users(
+          id,
+          full_name,
+          avatar_url
+        )
+      )
+    `
+    )
+    .eq("chatroom_id", chatroomId);
+
+  if (chatroomMembersError) {
+    console.error("Error fetching chatroom members:", chatroomMembersError);
+    throw new Error("Error fetching chatroom members");
+  }
+
+  // Get current Chatroom Member
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -34,59 +58,51 @@ const ChatroomPage = async ({
 
   const currentUser = user.id;
 
-  const { data: currentClassroomMember } = await supabase
-    .from("Classroom_Members")
-    .select("id")
-    .eq("classroom_id", chatroom.classroom_id)
-    .eq("user_id", currentUser)
-    .single();
+  const currentMember = chatroomMembers.find(
+    (member) => member.Classroom_Members.user_id === currentUser
+  );
 
-  const { data: chatroomMembers, error: membersError } = await supabase
-    .from("Chatroom_Members")
-    .select("*")
-    .eq("chatroom_id", chatroomId);
-
-  if (membersError) {
-    console.error("Error fetching chatroom members:", membersError);
-    return <div>Error loading chatroom</div>;
-  }
-
-  const classroomMemberIds =
-    chatroomMembers?.map((member) => member.member_id) || [];
-  const chatroomMemberIds = chatroomMembers?.map((member) => member.id) || [];
-
-  console.log(currentClassroomMember?.id);
-
-  // if user is not in this chatroom redirect to /chatrooms
-  if (
-    !currentClassroomMember ||
-    !classroomMemberIds.includes(currentClassroomMember.id)
-  ) {
+  // If user is not in this chatroom redirect to /chatrooms
+  if (!currentMember) {
     redirect("/chatrooms");
   }
 
-  // get current chatroom member id
-  const { data: currentChatroomMember, error: currentChatroomMemberError } =
-    await supabase
-      .from("Chatroom_Members")
-      .select("id")
-      .eq("chatroom_id", chatroomId)
-      .eq("member_id", currentClassroomMember.id)
-      .single();
-
-  if (currentChatroomMemberError) {
-    redirect("/chatrooms");
-  }
-
-  const { data: messages, error: messagesError } = await supabase
+  // Get messages
+  const { data: messageRaw, error: messagesError } = await supabase
     .from("Messages")
-    .select("*")
-    .in("member_id", chatroomMemberIds)
+    .select(
+      `
+      *,
+      Chatroom_Members (
+        id,
+        chatroom_id,
+        Classroom_Members (
+          Users (
+            id,
+            full_name,
+            avatar_url
+          )
+        )
+      )
+    `
+    )
+    .eq("Chatroom_Members.chatroom_id", chatroomId)
     .order("created_at", { ascending: true });
 
   if (messagesError) {
     console.error("Error fetching messages:", messagesError);
+    throw new Error("Error fetching messages");
   }
+
+  const messages = messageRaw.map((message) => {
+    const { Chatroom_Members, ...newMessage } = message;
+    return {
+      user_id: Chatroom_Members.Classroom_Members.Users.id,
+      full_name: Chatroom_Members.Classroom_Members.Users.full_name,
+      avatar_url: Chatroom_Members.Classroom_Members.Users.avatar_url,
+      ...newMessage,
+    };
+  });
 
   return (
     <div className="flex h-full flex-col">
@@ -116,7 +132,7 @@ const ChatroomPage = async ({
           <input
             type="hidden"
             name="chatroomMemberId"
-            value={currentChatroomMember.id}
+            value={currentMember.id}
           />
           <input
             type="text"

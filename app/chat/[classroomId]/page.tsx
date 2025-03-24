@@ -26,8 +26,7 @@ export default async function ChatPage({
 
   const chatAssistantId = await getOrCreateAssistant(
     Number(classroomId),
-    datasetId,
-    userId
+    datasetId
   );
   if (chatAssistantId.status == "empty") {
     return (

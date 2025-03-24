@@ -52,8 +52,7 @@ const API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function getOrCreateAssistant(
   classroomId: number,
-  datasetId: string,
-  userId: string
+  datasetId: string
 ) {
   const existingChat = await findChatAssistant(classroomId);
   if (existingChat) {
@@ -62,11 +61,7 @@ export async function getOrCreateAssistant(
 
   console.log("Get or create: didn't find an assistant, creating a new one");
 
-  const newAssistant = await createChatAssistant(
-    classroomId,
-    datasetId,
-    userId
-  );
+  const newAssistant = await createChatAssistant(classroomId, datasetId);
   if (!newAssistant?.data && newAssistant?.status) {
     return { status: "empty", id: null };
   }
@@ -96,7 +91,7 @@ export async function findChatAssistant(classroomId: ClassroomId) {
 
     if (res.error) throw new Error(`Failed to fetch chats: ${res.error}`);
 
-    const data = await res.data.chat_assistant_id;
+    const data = res.data.chat_assistant_id;
 
     // console.log(data);
 
@@ -109,12 +104,11 @@ export async function findChatAssistant(classroomId: ClassroomId) {
 
 async function createChatAssistant(
   classroomId: ClassroomId,
-  datasetId: string,
-  userId: string
+  datasetId: string
 ) {
   const newAssistant = {
     dataset_ids: [datasetId],
-    name: `${datasetId}-${userId}`,
+    name: `${datasetId}-${classroomId}`,
   };
 
   try {
@@ -141,7 +135,7 @@ async function createChatAssistant(
     }
 
     // update that in supabase
-    const supabase = await createServiceClient();
+    const supabase = createServiceClient();
 
     const supabaseRes = await supabase
       .from("Classroom")
@@ -224,7 +218,7 @@ async function createSession(
     const resJson = await res.json();
 
     // update that in supabase
-    const supabase = await createServiceClient();
+    const supabase = createServiceClient();
 
     const supabaseRes = await supabase
       .from("Classroom_Members")

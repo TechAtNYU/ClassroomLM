@@ -253,7 +253,7 @@ export async function changeClassroomName(
 }
 
 export async function archiveClassroom(classroom_id: number) {
-  const supabase = await createClient();
+  const supabase = await createServiceClient();
 
   const { data, error } = await supabase
     .from("Classroom")

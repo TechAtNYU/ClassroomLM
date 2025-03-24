@@ -2,7 +2,6 @@
 // "use client";
 
 import { getCurrentUserId, retrieveClassroomData } from "./actions";
-import ArchivedClassroomList from "./archivedClassroomList";
 import ClassroomList from "./classroomList";
 import NewClassroomButton from "./newClassroomButton";
 export default async function ClassroomPage() {
@@ -20,11 +19,6 @@ export default async function ClassroomPage() {
   return (
     <>
       <ClassroomList
-        userId={userId}
-        initialAdminData={classData?.validAdminClasses}
-        initialMemberData={classData?.validNonAdminClasses}
-      />
-      <ArchivedClassroomList
         userId={userId}
         initialAdminData={classData?.validAdminClasses}
         initialMemberData={classData?.validNonAdminClasses}

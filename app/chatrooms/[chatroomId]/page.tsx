@@ -112,10 +112,7 @@ const ChatroomPage = async ({
         <h1 className="text-xl font-bold">{chatroom.name}</h1>
         <div className="flex gap-2">
           {currentUser !== chatroom.user_id && (
-            <LeaveChatroomButton
-              chatroomId={chatroomId}
-              classroomId={chatroom.classroom_id}
-            />
+            <LeaveChatroomButton chatroomId={chatroomId} />
           )}
           <Link
             href="/chatrooms"

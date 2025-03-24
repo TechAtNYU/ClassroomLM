@@ -6,10 +6,8 @@ import { leaveChatroom } from "../../actions";
 
 export default function LeaveChatroomButton({
   chatroomId,
-  classroomId,
 }: {
   chatroomId: string;
-  classroomId: number;
 }) {
   const [isLeaving, setIsLeaving] = useState(false);
   const router = useRouter();
@@ -18,7 +16,7 @@ export default function LeaveChatroomButton({
     if (confirm("Are you sure you want to leave this chatroom?")) {
       setIsLeaving(true);
       try {
-        await leaveChatroom(chatroomId, classroomId);
+        await leaveChatroom(chatroomId);
         router.push("/chatrooms");
       } catch (error) {
         console.error("Error leaving chatroom:", error);

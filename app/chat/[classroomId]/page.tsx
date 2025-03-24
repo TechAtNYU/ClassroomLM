@@ -26,8 +26,7 @@ export default async function ChatPage({
 
   const chatAssistantId = await getOrCreateAssistant(
     Number(classroomId),
-    datasetId,
-    userId
+    datasetId
   );
   if (chatAssistantId.status == "empty") {
     return (
@@ -78,7 +77,6 @@ export default async function ChatPage({
       {chatAssistantId && chatSessionId && messageHistory && (
         <MessageBox
           assistantId={chatAssistantId.id}
-          userId={userId}
           chatSessionId={chatSessionId}
           messageHistory={messageHistory}
         ></MessageBox>

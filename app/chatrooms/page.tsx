@@ -20,7 +20,7 @@ const ChatroomsPage = async () => {
       .select(
         `
       *,
-      Classroom (
+      Classrooms (
         id,
         name
       )
@@ -34,7 +34,7 @@ const ChatroomsPage = async () => {
   }
 
   // take out all the classrooms
-  const classrooms = classroomMembers.map((member) => member.Classroom) || [];
+  const classrooms = classroomMembers.map((member) => member.Classrooms) || [];
 
   // Get all classroom member ids for the current user
   const userClassroomMemberIds = classroomMembers.map((member) => member.id);
@@ -50,7 +50,7 @@ const ChatroomsPage = async () => {
         name,
         classroom_id,
         creater_user_id,
-        Classroom(
+        Classrooms(
           name
         )
       )
@@ -110,7 +110,7 @@ const ChatroomsPage = async () => {
           chatrooms.map((chatroom) => (
             <div key={chatroom.id} className="rounded-lg border p-4 shadow-sm">
               <h2 className="mb-2 text-xl font-semibold">{chatroom.name}</h2>
-              <p>{`Classroom: ${chatroom.Classroom.name}`}</p>
+              <p>{`Classroom: ${chatroom.Classrooms.name}`}</p>
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/chatrooms/${chatroom.id}`}

@@ -206,7 +206,7 @@ export const inviteUserToChatroom = async (formData: FormData) => {
     .select(
       `
       *,
-      Classroom(
+      Classrooms(
         id
       )
     `
@@ -225,7 +225,7 @@ export const inviteUserToChatroom = async (formData: FormData) => {
     await supabase
       .from("Classroom_Members")
       .select("id, user_id")
-      .eq("classroom_id", chatroom.Classroom.id);
+      .eq("classroom_id", chatroom.Classrooms.id);
 
   if (classroomMembersError) {
     throw new Error(

@@ -85,13 +85,7 @@ const NewMessages = ({
     );
 
     // Subscribe to the channel
-    room.subscribe((status) => {
-      if (status !== "SUBSCRIBED") {
-        console.error("Failed to subscribe to realtime updates:", status);
-      } else {
-        console.log("Successfully subscribed to realtime updates");
-      }
-    });
+    room.subscribe();
 
     // Cleanup function
     return () => {

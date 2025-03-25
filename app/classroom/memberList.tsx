@@ -25,7 +25,8 @@ export default function MemberList({
       <SheetTrigger asChild>
         <button>Show Members</button>
       </SheetTrigger>
-      <SheetContent className="w-[900px] sm:max-w-5xl">
+      {/* not used: https://github.com/shadcn-ui/ui/issues/16#issuecomment-1602565563 */}
+      <SheetContent className="flex w-[55vw] items-center justify-center align-middle sm:max-w-5xl">
         {/* for some reason chanding the width doesn't actually do anything */}
         <SheetHeader>
           <SheetTitle>{classroom.name} Members</SheetTitle>
@@ -33,32 +34,14 @@ export default function MemberList({
       Make changes to your profile here. Click save when
       you're done.
     </SheetDescription> */}
-          {/* <h3>Members:</h3> */}
-          {/* <ul>
-            {classroom.Classroom_Members.map((member) => (
-              <li key={member.id}>
-                <div className="flex gap-2">
-                  <Avatar>
-                    <AvatarImage asChild src={member.Users.avatar_url}>
-                                <Image
-                                    src={member.Users.avatar_url}
-                                    fill={true}
-                                    alt="Member avatar"
-                                  />
-                    </AvatarImage>
-                    <AvatarFallback>
-                      {member.Users.full_name} Avatar
-                    </AvatarFallback>
-                  </Avatar>
-                  {member.Users.full_name} | User ID: {member.Users.id}
-                </div>{" "}
-              </li>
-            ))}
-          </ul> */}
-          <DataTable
-            columns={columns}
-            data={classroom.Classroom_Members.map((x) => x.Users)}
-          />
+
+          {/* todo future, for smaller screens, make the width even smaller */}
+          <div className="w-[50vw]">
+            <DataTable
+              columns={columns}
+              data={classroom.Classroom_Members.map((x) => x.Users)}
+            />
+          </div>
         </SheetHeader>
       </SheetContent>
     </Sheet>

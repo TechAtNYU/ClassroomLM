@@ -31,7 +31,6 @@ export type Database = {
           id: number;
           is_active: boolean;
           member_id: number;
-          ragflow_session_id: string | null;
         };
         Insert: {
           chatroom_id: string;
@@ -39,7 +38,6 @@ export type Database = {
           id?: number;
           is_active?: boolean;
           member_id: number;
-          ragflow_session_id?: string | null;
         };
         Update: {
           chatroom_id?: string;
@@ -47,7 +45,6 @@ export type Database = {
           id?: number;
           is_active?: boolean;
           member_id?: number;
-          ragflow_session_id?: string | null;
         };
         Relationships: [
           {
@@ -73,6 +70,7 @@ export type Database = {
           creater_user_id: string;
           id: string;
           name: string;
+          ragflow_session_id: string | null;
         };
         Insert: {
           classroom_id: number;
@@ -80,6 +78,7 @@ export type Database = {
           creater_user_id: string;
           id?: string;
           name: string;
+          ragflow_session_id?: string | null;
         };
         Update: {
           classroom_id?: number;
@@ -87,6 +86,7 @@ export type Database = {
           creater_user_id?: string;
           id?: string;
           name?: string;
+          ragflow_session_id?: string | null;
         };
         Relationships: [
           {
@@ -110,6 +110,7 @@ export type Database = {
           admin_user_id: string | null;
           archived: boolean | null;
           chat_assistant_id: string | null;
+          chatroom_assistant_id: string | null;
           created_at: string;
           id: number;
           join_code: string | null;
@@ -121,6 +122,7 @@ export type Database = {
           admin_user_id?: string | null;
           archived?: boolean | null;
           chat_assistant_id?: string | null;
+          chatroom_assistant_id?: string | null;
           created_at?: string;
           id?: number;
           join_code?: string | null;
@@ -132,6 +134,7 @@ export type Database = {
           admin_user_id?: string | null;
           archived?: boolean | null;
           chat_assistant_id?: string | null;
+          chatroom_assistant_id?: string | null;
           created_at?: string;
           id?: number;
           join_code?: string | null;
@@ -190,27 +193,37 @@ export type Database = {
       };
       Messages: {
         Row: {
+          chatroom_id: string;
           content: string;
           created_at: string;
           id: string;
           is_new: boolean;
-          member_id: number;
+          member_id: number | null;
         };
         Insert: {
+          chatroom_id: string;
           content: string;
           created_at?: string;
           id?: string;
           is_new?: boolean;
-          member_id: number;
+          member_id?: number | null;
         };
         Update: {
+          chatroom_id?: string;
           content?: string;
           created_at?: string;
           id?: string;
           is_new?: boolean;
-          member_id?: number;
+          member_id?: number | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "Messages_chatroom_id_fkey";
+            columns: ["chatroom_id"];
+            isOneToOne: false;
+            referencedRelation: "Chatrooms";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "Messages_member_id_fkey";
             columns: ["member_id"];

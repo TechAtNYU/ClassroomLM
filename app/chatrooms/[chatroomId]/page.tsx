@@ -87,8 +87,7 @@ const ChatroomPage = async ({
       )
     `
     )
-    .eq("Chatroom_Members.chatroom_id", chatroomId)
-    .eq("Chatroom_Members.is_active", true)
+    .eq("chatroom_id", chatroomId)
     .order("created_at", { ascending: true });
 
   if (messagesError) {
@@ -100,9 +99,13 @@ const ChatroomPage = async ({
     ? messageRaw.map((message) => {
         const { Chatroom_Members, ...newMessage } = message;
         return {
-          user_id: Chatroom_Members.Classroom_Members.Users.id,
-          full_name: Chatroom_Members.Classroom_Members.Users.full_name,
-          avatar_url: Chatroom_Members.Classroom_Members.Users.avatar_url,
+          // HACK: llm response has member_id set to null and there is special user_id and full_name reserved for LLM
+          user_id: Chatroom_Members?.Classroom_Members.Users.id ?? "llm",
+          full_name:
+            Chatroom_Members?.Classroom_Members.Users.full_name ??
+            "AI Assistant",
+          avatar_url:
+            Chatroom_Members?.Classroom_Members.Users.avatar_url ?? "",
           ...newMessage,
         };
       })

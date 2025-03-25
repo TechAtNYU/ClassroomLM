@@ -48,6 +48,7 @@ const ChatroomsPage = async () => {
       Chatrooms(
         id,
         name,
+        classroom_id,
         creater_user_id,
         Classroom(
           name
@@ -119,7 +120,13 @@ const ChatroomsPage = async () => {
                 </Link>
 
                 {currentUser === chatroom.creater_user_id && (
-                  <form action={deleteChatroom.bind(null, chatroom.id)}>
+                  <form
+                    action={deleteChatroom.bind(
+                      null,
+                      chatroom.id,
+                      chatroom.classroom_id
+                    )}
+                  >
                     <button
                       type="submit"
                       className="rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"

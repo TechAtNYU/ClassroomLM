@@ -2,6 +2,17 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import {
+  getRagflowDatasetId,
+  sendMessage,
+} from "../chat/[classroomId]/actions";
+import {
+  deleteSession,
+  findChatAssistant,
+  getOrCreateAssistant,
+  getOrCreateSession,
+  llmToChatroom,
+} from "./helpers";
 
 export const createChatroom = async (formData: FormData) => {
   const supabase = await createClient();
@@ -64,8 +75,18 @@ export const createChatroom = async (formData: FormData) => {
   revalidatePath("/chatrooms");
 };
 
-export const deleteChatroom = async (chatroomId: string) => {
+export const deleteChatroom = async (
+  chatroomId: string,
+  classroomId: number
+) => {
   const supabase = await createClient();
+
+  const assistantId = await findChatAssistant(classroomId);
+
+  if (assistantId) {
+    console.log("found session. delete session for chatroom");
+    await deleteSession(chatroomId, assistantId);
+  }
 
   const { error: chatroomError } = await supabase
     .from("Chatrooms")
@@ -90,7 +111,7 @@ export const sendMessageToChatroom = async (formData: FormData) => {
   }
 
   const chatroomId = formData.get("chatroomId") as string;
-  const content = formData.get("message") as string;
+  let content = (formData.get("message") as string).trim();
   const chatroomMemberId = parseInt(formData.get("chatroomMemberId") as string);
 
   if (!content || !chatroomMemberId || !chatroomId) {
@@ -99,16 +120,31 @@ export const sendMessageToChatroom = async (formData: FormData) => {
     );
   }
 
+  // Check if the message starts with "/ask" and trim it
+  const isAskCommand = content.startsWith("/ask ");
+  if (isAskCommand) {
+    content = content.substring(5).trim();
+    if (!content) {
+      throw new Error("Message content is required after the /ask command");
+    }
+  }
+
   // Insert the message
   const { error: messageError } = await supabase.from("Messages").insert([
     {
       content,
       member_id: chatroomMemberId,
+      chatroom_id: chatroomId,
     },
   ]);
 
   if (messageError) {
     throw new Error(`Failed to send message: ${messageError.message}`);
+  }
+
+  // Handle user "/ask" command
+  if (isAskCommand) {
+    askLLM(chatroomId);
   }
 
   revalidatePath(`/chatrooms/${chatroomId}`);
@@ -248,7 +284,7 @@ export const inviteUserToChatroom = async (formData: FormData) => {
         {
           chatroom_id: chatroomId,
           member_id: classroomMemberId,
-          is_active: true, // Explicitly set is_active to true
+          is_active: true,
         },
       ]);
 
@@ -309,4 +345,116 @@ export const leaveChatroom = async (chatroomId: string) => {
   }
 
   revalidatePath("/chatrooms");
+};
+
+export const askLLM = async (chatroomId: string) => {
+  const supabase = await createClient();
+
+  const { data: chatroom, error: chatroomError } = await supabase
+    .from("Chatrooms")
+    .select("classroom_id")
+    .eq("id", chatroomId)
+    .single();
+
+  if (chatroomError) {
+    throw new Error(`Failed to find chatroom: ${chatroomError.message}`);
+  }
+
+  // get all messages that is new
+  const { data: messageRaw, error: messagesError } = await supabase
+    .from("Messages")
+    .select(
+      `
+      *,
+      Chatroom_Members!inner (
+        Classroom_Members (
+          Users (
+            full_name
+          )
+        )
+      )
+    `
+    )
+    .eq("is_new", true)
+    .eq("chatroom_id", chatroomId)
+    .eq("Chatroom_Members.is_active", true)
+    .order("created_at", { ascending: true });
+
+  if (messagesError || !messageRaw) {
+    console.error("Error fetching messages:", messagesError);
+    throw new Error("Error fetching messages or messages is null");
+  }
+
+  const messages = messageRaw.map((message) => {
+    const { Chatroom_Members, ...newMessage } = message;
+    return {
+      id: newMessage.id,
+      created_at: newMessage.created_at,
+      content: newMessage.content,
+      full_name:
+        Chatroom_Members?.Classroom_Members.Users.full_name || "Unknown User",
+    };
+  });
+
+  // HACK: We might need better prompt engineering at some point to optomize performance
+  const prompt = `
+You are participating in a collaborative chat with a group of users. Below is the chat history before your last response (if any), including messages in JSON format from the user(s). Use this history to understand the context and generate a helpful response to the users.
+
+Instructions:
+1. Carefully review the chat history to understand the context of the conversation.
+2. Focus on the latest message which is likely to be a question and generate a response that aligns with the ongoing discussion.
+3. Ensure your response is clear, concise, and helpful to the group.
+4. If the question is ambiguous or lacks sufficient context, politely ask for clarification.
+5. If your response need to reference specific message in the chat history please address the user by their \`full_name\`
+
+Chat History in JSON:
+${JSON.stringify(messages)}
+  `;
+
+  const datasetId = await getRagflowDatasetId(chatroom.classroom_id);
+
+  if (!datasetId) {
+    llmToChatroom(chatroomId, "No dataset found!");
+    return;
+  }
+
+  const assistant = await getOrCreateAssistant(
+    chatroomId,
+    datasetId,
+    chatroom.classroom_id
+  );
+
+  if (assistant.status == "empty") {
+    llmToChatroom(chatroomId, "The dataset is empty!");
+    return;
+  }
+
+  const chatSessionId = await getOrCreateSession(
+    chatroomId,
+    assistant.id,
+    chatroom.classroom_id
+  );
+
+  const response: string = await sendMessage(
+    prompt,
+    assistant.id,
+    chatSessionId
+  );
+
+  llmToChatroom(chatroomId, response);
+
+  // mark all messages as not new message
+  const messageIds = messages.map((message) => message.id);
+  // console.log(messageIds);
+
+  const { error: messageMarkError } = await supabase
+    .from("Messages")
+    .update({ is_new: false })
+    .in("id", messageIds);
+
+  if (messageMarkError) {
+    throw new Error(
+      `Failed to mark messages as not new: ${messageMarkError.message}`
+    );
+  }
 };

@@ -5,8 +5,6 @@ import { Tables } from "@/utils/supabase/database.types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-const supabase = createClient();
-
 interface Message extends Tables<"Messages"> {
   user_id: string;
   full_name: string | null;
@@ -23,58 +21,76 @@ const NewMessages = ({
   const [messages, setMessages] = useState(chatHistory);
 
   useEffect(() => {
-    const fetchMemberIds = async () => {
-      const { data: members } = await supabase
-        .from("Chatroom_Members")
-        .select(
-          `
-          *,
-          Classroom_Members(
-            Users(
-              id,
-              full_name,
-              avatar_url
+    const supabase = createClient();
+
+    const room = supabase.channel(`chatroom-${chatroomId}`);
+
+    room.on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "Messages",
+        filter: `chatroom_id=eq.${chatroomId}`,
+      },
+      async (payload) => {
+        const messageRaw = payload.new as Tables<"Messages">;
+
+        // handle LLM message
+        if (messageRaw.member_id === null) {
+          const llmMessage: Message = {
+            ...messageRaw,
+            user_id: "llm",
+            full_name: "AI Assistant",
+            // TODO: We might need an avatar for assitant
+            avatar_url: "",
+          };
+          setMessages((prevMessages) => [...prevMessages, llmMessage]);
+          return;
+        }
+
+        // For user messages, fetch the user details
+        try {
+          const { data: memberData } = await supabase
+            .from("Chatroom_Members")
+            .select(
+              `
+              *,
+              Classroom_Members(
+                Users(
+                  id,
+                  full_name,
+                  avatar_url
+                )
+              )
+            `
             )
-          )
-        `
-        )
-        .eq("chatroom_id", chatroomId);
+            .eq("id", messageRaw.member_id)
+            .single();
 
-      return members || [];
-    };
-
-    fetchMemberIds().then((members) => {
-      const room = supabase.channel(`chatroom-${chatroomId}`);
-      members.forEach((member) => {
-        room.on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "Messages",
-            filter: `member_id=eq.${member.id}`,
-          },
-          (payload) => {
-            const messageRaw = payload.new as Tables<"Messages">;
-
+          if (memberData) {
             const message: Message = {
               ...messageRaw,
-              user_id: member.Classroom_Members.Users.id,
-              full_name: member.Classroom_Members.Users.full_name,
-              avatar_url: member.Classroom_Members.Users.avatar_url,
+              user_id: memberData.Classroom_Members.Users.id,
+              full_name: memberData.Classroom_Members.Users.full_name,
+              avatar_url: memberData.Classroom_Members.Users.avatar_url,
             };
 
             setMessages((prevMessages) => [...prevMessages, message]);
           }
-        );
-      });
+        } catch (error) {
+          console.error("Error fetching message user details:", error);
+        }
+      }
+    );
 
-      room.subscribe();
+    // Subscribe to the channel
+    room.subscribe();
 
-      return () => {
-        supabase.removeChannel(room);
-      };
-    });
+    // Cleanup function
+    return () => {
+      supabase.removeChannel(room);
+    };
   }, [chatroomId]);
 
   return (
@@ -85,12 +101,18 @@ const NewMessages = ({
         </p>
       ) : (
         messages.map((message, index) => {
+          const isLLM = message.user_id === "llm";
+
           return (
             <div
               key={message.id || index}
               className="flex items-start gap-3 rounded border p-3"
             >
-              {message.avatar_url ? (
+              {isLLM ? (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-200 text-sm font-medium text-blue-600">
+                  AI
+                </div>
+              ) : message.avatar_url ? (
                 <Image
                   src={message.avatar_url}
                   alt={message.full_name || "User"}
@@ -105,7 +127,9 @@ const NewMessages = ({
               <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                   <span className="font-medium">
-                    {message.full_name || "Unknown User"}
+                    {isLLM
+                      ? "AI Assistant"
+                      : message.full_name || "Unknown User"}
                   </span>
                   <span className="text-xs text-gray-500">
                     {new Date(message.created_at).toLocaleString()}

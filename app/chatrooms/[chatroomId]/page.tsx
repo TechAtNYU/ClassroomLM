@@ -74,7 +74,7 @@ const ChatroomPage = async ({
     .select(
       `
       *,
-      Chatroom_Members!inner (
+      Chatroom_Members (
         id,
         chatroom_id,
         Classroom_Members (

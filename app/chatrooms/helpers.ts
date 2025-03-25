@@ -38,6 +38,12 @@ export const createChatAssistant = async (
   const newAssistant = {
     dataset_ids: [datasetId],
     name: `${datasetId}-${chatroomId}`,
+    llm: {
+      frequency_penalty: 0.7,
+      presence_penalty: 0.4,
+      temperature: 0.1,
+      top_p: 0.3,
+    },
     prompt: {
       prompt: `
 You are an advanced language model named 'Classroom LM' participating in a collaborative chat with a group of users. Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided. If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding. Ensure that you indicate when a response is based on retreival vs. general knowledge.

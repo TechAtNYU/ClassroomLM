@@ -30,7 +30,7 @@ export async function getRagflowDatasetId(classroomId: ClassroomId) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("ragflow_dataset_id")
     .eq("id", classroomId)
     .single();
@@ -84,7 +84,7 @@ export async function findChatAssistant(classroomId: ClassroomId) {
     const supabase = await createClient();
 
     const res = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .select("chat_assistant_id")
       .eq("id", classroomId)
       .single();
@@ -138,7 +138,7 @@ async function createChatAssistant(
     const supabase = createServiceClient();
 
     const supabaseRes = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .update({ chat_assistant_id: resJson.data.id })
       .eq("id", classroomId)
       .select();
@@ -253,24 +253,27 @@ export async function sendMessage(
   };
 
   try {
-    const res = await fetch(`${API_URL}/v1/chats/${assistantID}/completions`, {
-      method: "POST",
-      body: JSON.stringify(params),
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
+    const resRaw = await fetch(
+      `${API_URL}/v1/chats/${assistantID}/completions`,
+      {
+        method: "POST",
+        body: JSON.stringify(params),
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    );
 
-    if (!res) throw new Error("Failed to send message");
+    if (!resRaw) throw new Error("Failed to send message");
 
-    const resp = await res.json();
-    console.log(resp);
+    const res = await resRaw.json();
+    console.log(res);
     // console.log("ANS", resp.data.answer);
 
     // console.log(resp.choices[0].message.content);
 
-    const resAnswer = resp.data.answer;
+    const resAnswer = res.data.answer;
 
     return resAnswer;
   } catch (error) {
@@ -283,7 +286,7 @@ export async function getDisplayInfo(classroomId: ClassroomId, userId: string) {
   const supabase = await createClient();
 
   const classroomNameResponse = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("name")
     .eq("id", classroomId);
 

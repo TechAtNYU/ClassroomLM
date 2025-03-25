@@ -130,10 +130,11 @@ export const getOrCreateAssistant = async (
     classroomId,
     datasetId
   );
-  if (!newAssistant?.data && newAssistant?.status) {
+
+  if (!newAssistant?.id) {
     return { status: "empty", id: null };
   }
-  return { status: "success", id: newAssistant.data.id };
+  return { status: "success", id: newAssistant.id };
 };
 
 export const findSessionID = async (

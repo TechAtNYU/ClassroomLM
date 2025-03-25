@@ -398,16 +398,8 @@ export const askLLM = async (chatroomId: string) => {
 
   // HACK: We might need better prompt engineering at some point to optomize performance
   const prompt = `
-You are participating in a collaborative chat with a group of users. Below is the chat history before your last response (if any), including messages in JSON format from the user(s). Use this history to understand the context and generate a helpful response to the users.
+Below is the chat history before your last response (if any) in JSON:
 
-Instructions:
-1. Carefully review the chat history to understand the context of the conversation.
-2. Focus on the latest message which is likely to be a question and generate a response that aligns with the ongoing discussion.
-3. Ensure your response is clear, concise, and helpful to the group.
-4. If the question is ambiguous or lacks sufficient context, politely ask for clarification.
-5. If your response need to reference specific message in the chat history please address the user by their \`full_name\`
-
-Chat History in JSON:
 ${JSON.stringify(messages)}
   `;
 

@@ -105,7 +105,46 @@ export type Database = {
           },
         ];
       };
-      Classroom: {
+      Classroom_Members: {
+        Row: {
+          classroom_id: number;
+          created_at: string;
+          id: number;
+          ragflow_session_id: string | null;
+          user_id: string;
+        };
+        Insert: {
+          classroom_id: number;
+          created_at?: string;
+          id?: number;
+          ragflow_session_id?: string | null;
+          user_id?: string;
+        };
+        Update: {
+          classroom_id?: number;
+          created_at?: string;
+          id?: number;
+          ragflow_session_id?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "Classroom_Members_classroom_id_fkey";
+            columns: ["classroom_id"];
+            isOneToOne: false;
+            referencedRelation: "Classrooms";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "Classroom_Members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "Users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      Classrooms: {
         Row: {
           admin_user_id: string | null;
           archived: boolean | null;
@@ -146,45 +185,6 @@ export type Database = {
           {
             foreignKeyName: "Classroom_admin_user_id_fkey";
             columns: ["admin_user_id"];
-            isOneToOne: false;
-            referencedRelation: "Users";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      Classroom_Members: {
-        Row: {
-          classroom_id: number;
-          created_at: string;
-          id: number;
-          ragflow_session_id: string | null;
-          user_id: string;
-        };
-        Insert: {
-          classroom_id: number;
-          created_at?: string;
-          id?: number;
-          ragflow_session_id?: string | null;
-          user_id?: string;
-        };
-        Update: {
-          classroom_id?: number;
-          created_at?: string;
-          id?: number;
-          ragflow_session_id?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "Classroom_Members_classroom_id_fkey";
-            columns: ["classroom_id"];
-            isOneToOne: false;
-            referencedRelation: "Classrooms";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "Classroom_Members_user_id_fkey";
-            columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "Users";
             referencedColumns: ["id"];

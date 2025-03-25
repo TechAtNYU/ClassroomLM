@@ -93,7 +93,7 @@ export type Database = {
             foreignKeyName: "Chatrooms_classroom_id_fkey";
             columns: ["classroom_id"];
             isOneToOne: false;
-            referencedRelation: "Classroom";
+            referencedRelation: "Classrooms";
             referencedColumns: ["id"];
           },
           {
@@ -179,7 +179,7 @@ export type Database = {
             foreignKeyName: "Classroom_Members_classroom_id_fkey";
             columns: ["classroom_id"];
             isOneToOne: false;
-            referencedRelation: "Classroom";
+            referencedRelation: "Classrooms";
             referencedColumns: ["id"];
           },
           {

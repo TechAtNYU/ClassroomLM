@@ -30,7 +30,7 @@ export async function getRagflowDatasetId(classroomId: ClassroomId) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("ragflow_dataset_id")
     .eq("id", classroomId)
     .single();
@@ -84,7 +84,7 @@ export async function findChatAssistant(classroomId: ClassroomId) {
     const supabase = await createClient();
 
     const res = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .select("chat_assistant_id")
       .eq("id", classroomId)
       .single();
@@ -138,7 +138,7 @@ async function createChatAssistant(
     const supabase = createServiceClient();
 
     const supabaseRes = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .update({ chat_assistant_id: resJson.data.id })
       .eq("id", classroomId)
       .select();
@@ -286,7 +286,7 @@ export async function getDisplayInfo(classroomId: ClassroomId, userId: string) {
   const supabase = await createClient();
 
   const classroomNameResponse = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("name")
     .eq("id", classroomId);
 

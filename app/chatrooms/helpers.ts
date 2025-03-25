@@ -11,7 +11,7 @@ export const findChatAssistant = async (classroomId: number) => {
     const supabase = await createClient();
 
     const res = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .select("chatroom_assistant_id")
       .eq("id", classroomId)
       .not("chatroom_assistant_id", "is", null)
@@ -97,7 +97,7 @@ You will be given the chat history before your last response (if any), including
     const supabase = createServiceClient();
 
     const supabaseRes = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .update({ chatroom_assistant_id: resJson.data.id })
       .eq("id", classroomId)
       .select();

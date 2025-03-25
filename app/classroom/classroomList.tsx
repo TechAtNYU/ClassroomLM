@@ -19,8 +19,8 @@ export default function ClassroomList({
   initialMemberData,
 }: {
   userId: string;
-  initialAdminData: Tables<"Classroom">[];
-  initialMemberData: Tables<"Classroom">[];
+  initialAdminData: Tables<"Classrooms">[];
+  initialMemberData: Tables<"Classrooms">[];
 }) {
   const [adminClasses, setAdminClassrooms] = useState(initialAdminData);
   const [memberClasses, setMemberClassrooms] = useState(initialMemberData);

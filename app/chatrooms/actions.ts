@@ -135,6 +135,7 @@ export const sendMessageToChatroom = async (formData: FormData) => {
       content,
       member_id: chatroomMemberId,
       chatroom_id: chatroomId,
+      is_ask: isAskCommand,
     },
   ]);
 

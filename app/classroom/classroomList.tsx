@@ -103,6 +103,7 @@ export default function ClassroomList({
           <h1 className="text-xl">{classroom.name}</h1>
           <h2>Classroom ID: {classroom.id}</h2>
           <p>Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}</p>
+          <p>Join Code: {classroom.join_code || "N/A"}</p>
 
           {classroom.Classroom_Members &&
             classroom.Classroom_Members.length > 0 && (

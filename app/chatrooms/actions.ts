@@ -81,7 +81,7 @@ export const deleteChatroom = async (
 ) => {
   const supabase = await createClient();
 
-  const assistantId = await findChatAssistant(classroomId);
+  const assistantId = await findChatAssistant(classroomId, chatroomId);
 
   if (assistantId) {
     console.log("found session. delete session for chatroom");

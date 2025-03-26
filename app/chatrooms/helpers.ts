@@ -6,20 +6,79 @@ import { createServiceClient } from "@/utils/supabase/service-server";
 const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
 const API_KEY = process.env.RAGFLOW_API_KEY;
 
-export const findChatAssistant = async (classroomId: number) => {
+export const findChatAssitantAndUpdate = async (
+  datasetId: string | null,
+  chatroomId: string,
+  classroomId: number
+) => {
+  if (!datasetId) {
+    return null;
+  }
+  const name = `${datasetId}-${chatroomId}`;
+
+  console.log("Finding existing assitant on ragflow");
+
+  try {
+    const res = await fetch(`${API_URL}/v1/chats?name=${name}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to find chat assistant");
+
+    const resJson = await res.json();
+
+    if (resJson.code !== 0) {
+      return null;
+    }
+
+    const data = resJson.data[0].id;
+
+    // update assistant on supabase
+    const supabase = createServiceClient();
+
+    const { error } = await supabase
+      .from("Classrooms")
+      .update({ chatroom_assistant_id: data })
+      .eq("id", classroomId);
+
+    if (error) {
+      throw new Error(`Failed to update classroom: ${error}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error finding chat assistant:", error);
+    return null;
+  }
+};
+
+export const findChatAssistant = async (
+  classroomId: number,
+  chatroomId: string
+) => {
   try {
     const supabase = await createClient();
 
     const res = await supabase
       .from("Classrooms")
-      .select("chatroom_assistant_id")
+      .select("chatroom_assistant_id, ragflow_dataset_id")
       .eq("id", classroomId)
       .not("chatroom_assistant_id", "is", null)
       .single();
 
     if (res.error) throw new Error(`Failed to fetch chats: ${res.error}`);
 
-    const data = res.data.chatroom_assistant_id;
+    const data =
+      res.data.chatroom_assistant_id ||
+      (await findChatAssitantAndUpdate(
+        res.data.ragflow_dataset_id,
+        chatroomId,
+        classroomId
+      ));
 
     // console.log(data);
 
@@ -124,7 +183,7 @@ export const getOrCreateAssistant = async (
   datasetId: string,
   classroomId: number
 ) => {
-  const existingChat = await findChatAssistant(classroomId);
+  const existingChat = await findChatAssistant(classroomId, chatroomId);
   if (existingChat) {
     return { status: "success", id: existingChat };
   }

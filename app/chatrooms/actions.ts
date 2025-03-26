@@ -416,7 +416,7 @@ ${JSON.stringify(messages)}
     chatroom.classroom_id
   );
 
-  if (assistant.status == "empty") {
+  if (!assistant.id) {
     llmToChatroom(chatroomId, "Dataset is empty");
     return;
   }

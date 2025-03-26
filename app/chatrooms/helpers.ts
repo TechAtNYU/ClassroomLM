@@ -146,18 +146,13 @@ You will be given the chat history before your last response (if any), including
     if (!res.ok) throw new Error("Failed to create chat assistant");
 
     const resJson = await res.json();
+
     if (!resJson?.data) {
-      if (
-        resJson?.message &&
-        resJson.message.includes("doesn't own parsed file")
-      ) {
-        return { status: "empty" };
-      }
-      throw new Error(`Failed to create assistant`);
+      return null;
     }
 
     // update that in supabase
-    const supabase = createServiceClient();
+    const supabase = await createClient();
 
     const supabaseRes = await supabase
       .from("Classrooms")
@@ -183,7 +178,7 @@ export const getOrCreateAssistant = async (
 ) => {
   const existingChat = await findChatAssistant(classroomId, chatroomId);
   if (existingChat) {
-    return { status: "success", id: existingChat };
+    return { id: existingChat };
   }
 
   console.log("Get or create: didn't find an assistant, creating a new one");
@@ -194,10 +189,7 @@ export const getOrCreateAssistant = async (
     datasetId
   );
 
-  if (!newAssistant?.id) {
-    return { status: "empty", id: null };
-  }
-  return { status: "success", id: newAssistant.id };
+  return { id: newAssistant?.data.id || null };
 };
 
 export const findSessionID = async (

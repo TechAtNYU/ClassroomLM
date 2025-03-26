@@ -392,6 +392,7 @@ export const askLLM = async (chatroomId: string) => {
       id: newMessage.id,
       created_at: newMessage.created_at,
       content: newMessage.content,
+      is_ask: newMessage.is_ask,
       full_name:
         Chatroom_Members?.Classroom_Members.Users.full_name || "Unknown User",
     };

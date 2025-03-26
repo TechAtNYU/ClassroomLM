@@ -144,7 +144,7 @@ export const sendMessageToChatroom = async (formData: FormData) => {
 
   // Handle user "/ask" command
   if (isAskCommand) {
-    await askLLM(chatroomId);
+    askLLM(chatroomId);
   }
 
   revalidatePath(`/chatrooms/${chatroomId}`);
@@ -406,7 +406,7 @@ ${JSON.stringify(messages)}
   const datasetId = await getRagflowDatasetId(chatroom.classroom_id);
 
   if (!datasetId) {
-    await llmToChatroom(chatroomId, "No dataset found!");
+    llmToChatroom(chatroomId, "No dataset found!");
     return;
   }
 
@@ -432,7 +432,7 @@ ${JSON.stringify(messages)}
     chatSessionId
   );
 
-  await llmToChatroom(chatroomId, response);
+  llmToChatroom(chatroomId, response);
 
   // mark all messages as not new message
   const messageIds = messages.map((message) => message.id);

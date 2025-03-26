@@ -103,8 +103,7 @@ export const createChatAssistant = async (
       top_p: 0.3,
     },
     prompt: {
-      prompt: `
-You are an advanced language model named 'Classroom LM' participating in a collaborative chat with a group of users. Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided. If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding. Ensure that you indicate when a response is based on retreival vs. general knowledge.
+      prompt: `You are an advanced language model named 'Classroom LM' participating in a collaborative chat with a group of users. Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided. If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding. Ensure that you indicate when a response is based on retreival vs. general knowledge.
 In addition to answering questions, you can **generate exam materials** when requested. This includes:
 
 - **Multiple-choice questions** (4 options each, one correct)
@@ -251,6 +250,8 @@ async function createSession(
     if (!res.ok) throw new Error("Failed to create session");
 
     const resJson = await res.json();
+
+    console.log(resJson);
 
     // update that in supabase
     const supabase = createServiceClient();

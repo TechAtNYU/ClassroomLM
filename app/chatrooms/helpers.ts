@@ -67,7 +67,6 @@ export const findChatAssistant = async (
       .from("Classrooms")
       .select("chatroom_assistant_id, ragflow_dataset_id")
       .eq("id", classroomId)
-      .not("chatroom_assistant_id", "is", null)
       .single();
 
     if (res.error) throw new Error(`Failed to fetch chats: ${res.error}`);

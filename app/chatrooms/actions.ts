@@ -417,7 +417,8 @@ ${JSON.stringify(messages)}
   );
 
   if (assistant.status == "empty") {
-    throw new Error("Failed to get or create assistant");
+    llmToChatroom(chatroomId, "Dataset is empty");
+    return;
   }
 
   const chatSessionId = await getOrCreateSession(

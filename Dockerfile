@@ -27,7 +27,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN \
-  if [ -f pnpm-lock.yaml]; then corepack enable pnpm && pnpm run build; \
+  if [ -f pnpm-lock.yaml  ]; then corepack enable pnpm && pnpm run build; \
   # elif [ -f package-lock.json ]; then npm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi

@@ -3,8 +3,7 @@ import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
 import { Tables } from "@/utils/supabase/database.types";
 
-export interface ClassroomWithMembers extends Tables<"Classroom"> {
-  archived: boolean;
+export interface ClassroomWithMembers extends Tables<"Classrooms"> {
   Classroom_Members?: Array<{
     id: number;
     classroom_id: number;
@@ -69,7 +68,7 @@ export async function deleteClassroom(classroom_id: number) {
   // Deleting Associated Supabase
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .delete()
     .eq("id", classroom_id)
     .select();
@@ -152,7 +151,7 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
 // export async function getClassroomAdminID(classroom_id: number) {
 //   const supabase = await createClient();
 //   const { data, error } = await supabase
-//     .from("Classroom")
+//     .from("Classrooms")
 //     .select("admin_user_id")
 //     .eq("id", classroom_id);
 
@@ -165,7 +164,7 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
 
 export async function getUserClassrooms() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("Classroom").select(`
+  const { data, error } = await supabase.from("Classrooms").select(`
       *,
       Classroom_Members (
         id,
@@ -249,7 +248,7 @@ export async function changeClassroomName(
 ) {
   const supabase = await createServiceClient();
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .update({ name: newName })
     .eq("id", classroom_id)
     .select();
@@ -266,7 +265,7 @@ export async function archiveClassroom(classroom_id: number) {
   const supabase = await createServiceClient();
 
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .update({ archived: true })
     .eq("id", classroom_id)
     .select();
@@ -283,7 +282,7 @@ export async function unarchiveClassroom(classroom_id: number) {
   const supabase = await createServiceClient();
 
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .update({ archived: false })
     .eq("id", classroom_id)
     .select();

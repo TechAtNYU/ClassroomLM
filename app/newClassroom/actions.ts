@@ -32,7 +32,7 @@ export async function newClassroom(name: string, id: string) {
 
   const supabase = await createServiceClient();
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .insert([
       {
         ragflow_dataset_id: ragflowDatasetId,

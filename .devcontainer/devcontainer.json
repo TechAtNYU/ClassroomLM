@@ -43,7 +43,6 @@
         "npm.packageManager": "pnpm"
       },
       "extensions": [
-        "ms-python.python",
         "yzhang.markdown-all-in-one",
         "DavidAnson.vscode-markdownlint",
         "bierner.github-markdown-preview",

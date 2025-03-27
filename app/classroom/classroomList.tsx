@@ -21,8 +21,8 @@ export default function ClassroomList({
   initialMemberData,
 }: {
   userId: string;
-  initialAdminData: Tables<"Classroom">[];
-  initialMemberData: Tables<"Classroom">[];
+  initialAdminData: Tables<"Classrooms">[];
+  initialMemberData: Tables<"Classrooms">[];
 }) {
   const [adminClasses, setAdminClassrooms] = useState(initialAdminData);
   const [memberClasses, setMemberClassrooms] = useState(initialMemberData);
@@ -135,6 +135,7 @@ export default function ClassroomList({
               <p>
                 Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
               </p>
+              <p>Join Code: {classroom.join_code || "N/A"}</p>
 
               {classroom.Classroom_Members &&
                 classroom.Classroom_Members.length > 0 && (

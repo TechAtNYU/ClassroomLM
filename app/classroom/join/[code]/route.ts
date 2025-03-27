@@ -4,10 +4,10 @@ import { getCurrentUserId } from "../../actions";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
   //await params
-  const { code } = await Promise.resolve(params);
+  const { code } = await params;
 
   //bypass RLS
   const supabase = createServiceClient();

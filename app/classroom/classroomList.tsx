@@ -134,7 +134,7 @@ export default function ClassroomList({
     isAdmin: boolean
   ) {
     return (
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap justify-start gap-4">
         {classroomList.map((classroom) => {
           return (
             <div key={classroom.id}>

@@ -30,7 +30,7 @@ export async function getRagflowDatasetId(classroomId: ClassroomId) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("ragflow_dataset_id")
     .eq("id", classroomId)
     .single();
@@ -52,8 +52,7 @@ const API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function getOrCreateAssistant(
   classroomId: number,
-  datasetId: string,
-  userId: string
+  datasetId: string
 ) {
   const existingChat = await findChatAssistant(classroomId);
   if (existingChat) {
@@ -62,11 +61,7 @@ export async function getOrCreateAssistant(
 
   console.log("Get or create: didn't find an assistant, creating a new one");
 
-  const newAssistant = await createChatAssistant(
-    classroomId,
-    datasetId,
-    userId
-  );
+  const newAssistant = await createChatAssistant(classroomId, datasetId);
   if (!newAssistant?.id) {
     return { status: "empty", id: null };
   }
@@ -89,14 +84,14 @@ export async function findChatAssistant(classroomId: ClassroomId) {
     const supabase = await createClient();
 
     const res = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .select("chat_assistant_id")
       .eq("id", classroomId)
       .single();
 
     if (res.error) throw new Error(`Failed to fetch chats: ${res.error}`);
 
-    const data = await res.data.chat_assistant_id;
+    const data = res.data.chat_assistant_id;
 
     // console.log(data);
 
@@ -109,12 +104,11 @@ export async function findChatAssistant(classroomId: ClassroomId) {
 
 async function createChatAssistant(
   classroomId: ClassroomId,
-  datasetId: string,
-  userId: string
+  datasetId: string
 ) {
   const newAssistant = {
     dataset_ids: [datasetId],
-    name: `${datasetId}-${userId}`,
+    name: `${datasetId}-${classroomId}`,
     prompt_type: "simple",
     prompt: {
       prompt: `You are a highly knowledgeable and reliable AI assistant named 'Classroom LM'.
@@ -178,7 +172,7 @@ async function createChatAssistant(
 
     const supabase = await createServiceClient();
     const supabaseRes = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .update({ chat_assistant_id: resJson.data.id })
       .eq("id", classroomId)
       .select();
@@ -190,7 +184,7 @@ async function createChatAssistant(
     return { status: "success", id: resJson.data.id };
   } catch (error) {
     console.error("Error creating chat assistant:", error);
-    return null;
+    return { success: "fail", message: "error creating", id: null };
   }
 }
 
@@ -257,7 +251,7 @@ async function createSession(
     const resJson = await res.json();
 
     // update that in supabase
-    const supabase = await createServiceClient();
+    const supabase = createServiceClient();
 
     const supabaseRes = await supabase
       .from("Classroom_Members")
@@ -280,7 +274,6 @@ async function createSession(
 export async function sendMessage(
   message: string,
   assistantID: string,
-  userID: string,
   chatSessionID: string
 ) {
   // console.log("Message sent: ", message);
@@ -289,29 +282,31 @@ export async function sendMessage(
   const params = {
     question: message,
     session_id: chatSessionID,
-    user_id: userID,
     stream: false,
   };
 
   try {
-    const res = await fetch(`${API_URL}/v1/chats/${assistantID}/completions`, {
-      method: "POST",
-      body: JSON.stringify(params),
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
+    const resRaw = await fetch(
+      `${API_URL}/v1/chats/${assistantID}/completions`,
+      {
+        method: "POST",
+        body: JSON.stringify(params),
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    );
 
-    if (!res) throw new Error("Failed to send message");
+    if (!resRaw) throw new Error("Failed to send message");
 
-    const resp = await res.json();
-    console.log(resp);
+    const res = await resRaw.json();
+    console.log(res);
     // console.log("ANS", resp.data.answer);
 
     // console.log(resp.choices[0].message.content);
 
-    const resAnswer = resp.data.answer;
+    const resAnswer = res.data.answer;
 
     return resAnswer;
   } catch (error) {
@@ -324,7 +319,7 @@ export async function getDisplayInfo(classroomId: ClassroomId, userId: string) {
   const supabase = await createClient();
 
   const classroomNameResponse = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("name")
     .eq("id", classroomId);
 

@@ -197,6 +197,7 @@ export type Database = {
           content: string;
           created_at: string;
           id: string;
+          is_ask: boolean;
           is_new: boolean;
           member_id: number | null;
         };
@@ -205,6 +206,7 @@ export type Database = {
           content: string;
           created_at?: string;
           id?: string;
+          is_ask?: boolean;
           is_new?: boolean;
           member_id?: number | null;
         };
@@ -213,6 +215,7 @@ export type Database = {
           content?: string;
           created_at?: string;
           id?: string;
+          is_ask?: boolean;
           is_new?: boolean;
           member_id?: number | null;
         };

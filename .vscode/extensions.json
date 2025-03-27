@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    "yzhang.markdown-all-in-one",
+    "DavidAnson.vscode-markdownlint",
+    "bierner.github-markdown-preview",
+    "hnw.vscode-auto-open-markdown-preview",
+    "bierner.markdown-preview-github-styles",
+    "donjayamanne.githistory",
+    "GitHub.vscode-pull-request-github",
+    "redhat.vscode-yaml",
+    "streetsidesoftware.code-spell-checker",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode-remote.remote-containers",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "redhat.vscode-tekton-pipelines",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

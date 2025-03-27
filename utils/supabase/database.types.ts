@@ -29,18 +29,21 @@ export type Database = {
           chatroom_id: string;
           created_at: string;
           id: number;
+          is_active: boolean;
           member_id: number;
         };
         Insert: {
           chatroom_id: string;
           created_at?: string;
           id?: number;
+          is_active?: boolean;
           member_id: number;
         };
         Update: {
           chatroom_id?: string;
           created_at?: string;
           id?: number;
+          is_active?: boolean;
           member_id?: number;
         };
         Relationships: [
@@ -64,63 +67,38 @@ export type Database = {
         Row: {
           classroom_id: number;
           created_at: string;
+          creater_user_id: string;
           id: string;
           name: string;
+          ragflow_session_id: string | null;
         };
         Insert: {
           classroom_id: number;
           created_at?: string;
+          creater_user_id: string;
           id?: string;
           name: string;
+          ragflow_session_id?: string | null;
         };
         Update: {
           classroom_id?: number;
           created_at?: string;
+          creater_user_id?: string;
           id?: string;
           name?: string;
+          ragflow_session_id?: string | null;
         };
         Relationships: [
           {
             foreignKeyName: "Chatrooms_classroom_id_fkey";
             columns: ["classroom_id"];
             isOneToOne: false;
-            referencedRelation: "Classroom";
+            referencedRelation: "Classrooms";
             referencedColumns: ["id"];
           },
-        ];
-      };
-      Classroom: {
-        Row: {
-          admin_user_id: string | null;
-          chat_assistant_id: string | null;
-          created_at: string;
-          id: number;
-          metadata: Json | null;
-          name: string | null;
-          ragflow_dataset_id: string | null;
-        };
-        Insert: {
-          admin_user_id?: string | null;
-          chat_assistant_id?: string | null;
-          created_at?: string;
-          id?: number;
-          metadata?: Json | null;
-          name?: string | null;
-          ragflow_dataset_id?: string | null;
-        };
-        Update: {
-          admin_user_id?: string | null;
-          chat_assistant_id?: string | null;
-          created_at?: string;
-          id?: number;
-          metadata?: Json | null;
-          name?: string | null;
-          ragflow_dataset_id?: string | null;
-        };
-        Relationships: [
           {
-            foreignKeyName: "Classroom_admin_user_id_fkey";
-            columns: ["admin_user_id"];
+            foreignKeyName: "Chatrooms_creater_user_id_fkey";
+            columns: ["creater_user_id"];
             isOneToOne: false;
             referencedRelation: "Users";
             referencedColumns: ["id"];
@@ -154,7 +132,7 @@ export type Database = {
             foreignKeyName: "Classroom_Members_classroom_id_fkey";
             columns: ["classroom_id"];
             isOneToOne: false;
-            referencedRelation: "Classroom";
+            referencedRelation: "Classrooms";
             referencedColumns: ["id"];
           },
           {
@@ -166,26 +144,89 @@ export type Database = {
           },
         ];
       };
+      Classrooms: {
+        Row: {
+          admin_user_id: string | null;
+          archived: boolean | null;
+          chat_assistant_id: string | null;
+          chatroom_assistant_id: string | null;
+          created_at: string;
+          id: number;
+          join_code: string | null;
+          metadata: Json | null;
+          name: string | null;
+          ragflow_dataset_id: string | null;
+        };
+        Insert: {
+          admin_user_id?: string | null;
+          archived?: boolean | null;
+          chat_assistant_id?: string | null;
+          chatroom_assistant_id?: string | null;
+          created_at?: string;
+          id?: number;
+          join_code?: string | null;
+          metadata?: Json | null;
+          name?: string | null;
+          ragflow_dataset_id?: string | null;
+        };
+        Update: {
+          admin_user_id?: string | null;
+          archived?: boolean | null;
+          chat_assistant_id?: string | null;
+          chatroom_assistant_id?: string | null;
+          created_at?: string;
+          id?: number;
+          join_code?: string | null;
+          metadata?: Json | null;
+          name?: string | null;
+          ragflow_dataset_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "Classroom_admin_user_id_fkey";
+            columns: ["admin_user_id"];
+            isOneToOne: false;
+            referencedRelation: "Users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       Messages: {
         Row: {
+          chatroom_id: string;
           content: string;
           created_at: string;
           id: string;
-          member_id: number;
+          is_ask: boolean;
+          is_new: boolean;
+          member_id: number | null;
         };
         Insert: {
+          chatroom_id: string;
           content: string;
           created_at?: string;
           id?: string;
-          member_id: number;
+          is_ask?: boolean;
+          is_new?: boolean;
+          member_id?: number | null;
         };
         Update: {
+          chatroom_id?: string;
           content?: string;
           created_at?: string;
           id?: string;
-          member_id?: number;
+          is_ask?: boolean;
+          is_new?: boolean;
+          member_id?: number | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "Messages_chatroom_id_fkey";
+            columns: ["chatroom_id"];
+            isOneToOne: false;
+            referencedRelation: "Chatrooms";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "Messages_member_id_fkey";
             columns: ["member_id"];

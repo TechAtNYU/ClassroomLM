@@ -217,7 +217,7 @@ async function uploadDocuments(datasetId: string, formData: FormData) {
 export async function getDatasetByClassroomId(classroomId: number) {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("Classroom")
+    .from("Classrooms")
     .select("ragflow_dataset_id")
     .eq("id", classroomId)
     .single();

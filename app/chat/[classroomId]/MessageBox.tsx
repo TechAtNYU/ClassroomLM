@@ -4,7 +4,6 @@ import { RagFlowMessages, sendMessage } from "./actions";
 
 function MessageBox(props: {
   assistantId: string;
-  userId: string;
   chatSessionId: string;
   messageHistory: RagFlowMessages | null;
 }) {
@@ -24,7 +23,6 @@ function MessageBox(props: {
     const response: string = await sendMessage(
       value,
       props.assistantId,
-      props.userId,
       props.chatSessionId
     );
 

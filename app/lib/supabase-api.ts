@@ -35,7 +35,7 @@ export const getCurrentUserId = async (): Promise<string> => {
 export const classroomApi = {
   getClassrooms: async (): Promise<Classroom[]> => {
     const { data: classrooms, error } = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .select("*");
 
     if (error) {
@@ -47,7 +47,7 @@ export const classroomApi = {
 
   getClassroomById: async (id: number): Promise<Classroom> => {
     const { data, error } = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .select("*")
       .eq("id", id)
       .single();
@@ -67,7 +67,7 @@ export const classroomApi = {
     const placeholderId = `classroom-${Date.now()}`;
 
     const { data, error } = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .insert([
         {
           name,
@@ -91,7 +91,7 @@ export const classroomApi = {
     metadata: Record<string, unknown> = {}
   ): Promise<Classroom> => {
     const { data, error } = await supabase
-      .from("Classroom")
+      .from("Classrooms")
       .update({ name, metadata })
       .eq("id", id)
       .select();
@@ -112,7 +112,7 @@ export const classroomApi = {
         `Failed to delete classroom members: ${membersError.message}`
       );
     }
-    const { error } = await supabase.from("Classroom").delete().eq("id", id);
+    const { error } = await supabase.from("Classrooms").delete().eq("id", id);
 
     if (error) {
       throw new Error(`Failed to delete classroom: ${error.message}`);

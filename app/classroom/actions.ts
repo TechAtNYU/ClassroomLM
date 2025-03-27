@@ -260,3 +260,37 @@ export async function changeClassroomName(
   //console.log(data[0].name);
   return data;
 }
+
+export async function archiveClassroom(classroom_id: number) {
+  const supabase = await createServiceClient();
+
+  const { data, error } = await supabase
+    .from("Classrooms")
+    .update({ archived: true })
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    console.error("Error archiving classroom:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+}
+
+export async function unarchiveClassroom(classroom_id: number) {
+  const supabase = await createServiceClient();
+
+  const { data, error } = await supabase
+    .from("Classrooms")
+    .update({ archived: false })
+    .eq("id", classroom_id)
+    .select();
+
+  if (error) {
+    console.error("Error unarchiving classroom:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, data };
+}

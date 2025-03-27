@@ -34,7 +34,12 @@ export async function newClassroom(name: string, id: string) {
   const { data, error } = await supabase
     .from("Classrooms")
     .insert([
-      { ragflow_dataset_id: ragflowDatasetId, name: name, admin_user_id: id },
+      {
+        ragflow_dataset_id: ragflowDatasetId,
+        name: name,
+        admin_user_id: id,
+        archived: false,
+      },
     ])
     .select("id");
 

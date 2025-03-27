@@ -169,7 +169,7 @@ export async function isUserAdminForClassroom(classroomId: number) {
   const userId = await getCurrentUserId();
 
   const { data, error } = await (await supabase)
-    .from("Classroom")
+    .from("Classrooms")
     .select("admin_user_id")
     .eq("id", classroomId)
     .single();

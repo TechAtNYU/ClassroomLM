@@ -62,10 +62,10 @@ export async function getOrCreateAssistant(
   console.log("Get or create: didn't find an assistant, creating a new one");
 
   const newAssistant = await createChatAssistant(classroomId, datasetId);
-  if (!newAssistant?.data && newAssistant?.status) {
+  if (!newAssistant?.id) {
     return { status: "empty", id: null };
   }
-  return { status: "success", id: newAssistant.data.id };
+  return { status: "success", id: newAssistant.id };
 }
 
 export async function findChatAssistant(classroomId: ClassroomId) {
@@ -109,6 +109,41 @@ async function createChatAssistant(
   const newAssistant = {
     dataset_ids: [datasetId],
     name: `${datasetId}-${classroomId}`,
+    prompt_type: "simple",
+    prompt: {
+      prompt: `You are a highly knowledgeable and reliable AI assistant named 'Classroom LM'.
+      Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided.  
+      If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding.
+      Ensure that you indicate when a response is based on retreival vs. general knowledge.
+      
+      In addition to answering questions, you can **generate exam materials** when requested.  
+      This includes:
+      - **Multiple-choice questions** (4 options each, one correct)
+      - **Short answer questions**
+      - **Essay prompts for critical thinking**
+      - **Problem-solving exercises (for STEM)**
+      - **True/False questions with explanations**
+      
+      Ensure that your responses are clear, structured, and academically rigorous.
+
+      **Knowledge Base:**
+      {knowledge}`,
+
+      empty_response: "",
+      opener: "Hi! How can I help you today?",
+      variables: [{ key: "knowledge", optional: true }],
+      keywords_similarity_weight: 0.75,
+      similarity_threshold: 0.2,
+      top_n: 6,
+      show_quote: true,
+    },
+    llm: {
+      // liable to fine-tune
+      temperature: 0.4,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.6,
+      top_p: 0.3,
+    },
   };
 
   try {
@@ -117,26 +152,25 @@ async function createChatAssistant(
       body: JSON.stringify(newAssistant),
       headers: {
         Authorization: `Bearer ${API_KEY}`,
-        "Content-type": "application/json; charset=UTF-8",
+        "Content-Type": "application/json; charset=UTF-8",
       },
     });
 
-    if (!res.ok) throw new Error("Failed to create chat assistant");
-
-    const resJson = await res.json();
-    if (!resJson?.data) {
-      if (
-        resJson?.message &&
-        resJson.message.includes("doesn't own parsed file")
-      ) {
-        return { status: "empty" };
-      }
-      throw new Error(`Failed to create assistant`);
+    if (!res.ok) {
+      const errorResponse = await res.json();
+      throw new Error(
+        `Failed to create chat assistant: ${errorResponse.message}`
+      );
     }
 
-    // update that in supabase
-    const supabase = createServiceClient();
+    const resJson = await res.json();
+    console.log("API Response:", resJson);
 
+    if (!resJson?.data) {
+      return { status: "empty" };
+    }
+
+    const supabase = await createServiceClient();
     const supabaseRes = await supabase
       .from("Classrooms")
       .update({ chat_assistant_id: resJson.data.id })
@@ -147,11 +181,10 @@ async function createChatAssistant(
       throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
     }
 
-    // console.log("creator", res);
-    return resJson;
+    return { status: "success", id: resJson.data.id };
   } catch (error) {
     console.error("Error creating chat assistant:", error);
-    return null;
+    return { success: "fail", message: "error creating", id: null };
   }
 }
 

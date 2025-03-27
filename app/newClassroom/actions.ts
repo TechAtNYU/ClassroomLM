@@ -7,35 +7,35 @@ const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function newClassroom(name: string, id: string) {
   //Create a new RAGFlow dataset
-  const timestamp = Date.now();
-  const ragflowName = name + " " + timestamp + " " + id.substring(0, 6);
-  const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
-    },
-    body: JSON.stringify({
-      name: ragflowName,
-    }),
-  });
+  // const timestamp = Date.now();
+  // const ragflowName = name + " " + timestamp + " " + id.substring(0, 6);
+  // const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+  //   },
+  //   body: JSON.stringify({
+  //     name: ragflowName,
+  //   }),
+  // });
 
-  if (!ragflowResponse.ok) {
-    const error = await ragflowResponse.json();
-    console.error("Error creating dataset in RAGFlow:", error);
-    return null;
-  }
+  // if (!ragflowResponse.ok) {
+  //   const error = await ragflowResponse.json();
+  //   console.error("Error creating dataset in RAGFlow:", error);
+  //   return null;
+  // }
 
-  const ragflowData = await ragflowResponse.json();
-  console.log(ragflowData);
-  const ragflowDatasetId = ragflowData.data.id;
+  // const ragflowData = await ragflowResponse.json();
+  // console.log(ragflowData);
+  // const ragflowDatasetId = ragflowData.data.id;
 
   const supabase = await createServiceClient();
   const { data, error } = await supabase
     .from("Classrooms")
     .insert([
       {
-        ragflow_dataset_id: ragflowDatasetId,
+        // ragflow_dataset_id: ragflowDatasetId, #??? TODO:: see if its okay that we moved this to uploading
         name: name,
         admin_user_id: id,
         archived: false,

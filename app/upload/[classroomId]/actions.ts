@@ -181,7 +181,7 @@ export async function isUserAdminForClassroom(classroomId: number) {
     console.error("Error fetching classroom admin:", error);
     return false;
   }
-  console.log(data.admin_user_id === userId);
+  // console.log(data.admin_user_id === userId);
   return data.admin_user_id === userId;
 }
 

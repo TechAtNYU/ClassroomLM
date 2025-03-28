@@ -11,5 +11,5 @@ export default async function UploadPage({
   if (!isAdmin) {
     return <h1> Not the admin for this classroom! </h1>;
   }
-  return <UploadComponent classroomId={classroomId} />;
+  return <UploadComponent classroomId={classroomId} classroomName="hi"/>;
 }

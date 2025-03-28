@@ -1,3 +1,4 @@
+"use server"
 import { isUserAdminForClassroom } from "@/app/upload/[classroomId]/actions";
 import { createServiceClient } from "@/utils/supabase/service-server";
 
@@ -123,8 +124,10 @@ export async function createDatasetClient(
   datasetId: string | undefined = undefined
 ): Promise<DatasetMutableOperationResult | null> {
   //
+  console.log(process.env.RAGFLOW_API_KEY, process.env.RAGFLOW_API_URL )
+
   try {
-    if (!process.env?.RAGFLOW_API_KEY || !process.env?.RAGFLOW_API_URL) {
+    if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
       throw Error("Ragflow API key and URL is required in the environment.");
     }
     let client: DatasetClient = {
@@ -455,7 +458,7 @@ export async function uploadFile(
   };
 }
 
-export function stripTrailingSlash(url: string): string {
+function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
 

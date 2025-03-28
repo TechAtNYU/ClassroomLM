@@ -2,6 +2,7 @@
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
 import { Tables } from "@/utils/supabase/database.types";
+import { deleteDataset } from "../lib/ragflow/dataset-client";
 
 export interface ClassroomWithMembers extends Tables<"Classrooms"> {
   Classroom_Members?: Array<{
@@ -17,22 +18,6 @@ export interface ClassroomWithMembers extends Tables<"Classrooms"> {
 }
 const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
-
-// TODO: add complex server tasks to this area and call them from your page when necessary
-
-// this is just a sample server-side action to show how it's done
-// export async function insertRandom() {
-//   // Notice how we use a createServiceClient instead of createClient from server
-//   // this BYPASSES ALL RLS in the case that you have to do some more complex things and we don't
-//   // want to write RLS rules for all of it. See our project doc Resources section for more info
-//   const supabase = createServiceClient();
-
-//   const { error } = await supabase.from("Classroom_Members").insert({
-//     classroom_id: 17,
-//     user_id: "05929f55-42bb-42d4-86bd-ddc0c7d12685",
-//   });
-//   console.log(error);
-// }
 
 // export async function getCurrentUserID2() {
 //   const supabase = createServiceClient();
@@ -71,14 +56,15 @@ export async function deleteClassroom(classroom_id: number) {
     .from("Classrooms")
     .delete()
     .eq("id", classroom_id)
-    .select();
+    .select()
+    .single();
 
   if (error) {
     throw new Error(error.message);
   }
 
   // Deleting Associated Chat Assistant
-  const chat_assistant_id = data[0].chat_assistant_id;
+  const chat_assistant_id = data.chat_assistant_id;
 
   if (chat_assistant_id) {
     const requestChatBody = {
@@ -104,33 +90,36 @@ export async function deleteClassroom(classroom_id: number) {
     console.log("No chat assistant found for classroom when deleting");
   }
 
-  // Deleting Associatied RAGFlow
-  const ragflow_dataset_id = data[0].ragflow_dataset_id;
-
-  if (!ragflow_dataset_id) {
-    throw new Error("No related RAGFlow dataset found for this classroom.");
+  // Deleting associated RAGFlow dataset if exists
+  if (data.ragflow_dataset_id) {
+    deleteDataset(data.id.toString(), data.ragflow_dataset_id);
   }
+  // const ragflow_dataset_id = data.ragflow_dataset_id;
 
-  //gets ids of ragflow_dataset_id
-  const requestBody = {
-    ids: [ragflow_dataset_id],
-  };
+  // if (!ragflow_dataset_id) {
+  //   throw new Error("No related RAGFlow dataset found for this classroom.");
+  // }
 
-  //deletes the respective dataset
-  const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
-    },
-    body: JSON.stringify(requestBody),
-  });
+  // //gets ids of ragflow_dataset_id
+  // const requestBody = {
+  //   ids: [ragflow_dataset_id],
+  // };
 
-  if (!ragflowResponse.ok) {
-    throw new Error(
-      `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
-    );
-  }
+  // //deletes the respective dataset
+  // const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
+  //   method: "DELETE",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+  //   },
+  //   body: JSON.stringify(requestBody),
+  // });
+
+  // if (!ragflowResponse.ok) {
+  //   throw new Error(
+  //     `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
+  //   );
+  // }
 
   return data || [];
 }

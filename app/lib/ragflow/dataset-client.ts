@@ -25,92 +25,14 @@ type DocumentFile = {
 /**
  * Result from any operation that changes the client itself
  *
- * **MAKE SURE TO SET YOUR CLIENT TO THE RETURNED CLIENT HERE**
+ * **MAKE SURE TO SET YOUR CLIENT TO THE RETURNED CLIENT FROM THIS**
  */
 type DatasetMutableOperationResult = {
   client: DatasetClient;
 };
 
-// Might change later with
+// Might change later with more common fields for a non-client changing operation
 type DatasetReadOnlyOperationResult = object;
-
-// Based off @supabase\supabase-js\src\SupabaseClient.ts
-// class DatasetClient {
-//     protected datasetUrl: string
-//     protected requestHeader: {"Authorization": string, "Content-Type": string;}
-//     protected classroomId: string;
-//     protected classroomName: string;
-//     protected datasetId!: string; // Definite assertion (!) is because constructor is not publicly available, must use createAssociatedDataset()
-
-//     constructor (ragflowUrl: string, ragflowKey: string, classroomConfig: DatasetClassroomConfig){
-//         this.datasetUrl = `${stripTrailingSlash(ragflowUrl)}/api/v1/datasets`
-//         this.requestHeader = {
-//             "Content-Type": "application/json",
-//             "Authorization": `Bearer ${ragflowKey}`,
-//           };
-//         this.classroomId = classroomConfig.classroomId;
-//         this.classroomName = classroomConfig.classroomName;
-//     }
-
-//     public async verifyDatasetExistence(){
-//         const params = new URLSearchParams({id: this.datasetId});
-//         const response = await fetch(
-//           `${getDatasetUrl()}?${params.toString()}`,
-//           {
-//             method: "GET",
-//             headers: getHeader()
-//           }
-//         );
-//         const jsonData = await response.json();
-//         if (!response.ok){
-//             console.error("DatasetService, verify dataset exist, Ragflow fetch error:", jsonData);
-//             return {fetchSuccess: false, doesExist: undefined}
-//         }
-//         if (!jsonData?.data?.length) {
-//             return {fetchSuccess: true, doesExist: false}
-//         }
-//         return {fetchSuccess: true, doesExist: true};
-//     }
-
-//     public async createAssociatedDataset(classroomName: string){
-//         const timestamp = Date.now();
-//         const datasetName = `${classroomName}_${timestamp}_${this.classroomId.substring(0, 6)}`;
-//         const ragflowResponse = await fetch(this.datasetUrl, {
-//           method: "POST",
-//           headers: this.requestHeader,
-//           body: JSON.stringify({
-//             name: datasetName,
-//           }),
-//         });
-
-//         const ragflowResponseData = await ragflowResponse.json();
-//         if (!ragflowResponse.ok) {
-//           console.error("DatasetService, creating dataset in RAGFlow:", ragflowResponseData);
-//           return {fetchSuccess: false};
-//         }
-
-//         const ragflowDatasetId = ragflowResponseData.data.id;
-
-//         const supabase = await createServiceClient();
-//         const { data, error } = await supabase
-//           .from("Classrooms")
-//           .update([
-//             {
-//               ragflow_dataset_id: ragflowDatasetId,
-//               name: name,
-//               admin_user_id: id,
-//               archived: false,
-//             },
-//           ])
-//           .select("id");
-
-//         if (error) {
-//           console.error("Error inserting classroom:", error);
-//           return null;
-//         }
-//     }
-
-// }
 
 /**
  * This function creates a DatasetClient for further operations. It either uses the dataset ID you give (which it assumes came from Supabase),
@@ -375,14 +297,22 @@ export async function retrieveDocuments(client: DatasetClient): Promise<
   return { ragflowCallSuccess: true, files: filesList };
 }
 
+/**
+ * Uploads a file to the client's dataset. Note that this does complete the upload but only starts the parse,
+ * it doesn't wait for it to finish.
+ * @param client Previously created client with `createDatasetClient()`
+ * @param formData Form with `file` as an attribute with a `File` object from a form
+ * @returns a list of `files` if a successful upload and parse start. Also: use `isAdmin`, `uploadCallSuccess`, and
+ * `parseCallSuccess` to verify if those different stages were successful.
+ */
 export async function uploadFile(
   client: DatasetClient,
   formData: FormData
 ): Promise<
   DatasetReadOnlyOperationResult & {
+    isAdmin: boolean;
     uploadCallSuccess: boolean;
     parseCallSuccess: boolean;
-    isAdmin: boolean;
     files: DocumentFile[];
   }
 > {
@@ -390,6 +320,8 @@ export async function uploadFile(
   const isAdmin = await isUserAdminForClassroom(
     Number(client.classroomConfig.classroomId)
   );
+
+  // Disallows usage if not admin
   if (!isAdmin) {
     return {
       isAdmin: false,
@@ -399,6 +331,7 @@ export async function uploadFile(
     };
   }
 
+  // Makes the upload file call
   const uploadResponse = await fetch(
     `${getDatasetUrl()}/${client.datasetId}/documents`,
     {
@@ -407,6 +340,7 @@ export async function uploadFile(
       body: formData,
     }
   );
+  // Make sure that the upload was successful
   const uploadJsonData = await uploadResponse.json();
   if (!uploadResponse.ok || (uploadJsonData && !uploadJsonData?.data?.length)) {
     console.error(
@@ -421,8 +355,8 @@ export async function uploadFile(
     };
   }
 
+  // Use the newly created file ID to initiate a parse
   const fileId = uploadJsonData.data[0].id;
-
   const parseResponse = await fetch(
     `${getDatasetUrl()}/${client.datasetId}/chunks`,
     {
@@ -432,8 +366,8 @@ export async function uploadFile(
     }
   );
 
+  // Ensure that the parse started correctly
   const parseJsonData = await parseResponse.json();
-
   if (!parseResponse.ok || parseJsonData.code !== 0) {
     return {
       isAdmin: true,
@@ -443,6 +377,7 @@ export async function uploadFile(
     };
   }
 
+  // Return a fresh list of documents for the client, note that this only waits for the parse to start, not finish
   const { files: fileList } = await retrieveDocuments(client);
   return {
     isAdmin: true,
@@ -450,6 +385,57 @@ export async function uploadFile(
     parseCallSuccess: true,
     files: fileList,
   };
+}
+
+/**
+ * Deletes a dataset for a given datasetId (or the id as retrieved from a classroom if no datasetId),
+ * This doesn't follow the usual pattern of using a `datasetClient` because we don't want to
+ * verify/create/etc a new dataset if we're just trying to delete it.
+ * @param classroomId
+ * @param datasetId
+ */
+export async function deleteDataset(
+  classroomId: string,
+  datasetId: string | undefined
+): Promise<{ ragflowCallSuccess: boolean }> {
+  //
+  if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
+    console.error("DatasetClient, deletion function, no API key or URL");
+    return { ragflowCallSuccess: false };
+  }
+
+  // Default to using the datasetId provided, but attempt to retrieve it from Supabase
+  // if the user didn't provide a datasetId
+  let datasetIdToUse = datasetId;
+  if (!datasetId) {
+    const supabase = await createServiceClient();
+    const { data, error } = await supabase
+      .from("Classrooms")
+      .select("ragflow_dataset_id")
+      .eq("id", Number(classroomId))
+      .single();
+
+    if (!error && data && data.ragflow_dataset_id) {
+      datasetIdToUse = data.ragflow_dataset_id;
+    }
+  }
+
+  const response = await fetch(getDatasetUrl(), {
+    method: "DELETE",
+    headers: getHeader(),
+    body: JSON.stringify({
+      ids: [datasetIdToUse],
+    }),
+  });
+  const jsonData = await response.json();
+  if (!response.ok) {
+    console.error(
+      "DatasetService, delete dataset exist, Ragflow call error:",
+      jsonData
+    );
+    return { ragflowCallSuccess: false };
+  }
+  return { ragflowCallSuccess: true };
 }
 
 function stripTrailingSlash(url: string): string {

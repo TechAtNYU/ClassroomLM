@@ -37,6 +37,7 @@ type DatasetReadOnlyOperationResult = object;
 /**
  * This function creates a DatasetClient for further operations. It either uses the dataset ID you give (which it assumes came from Supabase),
  * or retrieves the ID from supabase, or creates a new dataset. It will also verify that the ID given or retrieved is a valid dataset in RagFlow.
+ * If the given ID is invalid or the ID from supabase is invalid, it will make a new dataset and set the field to the Supabase to reflect that.
  * @param classroomConfig Enter the basic classroom information that the client might need
  * @param datasetId Enter the dataset ID if you already have it from a previous Supabase call, otherwise this function will attempt to retrieve it
  * @returns a DatasetClient with a good DatasetID, otherwise null if there was an error
@@ -45,14 +46,15 @@ export async function createDatasetClient(
   classroomConfig: DatasetClassroomConfig,
   datasetId: string | undefined = undefined
 ): Promise<DatasetMutableOperationResult | null> {
-  //
-
   try {
     if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
       throw Error("Ragflow API key and URL is required in the environment.");
     }
     let client: DatasetClient = {
       classroomConfig: classroomConfig,
+      // only temporarily keeps this as "" before it deterministically is either
+      // the user provided datasetId from the param or the one from supabase or a newly
+      // created dataset's ID straight from Ragflow
       datasetId: datasetId ?? "",
     };
 
@@ -71,7 +73,6 @@ export async function createDatasetClient(
     // At this point, the client might have a dataset ID and supabaseHasDatasetId accurately reflects this
     // So we default to a dataset not existing and attempt to verify it if we have a valid ID in supabase
     let doesDatasetExist = false;
-    console.log("supabaseHasDatasetId", supabaseHasDatasetId);
 
     if (supabaseHasDatasetId) {
       const verifyResult = await verifyDatasetExistence(client);
@@ -131,8 +132,8 @@ export async function verifyDatasetExistence(client: DatasetClient): Promise<
 }
 
 /**
- * A call to get a mutated client object with the dataset ID of a newly created Ragflow dataset
- * Also makes sure to update this ID within Supabase
+ * A call to get a mutated client object with the dataset ID of a newly created Ragflow dataset.
+ * Also makes sure to update this ID within Supabase.
  * @param client Previously created client with `createDatasetClient()`
  * @returns A mutated client with an updated dataset ID. Verify credibility if true for both `ragflowCallSuccess` and `supabaseSuccess`
  */
@@ -247,9 +248,9 @@ export async function getClientWithRetrievedDatasetId(
 }
 
 /**
- * Just returns boolean for whether the client's datasetId refers to a real/valid dataset in RagFlow
+ * Retrieves the documents within a given Ragflow dataset
  * @param client Previously created client with `createDatasetClient()`
- * @returns `doesExist` for whether the dataset does exist within RagFlow. Verify credibility with ragflowCallSuccess
+ * @returns `files` are the returned files from Ragflow. Verify credibility with ragflowCallSuccess
  */
 export async function retrieveDocuments(client: DatasetClient): Promise<
   DatasetReadOnlyOperationResult & {
@@ -257,6 +258,7 @@ export async function retrieveDocuments(client: DatasetClient): Promise<
     files: DocumentFile[];
   }
 > {
+  // TODO: might need to change these params to paginate if we have more files
   const params = new URLSearchParams({
     page: "1",
     page_size: "30",
@@ -420,6 +422,7 @@ export async function deleteDataset(
     }
   }
 
+  // performs delete with Ragflow
   const response = await fetch(getDatasetUrl(), {
     method: "DELETE",
     headers: getHeader(),
@@ -427,6 +430,8 @@ export async function deleteDataset(
       ids: [datasetIdToUse],
     }),
   });
+
+  // Verifies that the call was successful
   const jsonData = await response.json();
   if (!response.ok) {
     console.error(
@@ -435,6 +440,7 @@ export async function deleteDataset(
     );
     return { ragflowCallSuccess: false };
   }
+
   return { ragflowCallSuccess: true };
 }
 

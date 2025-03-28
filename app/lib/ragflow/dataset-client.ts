@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { isUserAdminForClassroom } from "@/app/upload/[classroomId]/actions";
 import { createServiceClient } from "@/utils/supabase/service-server";
 
@@ -124,7 +124,6 @@ export async function createDatasetClient(
   datasetId: string | undefined = undefined
 ): Promise<DatasetMutableOperationResult | null> {
   //
-  console.log(process.env.RAGFLOW_API_KEY, process.env.RAGFLOW_API_URL )
 
   try {
     if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
@@ -144,11 +143,14 @@ export async function createDatasetClient(
           "Supabase fetch error, could not verify existence of/retrieve dataset ID."
         );
       }
-      ({ client, supabaseHasDatasetId } = attemptedRetrieval);
+      client = attemptedRetrieval.client;
+      supabaseHasDatasetId = attemptedRetrieval.supabaseHasDatasetId;
     }
     // At this point, the client might have a dataset ID and supabaseHasDatasetId accurately reflects this
     // So we default to a dataset not existing and attempt to verify it if we have a valid ID in supabase
     let doesDatasetExist = false;
+    console.log("supabaseHasDatasetId", supabaseHasDatasetId);
+
     if (supabaseHasDatasetId) {
       const verifyResult = await verifyDatasetExistence(client);
       if (!verifyResult.ragflowCallSuccess) {
@@ -156,14 +158,13 @@ export async function createDatasetClient(
       }
       doesDatasetExist = verifyResult.doesExist;
     }
-
     // This creation occurs if nothing was in supabase OR if the supabase ID was bad
     if (!doesDatasetExist) {
       const createResult = await createAssociatedDataset(client);
       if (!createResult.ragflowCallSuccess || !createResult.supabaseSuccess) {
         throw Error("Error creating dataset.");
       }
-      ({ client } = createResult);
+      client = createResult.client;
     }
 
     // Guaranteed to return a client with a good dataset behind it
@@ -182,9 +183,7 @@ export async function createDatasetClient(
  * @param client Previously created client with `createDatasetClient()`
  * @returns `doesExist` for whether the dataset does exist within RagFlow. Verify credibility with ragflowCallSuccess
  */
-export async function verifyDatasetExistence(
-  client: DatasetClient
-): Promise<
+export async function verifyDatasetExistence(client: DatasetClient): Promise<
   DatasetReadOnlyOperationResult & {
     ragflowCallSuccess: boolean;
     doesExist: boolean;
@@ -231,7 +230,6 @@ export async function createAssociatedDataset(client: DatasetClient): Promise<
       name: datasetName,
     }),
   });
-
   // Verify the Ragflow API call result
   const ragflowResponseData = await ragflowResponse.json();
   if (!ragflowResponse.ok) {
@@ -245,7 +243,6 @@ export async function createAssociatedDataset(client: DatasetClient): Promise<
       supabaseSuccess: false,
     };
   }
-
   const ragflowDatasetId = ragflowResponseData.data.id;
 
   // Insert the new dataset's ID into Supabase
@@ -332,9 +329,7 @@ export async function getClientWithRetrievedDatasetId(
  * @param client Previously created client with `createDatasetClient()`
  * @returns `doesExist` for whether the dataset does exist within RagFlow. Verify credibility with ragflowCallSuccess
  */
-export async function retrieveDocuments(
-  client: DatasetClient
-): Promise<
+export async function retrieveDocuments(client: DatasetClient): Promise<
   DatasetReadOnlyOperationResult & {
     ragflowCallSuccess: boolean;
     files: DocumentFile[];
@@ -397,7 +392,7 @@ export async function uploadFile(
   );
   if (!isAdmin) {
     return {
-        isAdmin: false,
+      isAdmin: false,
       uploadCallSuccess: false,
       parseCallSuccess: false,
       files: [],
@@ -408,7 +403,7 @@ export async function uploadFile(
     `${getDatasetUrl()}/${client.datasetId}/documents`,
     {
       method: "POST",
-      headers: { ...getHeader(), "Content-Type": "multipart/form-data" },
+      headers: { Authorization: getHeader().Authorization },
       body: formData,
     }
   );
@@ -419,8 +414,7 @@ export async function uploadFile(
       uploadJsonData
     );
     return {
-        isAdmin: true,
-
+      isAdmin: true,
       uploadCallSuccess: false,
       parseCallSuccess: false,
       files: [],

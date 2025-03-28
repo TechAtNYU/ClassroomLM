@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -9,6 +9,10 @@ import {
   retrieveDocuments,
   uploadFile,
 } from "@/app/lib/ragflow/dataset-client";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type UploadedFile = {
   id: string;
@@ -27,9 +31,12 @@ export default function UploadComponent({
   classroomName: string;
 }) {
   const [file, setFile] = useState<File | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[] | null>(
+    null
+  );
   const [datasetClient, setDatasetClient] = useState<DatasetClient>();
   const [loading, setLoading] = useState(false);
+  const inputFile = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function fetchFiles() {
@@ -39,7 +46,6 @@ export default function UploadComponent({
           classroomId,
           classroomName,
         });
-        console.log(result);
         if (result) {
           clientToUse = result.client;
           setDatasetClient(clientToUse);
@@ -48,6 +54,7 @@ export default function UploadComponent({
         }
       }
       const retrieveResult = await retrieveDocuments(clientToUse);
+      console.log("retrieve: ", retrieveResult);
       if (!retrieveResult.ragflowCallSuccess) {
         return;
       }
@@ -74,22 +81,32 @@ export default function UploadComponent({
     const formData = new FormData();
     formData.append("file", file);
 
-    if (!datasetClient){
+    if (!datasetClient) {
       return;
     }
-    const response = await uploadFile(datasetClient,formData)
-    console.log("Upload Response:", response);
+    const response = await uploadFile(datasetClient, formData);
 
+    toast({
+      title: "Upload started!",
+      description: `Document ${file.name} has uploaded and began parsing`,
+      duration: 10000,
+    });
     setLoading(false);
 
     // if (!response || typeof response !== "object") {
     //   setErrorMessage("Invalid response from server.");
     //   return;
     // }
-
-    if (response.isAdmin && response.parseCallSuccess && response.uploadCallSuccess) {
+    if (
+      response.isAdmin &&
+      response.parseCallSuccess &&
+      response.uploadCallSuccess
+    ) {
       setUploadedFiles(response.files);
       setFile(null);
+      if (inputFile.current) {
+        inputFile.current.value = "";
+      }
     }
     // } else {
     //   setErrorMessage(response.message || "Failed to upload file.");
@@ -100,16 +117,23 @@ export default function UploadComponent({
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 text-black">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
         <h1 className="mb-4 text-xl font-bold">File Upload</h1>
-        {datasetClient == undefined ? (
-          "loading..."
+        {datasetClient == undefined || uploadedFiles == null ? (
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
         ) : (
           <>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <input
+                <Input
                   type="file"
                   onChange={handleFileChange}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                  ref={inputFile}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
 
@@ -133,13 +157,12 @@ export default function UploadComponent({
 
 function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
   const pathname = usePathname();
-
   return (
-    <>
-      {uploadedFiles.length > 0 && (
+    uploadedFiles.length > 0 && (
+      <ScrollArea className="mt-5 max-h-[50vh] rounded-md border px-3">
         <div className="mt-6">
           <h2 className="text-lg font-semibold">Uploaded Files</h2>
-          <ul className="mt-2 space-y-2">
+          <ul className="my-2 space-y-2">
             {uploadedFiles.map((file) => (
               <li key={file.id} className="rounded-md bg-gray-100 p-3">
                 <Link
@@ -158,7 +181,7 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
             ))}
           </ul>
         </div>
-      )}
-    </>
+      </ScrollArea>
+    )
   );
 }

@@ -1,6 +1,6 @@
 import {
   Megaphone,
-  Circle,
+  // Circle,
   UserRoundPen,
   BookText,
   Bell,
@@ -8,20 +8,20 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-import LogoImg from "@/components/ui/logoImg";
+import Image from "next/image";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarFooter,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
 
 import {
@@ -39,12 +39,12 @@ import {
 
 // Menu items.
 const items = [
-  {
-    title: "──────────────",
-    url: "#",
-    icon: Circle,
-    subItems: [],
-  },
+  // {
+  //   title: "──────────────",
+  //   url: "#",
+  //   icon: Circle,
+  //   subItems: [],
+  // },
   {
     title: "Announcements",
     url: "/",
@@ -68,12 +68,12 @@ const items = [
       },
     ],
   },
-  {
-    title: "──────────────",
-    url: "#",
-    icon: Circle,
-    subItems: [],
-  },
+  // {
+  //   title: "──────────────",
+  //   url: "#",
+  //   icon: Circle,
+  //   subItems: [],
+  // },
   {
     title: "Profile",
     url: "/profile",
@@ -95,15 +95,29 @@ export function AppSidebar(props: { username: string }) {
         backgroundImage:
           "linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)",
       }}
+      collapsible="icon"
+      variant="inset"
     >
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="#">
+                <div className="flex aspect-square size-8 items-center justify-center text-sidebar-primary-foreground">
+                  <div className="relative h-[90%] w-[90%] object-contain">
+                    <Image src={"/logo.svg"} fill alt="Logo" />
+                  </div>
+                </div>
+                <div className="grid flex-1 text-left text-lg leading-tight">
+                  <span className="truncate font-semibold">ClassroomLM</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <div className="m-2 flex flex-row">
-            <LogoImg />
-            <SidebarGroupLabel className="text-white">
-              Classroom LM
-            </SidebarGroupLabel>
-          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

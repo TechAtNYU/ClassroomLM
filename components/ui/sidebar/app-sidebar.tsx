@@ -36,6 +36,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { ModeToggle } from "./mode-toggle";
 
 // Menu items.
 const items = [
@@ -164,6 +165,9 @@ export function AppSidebar(props: { username: string }) {
       </SidebarContent>
 
       <SidebarFooter>
+        <div className="flex-col items-end">
+          <ModeToggle />
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

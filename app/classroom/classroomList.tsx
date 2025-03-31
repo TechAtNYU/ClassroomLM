@@ -299,7 +299,6 @@ export default function ClassroomList({
             </div>
           );
         })}
-        ;
       </div>
     );
   }

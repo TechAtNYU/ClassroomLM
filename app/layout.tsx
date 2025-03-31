@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
+import { createClient } from "@/utils/supabase/server";
+import { cn } from "./lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,10 +33,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const supabase = await createClient();
+  const user = await supabase.auth.getUser()
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(`antialiased font-sans`,geistSans.variable, geistMono.variable)}
       >
         <ThemeProvider
           attribute="class"
@@ -43,7 +48,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <SidebarProvider>
-            <AppSidebar username="test" />
+            <AppSidebar username={user.data.user?.user_metadata.full_name ?? "Username"}/>
             <SidebarInset>
               <main>
                 <SidebarTrigger />

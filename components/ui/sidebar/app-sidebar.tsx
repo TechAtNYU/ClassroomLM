@@ -1,11 +1,14 @@
+"use client"
+
 import {
-  Megaphone,
+  // Megaphone,
   // Circle,
-  UserRoundPen,
+  // UserRoundPen,
   BookText,
-  Bell,
+  // Bell,
   User2,
   ChevronUp,
+  UserRoundCog,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -14,21 +17,15 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
+
   SidebarFooter,
   SidebarHeader,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
 
 import {
   DropdownMenu,
@@ -37,59 +34,81 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
+import { usePathname } from "next/navigation";
+import { getPageAspectsByPath } from "./nav-utils";
 
 // Menu items.
-const items = [
-  // {
-  //   title: "──────────────",
-  //   url: "#",
-  //   icon: Circle,
-  //   subItems: [],
-  // },
-  {
-    title: "Announcements",
-    url: "/",
-    icon: Megaphone,
-    subItems: [],
-  },
-  {
-    title: "Courses",
-    url: "/",
-    icon: BookText,
-    subItems: [
-      {
-        title: "Enrolled",
-        url: "/classroom",
-        icon: BookText,
-      },
-      {
-        title: "My Courses",
-        url: "/classroom",
-        icon: BookText,
-      },
-    ],
-  },
-  // {
-  //   title: "──────────────",
-  //   url: "#",
-  //   icon: Circle,
-  //   subItems: [],
-  // },
-  {
-    title: "Profile",
-    url: "/profile",
-    icon: UserRoundPen,
-    subItems: [],
-  },
-  {
-    title: "Notifications",
-    url: "/notifications",
-    icon: Bell,
-    subItems: [],
-  },
-];
+// const items = [
+//   // {
+//   //   title: "──────────────",
+//   //   url: "#",
+//   //   icon: Circle,
+//   //   subItems: [],
+//   // },
+//   // {
+//   //   title: "Announcements",
+//   //   url: "/",
+//   //   icon: Megaphone,
+//   //   subItems: [],
+//   // },
+//   {
+//     title: "Enrolled",
+//     url: "/classroom",
+//     icon: BookText,
+//     isActive: false,
+//   },
+//   {
+//     title: "Manage courses",
+//     url: "/classroom",
+//     icon: UserRoundCog,
+//     isActive: false,
+//   },
+
+//   // {
+//   //   title: "──────────────",
+//   //   url: "#",
+//   //   icon: Circle,
+//   //   subItems: [],
+//   // },
+//   // {
+//   //   title: "Profile",
+//   //   url: "/profile",
+//   //   icon: UserRoundPen,
+//   //   subItems: [],
+//   // },
+//   // {
+//   //   title: "Notifications",
+//   //   url: "/notifications",
+//   //   icon: Bell,
+//   //   subItems: [],
+//   // },
+// ];
 
 export function AppSidebar(props: { username: string }) {
+
+  // get username
+  // get path from URL
+  // parallel rendering for upload/new classroom
+  const items = new Map([
+    ["enrolled", {
+    title: "Enrolled",
+    url: "/classroom",
+    icon: BookText,
+    isActive: false,
+  }],
+  ["adminManaged", {
+    title: "Manage courses",
+    url: "/classroom",
+    icon: UserRoundCog,
+    isActive: false,}]])
+
+  const pathname = usePathname()
+  const activePageHierarchy = getPageAspectsByPath(pathname)
+  if (activePageHierarchy?.classroomLanding){
+    items.get("enrolled").isActive = true
+  }
+  // items[0].subItems[0].subitems?.push("")
+  
   return (
     <Sidebar
       style={{
@@ -118,7 +137,7 @@ export function AppSidebar(props: { username: string }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        {/**  <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -129,16 +148,16 @@ export function AppSidebar(props: { username: string }) {
                 >
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        asChild
-                        style={{
-                          pointerEvents: item.url != "#" ? "auto" : "none",
-                        }}
+                      <SidebarMenuButton isActive
+                        // asChild
+                        // style={{
+                        //   pointerEvents: item.url != "#" ? "auto" : "none",
+                        // }}
                       >
-                        <a href={item.url == "/" ? "#" : item.url}>
+                         <a href={item.url == "/" ? "#" : item.url}> 
                           {item.icon != null ? <item.icon /> : <span></span>}
                           <span>{item.title}</span>
-                        </a>
+                         </a> 
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
 
@@ -161,7 +180,44 @@ export function AppSidebar(props: { username: string }) {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
+        <SidebarGroup>
+      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarMenu>
+        {items.values().map((item) => (
+          // <Collapsible
+          //   key={item.title}
+          //   asChild
+          //   defaultOpen={item.isActive}
+          //   className="group/collapsible"
+          // >
+            <SidebarMenuItem key = {item.title}>
+              {/* <CollapsibleTrigger asChild> */}
+                <SidebarMenuButton tooltip={item.title}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                  {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
+                </SidebarMenuButton>
+              {/* </CollapsibleTrigger> */}
+              {/* <CollapsibleContent>
+                <SidebarMenuSub> */}
+                  {/* {item.subItems?.map((subItem) => (
+                    <SidebarMenuSubItem key={subItem.title}>
+                      <SidebarMenuSubButton asChild>
+                        <a href={subItem.url}>
+                          <span>{subItem.title}</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ))} */}
+                {/* </SidebarMenuSub> */}
+              {/* </CollapsibleContent> */}
+            </SidebarMenuItem>
+          // </Collapsible>
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
+      
       </SidebarContent>
 
       <SidebarFooter>

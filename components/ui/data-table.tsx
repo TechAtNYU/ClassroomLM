@@ -35,6 +35,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="rounded-md border">
       {/* https://github.com/shadcn-ui/ui/issues/542#issuecomment-2015755497  */}
+      {/* ScrollAreas for this are our edits */}
       <ScrollArea className="[&>[data-radix-scroll-area-viewport]]:max-h-[60vh]">
         <Table>
           <TableHeader>

@@ -2,7 +2,10 @@
 // "use client";
 
 // import { getCurrentUserId, retrieveClassroomData } from "../../classroom/actions";
-export default async function ClassroomPage({
+
+import ClassroomManagementButtons from "./buttons";
+
+export default async function ClassroomManagementPage({
   params,
 }: {
   params: Promise<{ classroomId: string }>;
@@ -10,5 +13,12 @@ export default async function ClassroomPage({
   //   const userId = await getCurrentUserId();
   //   const classData = await retrieveClassroomData(userId);
   const { classroomId } = await params;
-  return <h1>Hello this is classroom {classroomId}</h1>;
+  const classroomIdNumber = Number(classroomId);
+
+  return (
+    <div>
+      <h1>Hello this is classroom {classroomId}</h1>
+      <ClassroomManagementButtons classroomId={classroomIdNumber} />
+    </div>
+  );
 }

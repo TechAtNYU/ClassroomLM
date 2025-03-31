@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   // Megaphone,
@@ -9,6 +9,7 @@ import {
   User2,
   ChevronUp,
   UserRoundCog,
+  SpeechIcon,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -20,12 +21,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-
   SidebarFooter,
   SidebarHeader,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
-
 
 import {
   DropdownMenu,
@@ -83,32 +82,62 @@ import { getPageAspectsByPath } from "./nav-utils";
 //   //   subItems: [],
 //   // },
 // ];
-
-export function AppSidebar(props: { username: string }) {
-
-  // get username
-  // get path from URL
-  // parallel rendering for upload/new classroom
-  const items = new Map([
-    ["enrolled", {
+const items = {
+  enrolled: {
     title: "Enrolled",
     url: "/classroom",
     icon: BookText,
     isActive: false,
-  }],
-  ["adminManaged", {
+  },
+  adminManage: {
     title: "Manage courses",
     url: "/classroom",
     icon: UserRoundCog,
-    isActive: false,}]])
+    isActive: false,
+  },
+};
 
-  const pathname = usePathname()
-  const activePageHierarchy = getPageAspectsByPath(pathname)
-  if (activePageHierarchy?.classroomLanding){
-    items.get("enrolled").isActive = true
+const enrolledClassItems = {
+  chat: {
+    title: "Personal Assistant",
+    suffixURL: "/chat",
+    icon: SpeechIcon,
+    isActive: false,
+  },
+};
+
+// const manageClassItems = {
+//   chat: {
+//     title: "Personal Assistant",
+//     suffixURL: "/chat",
+//     icon: SpeechIcon,
+//     isActive: false,
+//   },
+//   upload: {
+//     title: "Material Uploading",
+//     suffixURL: "/upload",
+//     icon: UploadIcon,
+//     isActive: false,
+//   }
+// }
+
+export function AppSidebar(props: { username: string }) {
+  // get username
+  // get path from URL
+  // parallel rendering for upload/new classroom
+
+  const pathname = usePathname();
+  const activePageHierarchy = getPageAspectsByPath(pathname);
+  if (activePageHierarchy?.classroomLanding) {
+    items.enrolled.isActive = true;
+  }
+
+  if (activePageHierarchy?.activeClassroom) {
+    items.enrolled.isActive = true;
+    // enrolledClassItems.
   }
   // items[0].subItems[0].subitems?.push("")
-  
+
   return (
     <Sidebar
       style={{
@@ -182,24 +211,75 @@ export function AppSidebar(props: { username: string }) {
           </SidebarGroupContent>
         </SidebarGroup> */}
         <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-      <SidebarMenu>
-        {items.values().map((item) => (
-          // <Collapsible
-          //   key={item.title}
-          //   asChild
-          //   defaultOpen={item.isActive}
-          //   className="group/collapsible"
-          // >
-            <SidebarMenuItem key = {item.title}>
-              {/* <CollapsibleTrigger asChild> */}
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
+          <SidebarGroupLabel>Classes</SidebarGroupLabel>
+          <SidebarMenu>
+            {Object.values(items).map((item) => (
+              // <Collapsible
+              //   key={item.title}
+              //   asChild
+              //   defaultOpen={item.isActive}
+              //   className="group/collapsible"
+              // >
+              <SidebarMenuItem key={item.title}>
+                {/* <CollapsibleTrigger asChild> */}
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  isActive={item.isActive}
+                  asChild
+                >
+                  <a href={item.url}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </a>
                   {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
                 </SidebarMenuButton>
-              {/* </CollapsibleTrigger> */}
-              {/* <CollapsibleContent>
+                {/* </CollapsibleTrigger> */}
+                {/* <CollapsibleContent>
+                <SidebarMenuSub> */}
+                {/* {item.subItems?.map((subItem) => (
+                    <SidebarMenuSubItem key={subItem.title}>
+                      <SidebarMenuSubButton asChild>
+                        <a href={subItem.url}>
+                          <span>{subItem.title}</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ))} */}
+                {/* </SidebarMenuSub> */}
+                {/* </CollapsibleContent> */}
+              </SidebarMenuItem>
+              // </Collapsible>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        {activePageHierarchy?.activeClassroom && (
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              {activePageHierarchy?.activeClassroom?.id}
+            </SidebarGroupLabel>
+            <SidebarMenu>
+              {Object.values(enrolledClassItems).map((item) => (
+                // <Collapsible
+                //   key={item.title}
+                //   asChild
+                //   defaultOpen={item.isActive}
+                //   className="group/collapsible"
+                // >
+                <SidebarMenuItem key={item.title}>
+                  {/* <CollapsibleTrigger asChild> */}
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    isActive={item.isActive}
+                    asChild
+                  >
+                    <a href={item.suffixURL}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </a>
+                    {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
+                  </SidebarMenuButton>
+                  {/* </CollapsibleTrigger> */}
+                  {/* <CollapsibleContent>
                 <SidebarMenuSub> */}
                   {/* {item.subItems?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
@@ -210,14 +290,14 @@ export function AppSidebar(props: { username: string }) {
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))} */}
-                {/* </SidebarMenuSub> */}
-              {/* </CollapsibleContent> */}
-            </SidebarMenuItem>
-          // </Collapsible>
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
-      
+                  {/* </SidebarMenuSub> */}
+                  {/* </CollapsibleContent> */}
+                </SidebarMenuItem>
+                // </Collapsible>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>

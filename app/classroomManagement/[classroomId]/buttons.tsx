@@ -3,11 +3,15 @@
 
 // import { getCurrentUserId, retrieveClassroomData } from "../../classroom/actions";
 "use client";
-import { archiveClassroom, changeClassroomName } from "../../classroom/actions";
+import {
+  archiveClassroom,
+  changeClassroomName,
+  deleteClassroom,
+} from "../../classroom/actions";
 import InviteMember from "./inviteMember";
 
 interface ClassroomManagementButtonsProps {
-  classroomId: number; // Expecting number directly, not an object
+  classroomId: number;
 }
 
 export default function ClassroomManagementButtons({
@@ -18,9 +22,7 @@ export default function ClassroomManagementButtons({
   const classroomIdNumber = Number(classroomId);
 
   const archiveClassroomFunction = async (classroomId: number) => {
-    console.log("HEY");
     try {
-      console.log("HEY");
       await archiveClassroom(classroomId);
     } catch {
       console.error("Error occurred while archiving the classroom");
@@ -38,6 +40,26 @@ export default function ClassroomManagementButtons({
     }
   };
 
+  const deleteClassroomFunction = async (classroomId: number) => {
+    const confirmation = window.confirm(
+      "Are you sure? This action can't be undone."
+    );
+    if (confirmation) {
+      try {
+        await deleteClassroom(classroomId);
+      } catch (error: unknown) {
+        // Handle the error, checking if it is an instance of Error
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error("Error occurred");
+        }
+      }
+    } else {
+      console.log("Classroom deletion cancelled.");
+    }
+  };
+
   return (
     <div>
       {/* ARCHIVE BUTTON */}
@@ -47,6 +69,14 @@ export default function ClassroomManagementButtons({
         onClick={() => archiveClassroomFunction(classroomIdNumber)}
       >
         Archive
+      </button>
+
+      <button
+        type="button"
+        className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+        onClick={() => deleteClassroomFunction(classroomIdNumber)}
+      >
+        Delete
       </button>
 
       {/* CHANGE NAME BUTTON */}

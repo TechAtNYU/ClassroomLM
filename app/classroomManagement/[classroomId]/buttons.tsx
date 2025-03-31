@@ -4,6 +4,7 @@
 // import { getCurrentUserId, retrieveClassroomData } from "../../classroom/actions";
 "use client";
 import { archiveClassroom, changeClassroomName } from "../../classroom/actions";
+import InviteMember from "./inviteMember";
 
 interface ClassroomManagementButtonsProps {
   classroomId: number; // Expecting number directly, not an object
@@ -56,6 +57,9 @@ export default function ClassroomManagementButtons({
       >
         Change Name
       </button>
+
+      <p>Invite Member:</p>
+      <InviteMember classroomId={classroomId} />
     </div>
   );
 }

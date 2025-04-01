@@ -36,9 +36,6 @@ export default async function RootLayout({
 }>) {
   const userData = await getUserAndClassroomData();
   // TODO: change this?
-  if (!userData) {
-    return <h1>Server error, please reload</h1>;
-  }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -55,18 +52,22 @@ export default async function RootLayout({
           enableSystem
           // disableTransitionOnChange
         >
-          <SidebarProvider>
-            <UserContextProvider userAndClassDataInitial={userData}>
-              <AppSidebar />
-              <SidebarInset>
-                <main>
-                  <SidebarTrigger />
-                  {children}
-                </main>
-                <Toaster />
-              </SidebarInset>
-            </UserContextProvider>
-          </SidebarProvider>
+          {userData ? (
+            <SidebarProvider>
+              <UserContextProvider userAndClassDataInitial={userData}>
+                <AppSidebar />
+                <SidebarInset>
+                  <main>
+                    <SidebarTrigger />
+                    {children}
+                  </main>
+                  <Toaster />
+                </SidebarInset>
+              </UserContextProvider>
+            </SidebarProvider>
+          ) : (
+            <main>{children}</main>
+          )}
         </ThemeProvider>
       </body>
     </html>

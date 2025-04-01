@@ -29,6 +29,10 @@ export async function getUserAndClassroomData(): Promise<UserWithClassroomsData 
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
 
+  // if just this errors, it's fine cause they're probably just logged out
+  if (userError) {
+    return null;
+  }
   const { data, error } = await supabase.from("Classrooms").select(`
         *,
         Classroom_Members (
@@ -43,9 +47,9 @@ export async function getUserAndClassroomData(): Promise<UserWithClassroomsData 
         )
       `);
 
-  if (error || userError) {
+  if (error) {
     console.log(
-      "Fetching user and classroom data within main layout context, supabase error: ",
+      "Fetching classroom data within main layout context, supabase error: ",
       error
     );
     return null;

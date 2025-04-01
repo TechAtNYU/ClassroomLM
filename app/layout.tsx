@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
-import { createClient } from "@/utils/supabase/server";
 import { cn } from "./lib/utils";
+import UserContextProvider from "./lib/userContext/userContext";
+import { getUserAndClassroomData } from "./lib/userContext/contextFetcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,8 +35,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser()
+
+  const userData = await getUserAndClassroomData();
+  // TODO: change this?
+  if (!userData){
+    return (
+      <h1>Server error, please reload</h1>
+    )
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -45,10 +53,11 @@ export default async function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
+          // disableTransitionOnChange
         >
           <SidebarProvider>
-            <AppSidebar username={user.data.user?.user_metadata.full_name ?? "Username"}/>
+          <UserContextProvider userAndClassDataInitial={userData}>
+            <AppSidebar/>
             <SidebarInset>
               <main>
                 <SidebarTrigger />
@@ -56,9 +65,11 @@ export default async function RootLayout({
               </main>
               <Toaster />
             </SidebarInset>
+          </UserContextProvider>
           </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
+

@@ -2,9 +2,9 @@
 import { useContext, useState } from "react";
 import { newClassroom } from "./actions";
 import Link from "next/link";
-import { getUserAndClassroomData } from "../lib/userContext/contextFetcher";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserContext } from "../lib/userContext/userContext";
+import { UserContext } from "@/app/lib/userContext/userContext";
+import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
 
 export default function NewClassroomPage() {
   const [className, setClassName] = useState("");

@@ -3,7 +3,6 @@
 
 import ClassroomList from "./classroomList";
 export default async function ClassroomPage() {
-
   // This below moved to classroom list itself since we can only retrieve the class data from context
   // within a client component, dont want to make a whole new retrieve just for a check
   // const classData = await retrieveClassroomData(userId);
@@ -17,8 +16,7 @@ export default async function ClassroomPage() {
   // }
   return (
     <>
-      <ClassroomList
-      />
+      <ClassroomList />
     </>
   );
 }

@@ -6,7 +6,6 @@ import { deleteDataset } from "../lib/ragflow/dataset-client";
 const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
-
 export async function deleteClassroom(classroom_id: number) {
   // Deleting Associated Supabase
   const supabase = await createClient();
@@ -95,7 +94,6 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
   return data || [];
 }
 
-
 export async function getUserClassrooms() {
   const supabase = await createClient();
   const { data, error } = await supabase.from("Classrooms").select(`
@@ -177,7 +175,10 @@ export async function changeClassroomName(
   return data;
 }
 
-export async function setArchiveStatusClassroom(classroom_id: number, status: boolean) {
+export async function setArchiveStatusClassroom(
+  classroom_id: number,
+  status: boolean
+) {
   const supabase = await createServiceClient();
 
   const { data, error } = await supabase

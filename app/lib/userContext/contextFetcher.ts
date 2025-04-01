@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { Tables } from "@/utils/supabase/database.types";
 import { createClient } from "@/utils/supabase/server";
 import { User } from "@supabase/supabase-js";
@@ -57,9 +57,9 @@ export async function getCurrentUserId(): Promise<string | null> {
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
 
-  if (userError || !userData?.user){
+  if (userError || !userData?.user) {
     return null;
   }
 
-  return userData.user.id
+  return userData.user.id;
 }

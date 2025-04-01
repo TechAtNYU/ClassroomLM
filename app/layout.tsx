@@ -34,20 +34,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-
   const userData = await getUserAndClassroomData();
   // TODO: change this?
-  if (!userData){
-    return (
-      <h1>Server error, please reload</h1>
-    )
+  if (!userData) {
+    return <h1>Server error, please reload</h1>;
   }
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn(`antialiased font-sans`,geistSans.variable, geistMono.variable)}
+        className={cn(
+          `font-sans antialiased`,
+          geistSans.variable,
+          geistMono.variable
+        )}
       >
         <ThemeProvider
           attribute="class"
@@ -56,20 +56,19 @@ export default async function RootLayout({
           // disableTransitionOnChange
         >
           <SidebarProvider>
-          <UserContextProvider userAndClassDataInitial={userData}>
-            <AppSidebar/>
-            <SidebarInset>
-              <main>
-                <SidebarTrigger />
-                {children}
-              </main>
-              <Toaster />
-            </SidebarInset>
-          </UserContextProvider>
+            <UserContextProvider userAndClassDataInitial={userData}>
+              <AppSidebar />
+              <SidebarInset>
+                <main>
+                  <SidebarTrigger />
+                  {children}
+                </main>
+                <Toaster />
+              </SidebarInset>
+            </UserContextProvider>
           </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-

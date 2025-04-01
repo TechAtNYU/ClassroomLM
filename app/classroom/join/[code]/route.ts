@@ -27,7 +27,7 @@ export async function GET(
   //ensures that the user is authenticated
   const userId = await getCurrentUserId();
 
-  if (!userId){
+  if (!userId) {
     console.error("User is not authenticated");
     //login page
     return NextResponse.redirect(new URL("/login", request.url));

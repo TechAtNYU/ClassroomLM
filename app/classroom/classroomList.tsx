@@ -39,7 +39,7 @@ export default function ClassroomList() {
   /**
    * Called "optimistic" because it changes the data in the UI (eg. the name or deletes
    * the classroom) without waiting for it to see if the actual database was successful.
-   * So the flow: update the UI, call the action, refresh with the actual database data 
+   * So the flow: update the UI, call the action, refresh with the actual database data
    * (which 99% of the time) will match what you optimistically update with anyway
    * Check uses of this below
    * @param classroomId classId to change

@@ -19,7 +19,7 @@ type PageStructure =
     }>
   | undefined;
 
-  // TODO: once structure is finalized, fix this
+// TODO: once structure is finalized, fix this
 export function getPageAspectsByPath(pathname: string): PageStructure {
   if (pathname == "/") {
     return undefined;

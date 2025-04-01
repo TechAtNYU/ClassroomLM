@@ -10,6 +10,7 @@ import {
   ChevronUp,
   UserRoundCog,
   SpeechIcon,
+  UploadIcon,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -24,6 +25,9 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarGroupLabel,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarMenuSub,
 } from "@/components/ui/sidebar";
 
 import {
@@ -35,6 +39,10 @@ import {
 import { ModeToggle } from "./mode-toggle";
 import { usePathname } from "next/navigation";
 import { getPageAspectsByPath } from "./nav-utils";
+import { Skeleton } from "../skeleton";
+import { useContext } from "react";
+import { UserContext } from "@/app/lib/userContext/userContext";
+import { ClassroomWithMembers } from "@/app/lib/userContext/contextFetcher";
 
 // Menu items.
 // const items = [
@@ -82,60 +90,86 @@ import { getPageAspectsByPath } from "./nav-utils";
 //   //   subItems: [],
 //   // },
 // ];
-const items = {
-  enrolled: {
-    title: "Enrolled",
-    url: "/classroom",
-    icon: BookText,
-    isActive: false,
-  },
-  adminManage: {
-    title: "Manage courses",
-    url: "/classroom",
-    icon: UserRoundCog,
-    isActive: false,
-  },
-};
 
-const enrolledClassItems = {
-  chat: {
-    title: "Personal Assistant",
-    suffixURL: "/chat",
-    icon: SpeechIcon,
-    isActive: false,
-  },
-};
-
-// const manageClassItems = {
-//   chat: {
-//     title: "Personal Assistant",
-//     suffixURL: "/chat",
-//     icon: SpeechIcon,
-//     isActive: false,
-//   },
-//   upload: {
-//     title: "Material Uploading",
-//     suffixURL: "/upload",
-//     icon: UploadIcon,
-//     isActive: false,
-//   }
-// }
-
-export function AppSidebar(props: { username: string }) {
+export function AppSidebar() {
+  // props: { userData: User | null }
   // get username
   // get path from URL
   // parallel rendering for upload/new classroom
 
+  // make items bigger
+
+  const items = {
+    enrolled: {
+      title: "Enrolled",
+      url: "/classroom",
+      icon: BookText,
+      isActive: false,
+    },
+    adminManage: {
+      title: "Manage courses",
+      url: "/classroom",
+      icon: UserRoundCog,
+      isActive: false,
+    },
+  };
+
+  const enrolledClassItems = {
+    chat: {
+      title: "Personal Assistant",
+      suffixURL: "/chat",
+      icon: SpeechIcon,
+      isActive: false,
+    },
+  };
+
+  const adminManageClassItems = {
+    chat: {
+      title: "Personal Assistant",
+      suffixURL: "/chat",
+      icon: SpeechIcon,
+      isActive: false,
+    },
+    upload: {
+      title: "Material Uploading",
+      suffixURL: "upload",
+      icon: UploadIcon,
+      isActive: false,
+    },
+  };
+
   const pathname = usePathname();
   const activePageHierarchy = getPageAspectsByPath(pathname);
+  console.log(activePageHierarchy);
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    return (
+      <div className="flex items-center space-x-4">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
+  const user = userContext.userAndClassData.userData;
+  const username = user.user_metadata?.full_name ?? "User Name";
+
+  let classroomInfo: ClassroomWithMembers | undefined,
+    isAdminOfActiveClass: boolean = false;
   if (activePageHierarchy?.classroomLanding) {
     items.enrolled.isActive = true;
+  } else if (activePageHierarchy?.activeClassroom) {
+    classroomInfo = userContext.userAndClassData.classroomsData.find(
+      (x) => x.id === activePageHierarchy?.activeClassroom.id
+    );
+    isAdminOfActiveClass = user.id === classroomInfo?.admin_user_id;
   }
-
-  if (activePageHierarchy?.activeClassroom) {
-    items.enrolled.isActive = true;
-    // enrolledClassItems.
-  }
+  // } else if (activePageHierarchy?.activeClassroom) {
+  //   items.enrolled.isActive = true;
+  //   // enrolledClassItems.
+  // }
   // items[0].subItems[0].subitems?.push("")
 
   return (
@@ -213,60 +247,51 @@ export function AppSidebar(props: { username: string }) {
         <SidebarGroup>
           <SidebarGroupLabel>Classes</SidebarGroupLabel>
           <SidebarMenu>
-            {Object.values(items).map((item) => (
-              // <Collapsible
-              //   key={item.title}
-              //   asChild
-              //   defaultOpen={item.isActive}
-              //   className="group/collapsible"
-              // >
+            {Object.entries(items).map(([itemKey, item]) => (
               <SidebarMenuItem key={item.title}>
-                {/* <CollapsibleTrigger asChild> */}
                 <SidebarMenuButton
                   tooltip={item.title}
                   isActive={item.isActive}
                   asChild
+                  // size="lg"
                 >
                   <a href={item.url}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                   </a>
-                  {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
                 </SidebarMenuButton>
-                {/* </CollapsibleTrigger> */}
-                {/* <CollapsibleContent>
-                <SidebarMenuSub> */}
-                {/* {item.subItems?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))} */}
-                {/* </SidebarMenuSub> */}
-                {/* </CollapsibleContent> */}
+                {activePageHierarchy?.activeClassroom &&
+                  classroomInfo &&
+                  ((itemKey == "enrolled" && !isAdminOfActiveClass) ||
+                    (itemKey == "adminManage" && isAdminOfActiveClass)) && (
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem
+                        key={activePageHierarchy?.activeClassroom?.id}
+                      >
+                        <SidebarMenuSubButton
+                          // size="md"
+                          isActive
+                        >
+                          {/* {item.icon && <item.icon />} */}
+                          <span>{classroomInfo.name}</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  )}
               </SidebarMenuItem>
-              // </Collapsible>
             ))}
           </SidebarMenu>
         </SidebarGroup>
-        {activePageHierarchy?.activeClassroom && (
+        {activePageHierarchy?.activeClassroom && classroomInfo && (
           <SidebarGroup>
-            <SidebarGroupLabel>
-              {activePageHierarchy?.activeClassroom?.id}
-            </SidebarGroupLabel>
+            <SidebarGroupLabel>{classroomInfo.name}</SidebarGroupLabel>
             <SidebarMenu>
-              {Object.values(enrolledClassItems).map((item) => (
-                // <Collapsible
-                //   key={item.title}
-                //   asChild
-                //   defaultOpen={item.isActive}
-                //   className="group/collapsible"
-                // >
+              {Object.values(
+                isAdminOfActiveClass
+                  ? adminManageClassItems
+                  : enrolledClassItems
+              ).map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  {/* <CollapsibleTrigger asChild> */}
                   <SidebarMenuButton
                     tooltip={item.title}
                     isActive={item.isActive}
@@ -276,24 +301,8 @@ export function AppSidebar(props: { username: string }) {
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </a>
-                    {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
                   </SidebarMenuButton>
-                  {/* </CollapsibleTrigger> */}
-                  {/* <CollapsibleContent>
-                <SidebarMenuSub> */}
-                  {/* {item.subItems?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))} */}
-                  {/* </SidebarMenuSub> */}
-                  {/* </CollapsibleContent> */}
                 </SidebarMenuItem>
-                // </Collapsible>
               ))}
             </SidebarMenu>
           </SidebarGroup>
@@ -309,7 +318,8 @@ export function AppSidebar(props: { username: string }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {props.username ?? "Username"}
+                  <User2 />
+                  {username}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

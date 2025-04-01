@@ -148,7 +148,7 @@ export default function ClassroomList({
                   <CardContent>
                     {classroom.Classroom_Members &&
                       classroom.Classroom_Members.length > 0 && (
-                        <MemberList classroom={classroom} />
+                        <MemberList classroom={classroom} enableDeletion={false} />
                       )}
                     {/* <p>Invite Member:</p>
                     <InviteMember
@@ -327,7 +327,7 @@ export default function ClassroomList({
                 Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
               </p>
 
-              {classroom.Classroom_Members &&
+              {/* {classroom.Classroom_Members &&
                 classroom.Classroom_Members.length > 0 && (
                   <div>
                     <h3>Members:</h3>
@@ -337,7 +337,7 @@ export default function ClassroomList({
                       ))}
                     </ul>
                   </div>
-                )}
+                )} */}
 
               {/* <InviteMember
                classroomId={classroom.id}

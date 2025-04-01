@@ -13,12 +13,21 @@ import { DataTable } from "@/components/ui/data-table";
 
 export default function MemberList({
   classroom,
+  enableDeletion,
 }: {
   classroom: ClassroomWithMembers;
+  enableDeletion: boolean;
 }) {
   if (!classroom.Classroom_Members) {
     return <h1>No members found!</h1>;
   }
+
+  const handleDelete = (memberId:any) => {
+    console.log("ID:" + memberId);
+  }
+
+  
+
   // other table implementation: https://data-table.openstatus.dev/
   return (
     <Sheet>
@@ -37,10 +46,25 @@ export default function MemberList({
 
           {/* todo future, for smaller screens, make the width even smaller */}
           <div className="w-[50vw]">
-            <DataTable
-              columns={columns}
-              data={classroom.Classroom_Members.map((x) => x.Users)}
-            />
+          <DataTable
+            columns={[
+              ...columns,
+              ...(enableDeletion
+                ? [
+                    {
+                      id: "actions",
+                      header: "Manage",
+                      cell: ({ row }) => (
+                        <button onClick={() => handleDelete("123")}>
+                          Delete
+                        </button>
+                      ),
+                    },
+                  ]
+                : []),
+            ]}
+            data={classroom.Classroom_Members.map((x) => x.Users)}
+          />
           </div>
         </SheetHeader>
       </SheetContent>

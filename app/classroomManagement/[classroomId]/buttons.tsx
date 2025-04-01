@@ -10,6 +10,7 @@ import {
 } from "../../classroom/actions";
 import InviteMember from "./inviteMember";
 import Link from "next/link";
+import MemberList from "../../classroom/memberList";
 
 interface ClassroomManagementButtonsProps {
   classroomId: number;

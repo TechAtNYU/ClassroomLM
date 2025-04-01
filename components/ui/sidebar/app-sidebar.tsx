@@ -140,7 +140,7 @@ export function AppSidebar() {
 
   const pathname = usePathname();
   const activePageHierarchy = getPageAspectsByPath(pathname);
-  console.log(activePageHierarchy);
+
   const userContext = useContext(UserContext);
   if (!userContext) {
     return (

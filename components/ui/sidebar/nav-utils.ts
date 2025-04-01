@@ -1,5 +1,3 @@
-import { createClient } from "@/utils/supabase/client";
-
 type PageStructure =
   | PickOne<{
       classroomLanding: PickOne<{
@@ -21,6 +19,7 @@ type PageStructure =
     }>
   | undefined;
 
+  // TODO: once structure is finalized, fix this
 export function getPageAspectsByPath(pathname: string): PageStructure {
   if (pathname == "/") {
     return undefined;
@@ -41,23 +40,6 @@ export function getPageAspectsByPath(pathname: string): PageStructure {
   }
 
   return { activeClassroom: { id: Number(id), activeSubPage: subPage } };
-}
-
-export async function getClassInfoById(classroomId: number) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("Classrooms")
-    .select("*")
-    .eq("id", classroomId)
-    .single();
-
-  if (error) {
-    console.log("Sidebar: error retrieving classroom info");
-    return undefined;
-  }
-
-  return data;
 }
 
 type PickOne<T> = {

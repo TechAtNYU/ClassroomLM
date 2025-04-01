@@ -1,5 +1,4 @@
 "use server";
-import { createClient } from "@/utils/supabase/server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 
 // const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
@@ -64,16 +63,4 @@ export async function newClassroom(name: string, id: string) {
   }
 
   return data;
-}
-
-export async function getCurrentUserId() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw Error("No authenticated user found");
-  }
-  return user.id;
 }

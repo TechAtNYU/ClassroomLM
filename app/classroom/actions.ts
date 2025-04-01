@@ -1,53 +1,11 @@
 "use server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
-import { Tables } from "@/utils/supabase/database.types";
 import { deleteDataset } from "../lib/ragflow/dataset-client";
 
-export interface ClassroomWithMembers extends Tables<"Classrooms"> {
-  Classroom_Members?: Array<{
-    id: number;
-    classroom_id: number;
-    Users: {
-      id: string;
-      email: string;
-      full_name: string;
-      avatar_url: string;
-    };
-  }>;
-}
 const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
-// export async function getCurrentUserID2() {
-//   const supabase = createServiceClient();
-
-//   const { data: { user } } = await supabase.auth.getUser()
-
-//   // // Get the current user using the updated method
-//   // const { data: user, error } = await supabase.auth.getUser();
-
-//   // if (error) {
-//   //   throw new Error(error.message);
-//   // }
-
-//   // if (!user) {
-//   //   throw new Error("No user is logged in");
-//   // }
-
-//   // return user.id; // Return the current user's ID
-// }
-export async function getCurrentUserId() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw Error("No authenticated user found");
-  }
-  return user.id;
-}
 
 export async function deleteClassroom(classroom_id: number) {
   // Deleting Associated Supabase
@@ -137,19 +95,6 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
   return data || [];
 }
 
-// export async function getClassroomAdminID(classroom_id: number) {
-//   const supabase = await createClient();
-//   const { data, error } = await supabase
-//     .from("Classrooms")
-//     .select("admin_user_id")
-//     .eq("id", classroom_id);
-
-//   if (error) {
-//     throw new Error(error.message);
-//   }
-
-//   return data[0]?.admin_user_id || null;
-// }
 
 export async function getUserClassrooms() {
   const supabase = await createClient();
@@ -170,24 +115,6 @@ export async function getUserClassrooms() {
     throw new Error(error.message);
   }
   return data || [];
-}
-
-export async function retrieveClassroomData(userId: string) {
-  const classrooms = await getUserClassrooms();
-
-  // if (!classrooms || classrooms.length === 0) {
-  //   return;
-  // }
-
-  const validAdminClasses = classrooms.filter(
-    (classroom) => classroom.admin_user_id == userId
-  );
-
-  const validNonAdminClasses = classrooms.filter(
-    (classroom) => classroom.admin_user_id != userId
-  );
-
-  return { validAdminClasses, validNonAdminClasses };
 }
 
 export async function inviteMemberToClassroom(
@@ -250,34 +177,17 @@ export async function changeClassroomName(
   return data;
 }
 
-export async function archiveClassroom(classroom_id: number) {
+export async function setArchiveStatusClassroom(classroom_id: number, status: boolean) {
   const supabase = await createServiceClient();
 
   const { data, error } = await supabase
     .from("Classrooms")
-    .update({ archived: true })
+    .update({ archived: status })
     .eq("id", classroom_id)
     .select();
 
   if (error) {
-    console.error("Error archiving classroom:", error);
-    return { success: false, error: error.message };
-  }
-
-  return { success: true, data };
-}
-
-export async function unarchiveClassroom(classroom_id: number) {
-  const supabase = await createServiceClient();
-
-  const { data, error } = await supabase
-    .from("Classrooms")
-    .update({ archived: false })
-    .eq("id", classroom_id)
-    .select();
-
-  if (error) {
-    console.error("Error unarchiving classroom:", error);
+    console.error("Error setting archive status classroom:", error);
     return { success: false, error: error.message };
   }
 

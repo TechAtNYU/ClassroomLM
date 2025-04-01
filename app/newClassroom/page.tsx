@@ -1,29 +1,46 @@
 "use client";
-import { useState } from "react";
-import { newClassroom, getCurrentUserId } from "./actions";
+import { useContext, useState } from "react";
+import { newClassroom } from "./actions";
 import Link from "next/link";
+import { getUserAndClassroomData } from "../lib/userContext/contextFetcher";
+import { Skeleton } from "@/components/ui/skeleton";
+import { UserContext } from "../lib/userContext/userContext";
 
 export default function NewClassroomPage() {
   const [className, setClassName] = useState("");
   const [resultText, setResultText] = useState("");
+
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    return (
+      <div className="flex items-center space-x-4">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
+  const { setUserAndClassData, userAndClassData } = userContext;
+  const userId = userAndClassData.userData.id;
+
   const addClassroom = async () => {
-    try {
-      const userId = await getCurrentUserId();
-      const result = await newClassroom(className, userId);
-      if (!result) {
-        setResultText(`Error while making classroom!`);
-        return;
-      }
-      setResultText(`Created classroom ${className} successfully!`);
-    } catch (error: unknown) {
-      //type unknown for typescript lint
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Error Occured");
-      }
+    const result = await newClassroom(className, userId);
+    if (!result) {
+      setResultText(`Error while making classroom!`);
+      return;
     }
+    setResultText(`Created classroom ${className} successfully!`);
     setClassName("");
+    refreshClassrooms();
+  };
+
+  const refreshClassrooms = async () => {
+    const refreshedData = await getUserAndClassroomData();
+    if (refreshedData) {
+      setUserAndClassData(refreshedData);
+    }
   };
 
   return (

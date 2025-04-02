@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service-server";
-import { getCurrentUserId } from "../../actions";
+import { getCurrentUserId } from "@/app/lib/userContext/contextFetcher";
 
 export async function GET(
   request: NextRequest,
@@ -25,11 +25,10 @@ export async function GET(
   }
 
   //ensures that the user is authenticated
-  let userId: string;
-  try {
-    userId = await getCurrentUserId();
-  } catch (err) {
-    console.error("User is not authenticated:", err);
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    console.error("User is not authenticated");
     //login page
     return NextResponse.redirect(new URL("/login", request.url));
   }

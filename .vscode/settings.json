@@ -5,7 +5,8 @@
     "Ragflow",
     "supabase",
     "taskrun",
-    "tekton"
+    "tekton",
+    "turbopack"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,

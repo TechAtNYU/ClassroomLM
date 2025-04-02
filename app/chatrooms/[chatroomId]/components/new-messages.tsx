@@ -116,6 +116,7 @@ const NewMessages = ({
                 <Image
                   src={message.avatar_url}
                   alt={message.full_name || "User"}
+                  referrerPolicy="no-referrer"
                   width={25}
                   height={25}
                 />

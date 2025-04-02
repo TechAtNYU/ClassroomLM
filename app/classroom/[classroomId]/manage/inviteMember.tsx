@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { inviteMemberToClassroom } from "../../classroom/actions";
+import { inviteMemberToClassroom } from "../../actions";
 
 export default function InviteMember({ classroomId }: { classroomId: number }) {
   const [email, setEmail] = useState("");

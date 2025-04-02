@@ -1,130 +1,64 @@
 "use client";
-import { useState } from "react";
+import { useContext } from "react";
 import {
+  changeClassroomName,
   deleteClassroom,
   leaveClassroom,
-  retrieveClassroomData,
-  changeClassroomName,
-  ClassroomWithMembers,
-  archiveClassroom,
-  unarchiveClassroom,
+  setArchiveStatusClassroom,
 } from "./actions";
-import { Tables } from "@/utils/supabase/database.types";
 import Link from "next/link";
-import NewClassroomButton from "./newClassroomButton";
 import MemberList from "./memberList";
+import {
+  ClassroomWithMembers,
+  getUserAndClassroomData,
+} from "../lib/userContext/contextFetcher";
+import { UserContext } from "../lib/userContext/userContext";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
   CardDescription,
-  // CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { optimisticUpdateAndFetchClassroomData } from "./clientUtils";
 
-export default function ClassroomList({
-  userId,
-  initialAdminData,
-  initialMemberData,
-}: {
-  userId: string;
-  initialAdminData: Tables<"Classrooms">[];
-  initialMemberData: Tables<"Classrooms">[];
-}) {
-  const [adminClasses, setAdminClassrooms] = useState(initialAdminData);
-  const [memberClasses, setMemberClassrooms] = useState(initialMemberData);
+export default function ClassroomList() {
+  const userContext = useContext(UserContext);
+  // If the userContext is undefined still, give loading visual
+  if (!userContext) {
+    return (
+      <div className="flex items-center space-x-4">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
 
-  const deleteClassroomAndFetch = async (classroomId: number) => {
-    try {
-      await deleteClassroom(classroomId);
-      refreshClassrooms();
-    } catch (error: unknown) {
-      //type unknown for typescript lint
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Error Occured");
-      }
-    }
-  };
-
-  const archiveClassroomAndFetch = async (classroomId: number) => {
-    try {
-      setAdminClassrooms((prevClasses) =>
-        prevClasses.map((classroom) =>
-          classroom.id === classroomId
-            ? { ...classroom, archived: true }
-            : classroom
-        )
-      );
-      await archiveClassroom(classroomId);
-      refreshClassrooms();
-    } catch {
-      console.error("Error occurred while archiving the classroom");
-    }
-  };
-
-  const unarchiveClassroomAndFetch = async (classroomId: number) => {
-    try {
-      setAdminClassrooms((prevClasses) =>
-        prevClasses.map((classroom) =>
-          classroom.id === classroomId
-            ? { ...classroom, archived: false }
-            : classroom
-        )
-      );
-      await unarchiveClassroom(classroomId);
-      refreshClassrooms();
-    } catch {
-      console.error("Error occurred while archiving the classroom");
-    }
-  };
+  // get the data and setter from the context (these are just a regular useState, so treat them like that)
+  const { setUserAndClassData, userAndClassData } = userContext;
+  const userId = userAndClassData.userData.id;
 
   const handleChangeClassroomName = async (classroomId: number) => {
     const newName = window.prompt("Enter new class name:");
     if (newName !== null && newName !== "") {
-      setAdminClassrooms((prevClasses) =>
-        prevClasses.map((classroom) =>
-          classroom.id === classroomId
-            ? { ...classroom, name: newName }
-            : classroom
-        )
+      optimisticUpdateAndFetchClassroomData(
+        classroomId,
+        async () => changeClassroomName(classroomId, newName),
+        { name: newName },
+        setUserAndClassData,
+        refreshClassrooms
       );
-
-      try {
-        await changeClassroomName(classroomId, newName);
-      } catch (error) {
-        console.error("Error changing classroom name:", error);
-        setAdminClassrooms((prevClasses) =>
-          prevClasses.map((classroom) =>
-            classroom.id === classroomId
-              ? { ...classroom, name: classroom.name }
-              : classroom
-          )
-        );
-      }
-    }
-  };
-
-  const leaveClassroomAndFetch = async (classroomId: number) => {
-    try {
-      await leaveClassroom(classroomId, userId);
-      refreshClassrooms();
-    } catch (error: unknown) {
-      //type unknown for typescript lint
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Error Occured");
-      }
     }
   };
 
   const refreshClassrooms = async () => {
-    const refreshedData = await retrieveClassroomData(userId);
+    const refreshedData = await getUserAndClassroomData();
     if (refreshedData) {
-      setAdminClassrooms(refreshedData.validAdminClasses);
-      setMemberClassrooms(refreshedData.validNonAdminClasses);
+      setUserAndClassData(refreshedData);
     }
   };
 
@@ -148,7 +82,10 @@ export default function ClassroomList({
                   <CardContent>
                     {classroom.Classroom_Members &&
                       classroom.Classroom_Members.length > 0 && (
-                        <MemberList classroom={classroom} enableDeletion={false} />
+                        <MemberList
+                          classroom={classroom}
+                          enableDeletion={false}
+                        />
                       )}
                     {/* <p>Invite Member:</p>
                     <InviteMember
@@ -163,40 +100,46 @@ export default function ClassroomList({
                         Chat!
                       </button>
                     </Link>
-                    {/* <button
-                      type="button"
-                      className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                      onClick={
-                        isAdmin
-                          ? () => deleteClassroomAndFetch(classroom.id)
-                          : () => leaveClassroomAndFetch(classroom.id)
-                      }
-                    >
-                      {isAdmin ? "Delete Classroom" : "Leave Classroom"}
-                    </button> */}
 
                     {!isAdmin && (
-                      <button
-                        type="button"
-                        className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                        onClick={() => leaveClassroomAndFetch(classroom.id)}
-                      >
-                        Leave Classroom
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                      onClick={() =>
+                        optimisticUpdateAndFetchClassroomData(
+                          classroom.id,
+                          async () => leaveClassroom(classroom.id, userId),
+                          "remove",
+                          setUserAndClassData,
+                          refreshClassrooms
+                        )
+                      }
+                    >
+                    Leave Classroom
+                    </button>)
+                  }
 
                     {isAdmin && (
                       <button
                         type="button"
                         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                        onClick={() => archiveClassroomAndFetch(classroom.id)}
+                        onClick={() =>
+                          optimisticUpdateAndFetchClassroomData(
+                            classroom.id,
+                            async () =>
+                              setArchiveStatusClassroom(classroom.id, true),
+                            { archived: true },
+                            setUserAndClassData,
+                            refreshClassrooms
+                          )
+                        }
                       >
                         Archive
                       </button>
                     )}
 
                     {isAdmin && (
-                      <Link href={`../upload/${classroom.id}`} passHref>
+                      <Link href={`upload`} passHref>
                         <button
                           type="button"
                           className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
@@ -208,7 +151,7 @@ export default function ClassroomList({
 
                     {isAdmin && (
                       <Link
-                        href={`../classroomManagement/${classroom.id}`}
+                        href={`/classroom/${classroom.id}/manage`}
                         passHref
                       >
                         <button
@@ -354,10 +297,16 @@ export default function ClassroomList({
               <button
                 type="button"
                 className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                onClick={
-                  isAdmin
-                    ? () => deleteClassroomAndFetch(classroom.id)
-                    : () => leaveClassroomAndFetch(classroom.id)
+                onClick={() =>
+                  optimisticUpdateAndFetchClassroomData(
+                    classroom.id,
+                    isAdmin
+                      ? async () => deleteClassroom(classroom.id)
+                      : async () => leaveClassroom(classroom.id, userId),
+                    "remove",
+                    setUserAndClassData,
+                    refreshClassrooms
+                  )
                 }
               >
                 {isAdmin ? "Delete Classroom" : "Remove Classroom"}
@@ -367,7 +316,16 @@ export default function ClassroomList({
                 <button
                   type="button"
                   className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                  onClick={() => unarchiveClassroomAndFetch(classroom.id)}
+                  onClick={() =>
+                    optimisticUpdateAndFetchClassroomData(
+                      classroom.id,
+                      async () =>
+                        setArchiveStatusClassroom(classroom.id, false),
+                      { archived: false },
+                      setUserAndClassData,
+                      refreshClassrooms
+                    )
+                  }
                 >
                   Unarchive
                 </button>
@@ -381,31 +339,36 @@ export default function ClassroomList({
     });
   }
 
+  const adminClasses = userAndClassData.classroomsData.filter(
+    (classroom) => classroom.admin_user_id == userId
+  );
+
+  const memberClasses = userAndClassData.classroomsData.filter(
+    (classroom) => classroom.admin_user_id != userId
+  );
+
   return (
     <>
-      <div style={{ padding: 20 }}>
-        <h1>User ID: {userId}</h1>
-        <NewClassroomButton />
-        <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
-        <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
-        {/* ADMIN CLASSES */}
-        {mapToListItem(adminClasses, true)}
-        <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
-        <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
-        {/* NON-ADMIN CLASSES */}
-        {mapToListItem(memberClasses, false)}
-        <hr className="my-5 h-5 border-0 bg-gray-800 dark:bg-white" />
-        <h1 className={"mb-5 text-center text-3xl underline"}>
-          Archived Classrooms
-        </h1>
-        <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
-        {mapToListItemArchived(adminClasses, true)}
+      <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
+      <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
+      {/* ADMIN CLASSES */}
+      {mapToListItem(adminClasses, true)}
+      <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
+      <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
+      {/* NON-ADMIN CLASSES */}
+      {mapToListItem(memberClasses, false)}
+      <hr className="my-5 h-5 border-0 bg-gray-800 dark:bg-white" />
+      <h1 className={"mb-5 text-center text-3xl underline"}>
+        Archived Classrooms
+      </h1>
+      <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
+      {mapToListItemArchived(adminClasses, true)}
 
-        <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
-        <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
-        {/* NON-ADMIN CLASSES */}
-        {mapToListItemArchived(memberClasses, false)}
-        {/* <Link href="newClassroom/">
+      <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
+      <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
+      {/* NON-ADMIN CLASSES */}
+      {mapToListItemArchived(memberClasses, false)}
+      {/* <Link href="newClassroom/">
           <button
             type="button"
             className="dark:focus:green-red-900 mb-2 me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white"
@@ -413,12 +376,11 @@ export default function ClassroomList({
             Create a Classroom
           </button>
         </Link> */}
-        {/* <ArchivedClassroomList
+      {/* <ArchivedClassroomList
           userId={userId}
           initialAdminData={adminClasses}
           initialMemberData={memberClasses}
         /> */}
-      </div>
     </>
   );
 }

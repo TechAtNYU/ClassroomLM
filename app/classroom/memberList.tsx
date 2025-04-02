@@ -7,9 +7,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ClassroomWithMembers } from "./actions";
 import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
+import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
 
 export default function MemberList({
   classroom,
@@ -36,7 +36,6 @@ export default function MemberList({
       </SheetTrigger>
       {/* not used: https://github.com/shadcn-ui/ui/issues/16#issuecomment-1602565563 */}
       <SheetContent className="flex w-[55vw] items-center justify-center align-middle sm:max-w-5xl">
-        {/* for some reason chanding the width doesn't actually do anything */}
         <SheetHeader>
           <SheetTitle>{classroom.name} Members</SheetTitle>
           {/* <SheetDescription>

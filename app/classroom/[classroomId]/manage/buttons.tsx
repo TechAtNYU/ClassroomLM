@@ -3,68 +3,81 @@
 
 // import { getCurrentUserId, retrieveClassroomData } from "../../classroom/actions";
 "use client";
-import {
-  archiveClassroom,
-  changeClassroomName,
-  deleteClassroom,
-} from "../../classroom/actions";
+
 import InviteMember from "./inviteMember";
 import Link from "next/link";
-import MemberList from "../../classroom/memberList";
+// import MemberList from "../../classroom/memberList";
+import { changeClassroomName, deleteClassroom, setArchiveStatusClassroom } from "../../actions";
+import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
+import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
+import { UserContextType } from "@/app/lib/userContext/userContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface ClassroomManagementButtonsProps {
-  classroomId: number;
-}
 
 export default function ClassroomManagementButtons({
   classroomId,
-}: ClassroomManagementButtonsProps) {
+  userContext
+}: {classroomId: number, userContext: UserContextType}) {
   //   const userId = await getCurrentUserId();
   //   const classData = await retrieveClassroomData(userId);
   const classroomIdNumber = Number(classroomId);
-
-  const archiveClassroomFunction = async (classroomId: number) => {
-    try {
-      await archiveClassroom(classroomId);
-    } catch {
-      console.error("Error occurred while archiving the classroom");
-    }
-  };
+  const { setUserAndClassData, userAndClassData } = userContext;
+  
+  const classroomInfo = userAndClassData.classroomsData.find(x => x.id === classroomId);
+  if (!classroomInfo) {
+    return (
+      <div className="flex items-center space-x-4">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
 
   const handleChangeClassroomName = async (classroomId: number) => {
     const newName = window.prompt("Enter new class name:");
     if (newName !== null && newName !== "") {
-      try {
-        await changeClassroomName(classroomId, newName);
-      } catch (error) {
-        console.error("Error changing classroom name:", error);
-      }
+      optimisticUpdateAndFetchClassroomData(
+        classroomId,
+        async () => changeClassroomName(classroomId, newName),
+        { name: newName },
+        setUserAndClassData,
+        refreshClassrooms
+      );
     }
   };
+
+  const refreshClassrooms = async () => {
+    const refreshedData = await getUserAndClassroomData();
+    if (refreshedData) {
+      setUserAndClassData(refreshedData);
+    }
+  };
+
 
   const deleteClassroomFunction = async (classroomId: number) => {
     const confirmation = window.confirm(
       "Are you sure? This action can't be undone."
     );
     if (confirmation) {
-      try {
-        await deleteClassroom(classroomId);
-      } catch (error: unknown) {
-        // Handle the error, checking if it is an instance of Error
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error("Error occurred");
-        }
-      }
+        optimisticUpdateAndFetchClassroomData(
+          classroomId,
+          async () => deleteClassroom(classroomId),
+          "remove",
+          setUserAndClassData,
+          refreshClassrooms
+        )
     } else {
-      console.log("Classroom deletion cancelled.");
+      console.log("Classroom deletion cancelled."); //TODO: remove log message
     }
   };
 
   return (
     <div>
-      <Link href={`../upload/${classroomId}`} passHref>
+      {"Look at the class info: " + classroomInfo.name}
+      <Link href={`upload`} passHref>
         <button
           type="button"
           className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
@@ -76,7 +89,16 @@ export default function ClassroomManagementButtons({
       <button
         type="button"
         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-        onClick={() => archiveClassroomFunction(classroomIdNumber)}
+        onClick={() =>
+          optimisticUpdateAndFetchClassroomData(
+            classroomId,
+            async () =>
+              setArchiveStatusClassroom(classroomId, true),
+            { archived: true },
+            setUserAndClassData,
+            refreshClassrooms
+          )
+        }
       >
         Archive
       </button>

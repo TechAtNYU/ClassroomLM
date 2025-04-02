@@ -1,68 +1,10 @@
 "use server";
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
-import { Tables } from "@/utils/supabase/database.types";
+import { deleteDataset } from "../lib/ragflow/dataset-client";
 
-export interface ClassroomWithMembers extends Tables<"Classrooms"> {
-  Classroom_Members?: Array<{
-    id: number;
-    classroom_id: number;
-    Users: {
-      id: string;
-      email: string;
-      full_name: string;
-      avatar_url: string;
-    };
-  }>;
-}
 const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
-
-// TODO: add complex server tasks to this area and call them from your page when necessary
-
-// this is just a sample server-side action to show how it's done
-// export async function insertRandom() {
-//   // Notice how we use a createServiceClient instead of createClient from server
-//   // this BYPASSES ALL RLS in the case that you have to do some more complex things and we don't
-//   // want to write RLS rules for all of it. See our project doc Resources section for more info
-//   const supabase = createServiceClient();
-
-//   const { error } = await supabase.from("Classroom_Members").insert({
-//     classroom_id: 17,
-//     user_id: "05929f55-42bb-42d4-86bd-ddc0c7d12685",
-//   });
-//   console.log(error);
-// }
-
-// export async function getCurrentUserID2() {
-//   const supabase = createServiceClient();
-
-//   const { data: { user } } = await supabase.auth.getUser()
-
-//   // // Get the current user using the updated method
-//   // const { data: user, error } = await supabase.auth.getUser();
-
-//   // if (error) {
-//   //   throw new Error(error.message);
-//   // }
-
-//   // if (!user) {
-//   //   throw new Error("No user is logged in");
-//   // }
-
-//   // return user.id; // Return the current user's ID
-// }
-export async function getCurrentUserId() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw Error("No authenticated user found");
-  }
-  return user.id;
-}
 
 export async function deleteClassroom(classroom_id: number) {
   // Deleting Associated Supabase
@@ -71,14 +13,15 @@ export async function deleteClassroom(classroom_id: number) {
     .from("Classrooms")
     .delete()
     .eq("id", classroom_id)
-    .select();
+    .select()
+    .single();
 
   if (error) {
     throw new Error(error.message);
   }
 
   // Deleting Associated Chat Assistant
-  const chat_assistant_id = data[0].chat_assistant_id;
+  const chat_assistant_id = data.chat_assistant_id;
 
   if (chat_assistant_id) {
     const requestChatBody = {
@@ -104,33 +47,36 @@ export async function deleteClassroom(classroom_id: number) {
     console.log("No chat assistant found for classroom when deleting");
   }
 
-  // Deleting Associatied RAGFlow
-  const ragflow_dataset_id = data[0].ragflow_dataset_id;
-
-  if (!ragflow_dataset_id) {
-    throw new Error("No related RAGFlow dataset found for this classroom.");
+  // Deleting associated RAGFlow dataset if exists
+  if (data.ragflow_dataset_id) {
+    deleteDataset(data.id.toString(), data.ragflow_dataset_id);
   }
+  // const ragflow_dataset_id = data.ragflow_dataset_id;
 
-  //gets ids of ragflow_dataset_id
-  const requestBody = {
-    ids: [ragflow_dataset_id],
-  };
+  // if (!ragflow_dataset_id) {
+  //   throw new Error("No related RAGFlow dataset found for this classroom.");
+  // }
 
-  //deletes the respective dataset
-  const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RAGFLOW_API_KEY}`,
-    },
-    body: JSON.stringify(requestBody),
-  });
+  // //gets ids of ragflow_dataset_id
+  // const requestBody = {
+  //   ids: [ragflow_dataset_id],
+  // };
 
-  if (!ragflowResponse.ok) {
-    throw new Error(
-      `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
-    );
-  }
+  // //deletes the respective dataset
+  // const ragflowResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/datasets`, {
+  //   method: "DELETE",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+  //   },
+  //   body: JSON.stringify(requestBody),
+  // });
+
+  // if (!ragflowResponse.ok) {
+  //   throw new Error(
+  //     `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
+  //   );
+  // }
 
   return data || [];
 }
@@ -147,20 +93,6 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
   }
   return data || [];
 }
-
-// export async function getClassroomAdminID(classroom_id: number) {
-//   const supabase = await createClient();
-//   const { data, error } = await supabase
-//     .from("Classrooms")
-//     .select("admin_user_id")
-//     .eq("id", classroom_id);
-
-//   if (error) {
-//     throw new Error(error.message);
-//   }
-
-//   return data[0]?.admin_user_id || null;
-// }
 
 export async function getUserClassrooms() {
   const supabase = await createClient();
@@ -181,24 +113,6 @@ export async function getUserClassrooms() {
     throw new Error(error.message);
   }
   return data || [];
-}
-
-export async function retrieveClassroomData(userId: string) {
-  const classrooms = await getUserClassrooms();
-
-  // if (!classrooms || classrooms.length === 0) {
-  //   return;
-  // }
-
-  const validAdminClasses = classrooms.filter(
-    (classroom) => classroom.admin_user_id == userId
-  );
-
-  const validNonAdminClasses = classrooms.filter(
-    (classroom) => classroom.admin_user_id != userId
-  );
-
-  return { validAdminClasses, validNonAdminClasses };
 }
 
 export async function inviteMemberToClassroom(
@@ -261,34 +175,20 @@ export async function changeClassroomName(
   return data;
 }
 
-export async function archiveClassroom(classroom_id: number) {
+export async function setArchiveStatusClassroom(
+  classroom_id: number,
+  status: boolean
+) {
   const supabase = await createServiceClient();
 
   const { data, error } = await supabase
     .from("Classrooms")
-    .update({ archived: true })
+    .update({ archived: status })
     .eq("id", classroom_id)
     .select();
 
   if (error) {
-    console.error("Error archiving classroom:", error);
-    return { success: false, error: error.message };
-  }
-
-  return { success: true, data };
-}
-
-export async function unarchiveClassroom(classroom_id: number) {
-  const supabase = await createServiceClient();
-
-  const { data, error } = await supabase
-    .from("Classrooms")
-    .update({ archived: false })
-    .eq("id", classroom_id)
-    .select();
-
-  if (error) {
-    console.error("Error unarchiving classroom:", error);
+    console.error("Error setting archive status classroom:", error);
     return { success: false, error: error.message };
   }
 

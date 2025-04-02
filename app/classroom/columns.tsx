@@ -12,7 +12,10 @@ export const columns: ColumnDef<Tables<"Users">>[] = [
       <div className="flex items-center gap-2 font-bold">
         <div>
           <Avatar className="size-5">
-            <AvatarImage src={row.renderValue("avatar_url")} />
+            <AvatarImage
+              src={row.renderValue("avatar_url")}
+              referrerPolicy="no-referrer"
+            />
             <AvatarFallback>{row.original.full_name} Avatar</AvatarFallback>
           </Avatar>
         </div>

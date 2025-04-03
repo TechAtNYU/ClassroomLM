@@ -30,13 +30,9 @@ import {
 
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import {
-  Edit,
-  LogOut,
-  MessageSquareMore,
-  Users,
-} from "lucide-react";
+import { Edit, LogOut, MessageSquareMore, Trash2, Users } from "lucide-react";
 import { SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export default function ClassroomList() {
   const searchParams = useSearchParams();
@@ -115,43 +111,20 @@ export default function ClassroomList() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {!isAdmin && (
-                      <TooltipProvider>
-                        <Tooltip delayDuration={300}>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                              onClick={() =>
-                                optimisticUpdateAndFetchClassroomData(
-                                  classroom.id,
-                                  async () =>
-                                    leaveClassroom(classroom.id, userId),
-                                  "remove",
-                                  setUserAndClassData,
-                                  refreshClassrooms
-                                )
-                              }
-                            >
-                              <LogOut />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Leave Classroom</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-
                     <TooltipProvider>
                       <Tooltip delayDuration={300}>
                         <TooltipTrigger asChild>
-                          <Link href={`../chat/${classroom.id}`} passHref>
-                            <button
-                              type="button"
-                              className="me-2 rounded-lg px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                            >
-                              <MessageSquareMore />
-                            </button>
-                          </Link>
+                          <Button
+                            type="button"
+                            variant={"ghost"}
+                            size={"iconLg"}
+                            asChild
+                            // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                          >
+                            <Link href={`../chat/${classroom.id}`} passHref>
+                              <MessageSquareMore className="scale-[200%]" />{" "}
+                            </Link>
+                          </Button>
                         </TooltipTrigger>
                         <TooltipContent>Chat!</TooltipContent>
                       </Tooltip>
@@ -160,17 +133,20 @@ export default function ClassroomList() {
                       <TooltipProvider>
                         <Tooltip delayDuration={300}>
                           <TooltipTrigger asChild>
-                            <Link
-                              href={`/classroom/${classroom.id}/manage`}
-                              passHref
+                            <Button
+                              type="button"
+                              variant={"ghost"}
+                              size={"iconLg"}
+                              asChild
+                              // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                             >
-                              <button
-                                type="button"
-                                className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                              <Link
+                                href={`/classroom/${classroom.id}/manage`}
+                                passHref
                               >
-                                <Edit />
-                              </button>
-                            </Link>
+                                <Edit className="scale-[200%]" />
+                              </Link>
+                            </Button>
                           </TooltipTrigger>
                           <TooltipContent>Manage Classroom</TooltipContent>
                         </Tooltip>
@@ -184,23 +160,52 @@ export default function ClassroomList() {
                           enableDeletion={false}
                           triggerButton={
                             <TooltipProvider>
-                            <Tooltip delayDuration={300}>
-                      
-                            <SheetTrigger asChild>
+                              <Tooltip delayDuration={300}>
+                                <SheetTrigger asChild>
                                   <TooltipTrigger asChild>
-                                    <button className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900">
-                                      <Users />
-                                    </button>
+                                    <Button
+                                      type="button"
+                                      variant={"ghost"}
+                                      size={"iconLg"}
+                                      // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                                    >
+                                      <Users className="scale-[200%]" />
+                                    </Button>
                                   </TooltipTrigger>
-                      
-                            </SheetTrigger>
-                            <TooltipContent>View Members</TooltipContent>
-                            </Tooltip>
+                                </SheetTrigger>
+                                <TooltipContent>View Members</TooltipContent>
+                              </Tooltip>
                             </TooltipProvider>
                           }
                         />
                       )}
-
+                    {!isAdmin && (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              type="button"
+                              variant={"destructiveGhost"}
+                              size={"iconLg"}
+                              onClick={() =>
+                                optimisticUpdateAndFetchClassroomData(
+                                  classroom.id,
+                                  async () =>
+                                    leaveClassroom(classroom.id, userId),
+                                  "remove",
+                                  setUserAndClassData,
+                                  refreshClassrooms
+                                )
+                              }
+                              // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                            >
+                              <LogOut className="scale-[200%]" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Leave Classroom</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                     {/* 
                     {isAdmin && (
                       <button
@@ -333,9 +338,10 @@ export default function ClassroomList() {
                  Chat!
                </button>
              </Link> */}
-              <button
+              <Button
                 type="button"
-                className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                variant={"ghost"}
+                size={"iconLg"}
                 onClick={() =>
                   optimisticUpdateAndFetchClassroomData(
                     classroom.id,
@@ -347,14 +353,18 @@ export default function ClassroomList() {
                     refreshClassrooms
                   )
                 }
+                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
               >
+                <Trash2 className="scale-[200%]" />
                 {isAdmin ? "Delete Classroom" : "Remove Classroom"}
-              </button>
+              </Button>
 
               {isAdmin && (
-                <button
+                <Button
                   type="button"
-                  className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  // className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                   onClick={() =>
                     optimisticUpdateAndFetchClassroomData(
                       classroom.id,
@@ -367,7 +377,7 @@ export default function ClassroomList() {
                   }
                 >
                   Unarchive
-                </button>
+                </Button>
               )}
 
               <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />

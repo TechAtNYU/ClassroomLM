@@ -27,8 +27,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSearchParams } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 export default function ClassroomList() {
+  const searchParams = useSearchParams();
+
   const userContext = useContext(UserContext);
   // If the userContext is undefined still, give loading visual
   if (!userContext) {
@@ -42,6 +46,7 @@ export default function ClassroomList() {
       </div>
     );
   }
+
 
   // get the data and setter from the context (these are just a regular useState, so treat them like that)
   const { setUserAndClassData, userAndClassData } = userContext;
@@ -59,6 +64,17 @@ export default function ClassroomList() {
   //     );
   //   }
   // };
+
+  const joinedClassSuccess = searchParams.get('join_success')
+  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))){
+    const joinClassInfo = userAndClassData.classroomsData.find(x => x.id === Number(joinedClassSuccess))
+    if (joinClassInfo){
+      toast({
+        description: (<div>Successfully joined classroom <span className="font-bold">{joinClassInfo.name}</span>!</div>),
+        duration: 10000,
+      });
+    }
+  }
 
   const refreshClassrooms = async () => {
     const refreshedData = await getUserAndClassroomData();

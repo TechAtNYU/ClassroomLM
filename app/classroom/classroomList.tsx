@@ -22,6 +22,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { optimisticUpdateAndFetchClassroomData } from "./clientUtils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function ClassroomList() {
   const userContext = useContext(UserContext);
@@ -42,18 +48,18 @@ export default function ClassroomList() {
   const { setUserAndClassData, userAndClassData } = userContext;
   const userId = userAndClassData.userData.id;
 
-  const handleChangeClassroomName = async (classroomId: number) => {
-    const newName = window.prompt("Enter new class name:");
-    if (newName !== null && newName !== "") {
-      optimisticUpdateAndFetchClassroomData(
-        classroomId,
-        async () => changeClassroomName(classroomId, newName),
-        { name: newName },
-        setUserAndClassData,
-        refreshClassrooms
-      );
-    }
-  };
+  // const handleChangeClassroomName = async (classroomId: number) => {
+  //   const newName = window.prompt("Enter new class name:");
+  //   if (newName !== null && newName !== "") {
+  //     optimisticUpdateAndFetchClassroomData(
+  //       classroomId,
+  //       async () => changeClassroomName(classroomId, newName),
+  //       { name: newName },
+  //       setUserAndClassData,
+  //       refreshClassrooms
+  //     );
+  //   }
+  // };
 
   const refreshClassrooms = async () => {
     const refreshedData = await getUserAndClassroomData();
@@ -80,89 +86,63 @@ export default function ClassroomList() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {classroom.Classroom_Members &&
-                      classroom.Classroom_Members.length > 0 && (
-                        <MemberList
-                          classroom={classroom}
-                          enableDeletion={false}
-                        />
-                      )}
-                    {/* <p>Invite Member:</p>
-                    <InviteMember
-                      classroomId={classroom.id}
-                      onInviteSuccess={refreshClassrooms}
-                    /> */}
-                    <Link href={`../chat/${classroom.id}`} passHref>
-                      <button
-                        type="button"
-                        className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                      >
-                        Chat!
-                      </button>
-                    </Link>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>Buttons</TooltipTrigger>
+                        <TooltipContent>
+                          {classroom.Classroom_Members &&
+                            classroom.Classroom_Members.length > 0 && (
+                              <MemberList
+                                classroom={classroom}
+                                enableDeletion={false}
+                              />
+                            )}
+                          <Link href={`../chat/${classroom.id}`} passHref>
+                            <button
+                              type="button"
+                              className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                            >
+                              Chat!
+                            </button>
+                          </Link>
 
-                    {!isAdmin && (
-                    <button
-                      type="button"
-                      className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                      onClick={() =>
-                        optimisticUpdateAndFetchClassroomData(
-                          classroom.id,
-                          async () => leaveClassroom(classroom.id, userId),
-                          "remove",
-                          setUserAndClassData,
-                          refreshClassrooms
-                        )
-                      }
-                    >
-                    Leave Classroom
-                    </button>)
-                  }
+                          {!isAdmin && (
+                            <button
+                              type="button"
+                              className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                              onClick={() =>
+                                optimisticUpdateAndFetchClassroomData(
+                                  classroom.id,
+                                  async () =>
+                                    leaveClassroom(classroom.id, userId),
+                                  "remove",
+                                  setUserAndClassData,
+                                  refreshClassrooms
+                                )
+                              }
+                            >
+                              Leave Classroom
+                            </button>
+                          )}
 
-                    {isAdmin && (
-                      <button
-                        type="button"
-                        className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                        onClick={() =>
-                          optimisticUpdateAndFetchClassroomData(
-                            classroom.id,
-                            async () =>
-                              setArchiveStatusClassroom(classroom.id, true),
-                            { archived: true },
-                            setUserAndClassData,
-                            refreshClassrooms
-                          )
-                        }
-                      >
-                        Archive
-                      </button>
-                    )}
+                          {isAdmin && (
+                            <Link
+                              href={`/classroom/${classroom.id}/manage`}
+                              passHref
+                            >
+                              <button
+                                type="button"
+                                className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                              >
+                                Manage Classroom
+                              </button>
+                            </Link>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                    {isAdmin && (
-                      <Link href={`upload`} passHref>
-                        <button
-                          type="button"
-                          className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                        >
-                          Upload Materials
-                        </button>
-                      </Link>
-                    )}
-
-                    {isAdmin && (
-                      <Link
-                        href={`/classroom/${classroom.id}/manage`}
-                        passHref
-                      >
-                        <button
-                          type="button"
-                          className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                        >
-                          Manage Classroom
-                        </button>
-                      </Link>
-                    )}
-
+                    {/* 
                     {isAdmin && (
                       <button
                         onClick={() => handleChangeClassroomName(classroom.id)}
@@ -171,7 +151,7 @@ export default function ClassroomList() {
                       >
                         Change Name
                       </button>
-                    )}
+                    )} */}
                   </CardContent>
                   {/* <CardFooter>
                 <p>Card Footer</p>

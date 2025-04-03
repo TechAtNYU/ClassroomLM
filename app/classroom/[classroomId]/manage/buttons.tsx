@@ -7,23 +7,31 @@
 import InviteMember from "./inviteMember";
 import Link from "next/link";
 // import MemberList from "../../classroom/memberList";
-import { changeClassroomName, deleteClassroom, setArchiveStatusClassroom } from "../../actions";
+import {
+  changeClassroomName,
+  deleteClassroom,
+  setArchiveStatusClassroom,
+} from "../../actions";
 import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
 import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
 import { UserContextType } from "@/app/lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
 
-
 export default function ClassroomManagementButtons({
   classroomId,
-  userContext
-}: {classroomId: number, userContext: UserContextType}) {
+  userContext,
+}: {
+  classroomId: number;
+  userContext: UserContextType;
+}) {
   //   const userId = await getCurrentUserId();
   //   const classData = await retrieveClassroomData(userId);
   const classroomIdNumber = Number(classroomId);
   const { setUserAndClassData, userAndClassData } = userContext;
-  
-  const classroomInfo = userAndClassData.classroomsData.find(x => x.id === classroomId);
+
+  const classroomInfo = userAndClassData.classroomsData.find(
+    (x) => x.id === classroomId
+  );
   if (!classroomInfo) {
     return (
       <div className="flex items-center space-x-4">
@@ -56,19 +64,18 @@ export default function ClassroomManagementButtons({
     }
   };
 
-
   const deleteClassroomFunction = async (classroomId: number) => {
     const confirmation = window.confirm(
       "Are you sure? This action can't be undone."
     );
     if (confirmation) {
-        optimisticUpdateAndFetchClassroomData(
-          classroomId,
-          async () => deleteClassroom(classroomId),
-          "remove",
-          setUserAndClassData,
-          refreshClassrooms
-        )
+      optimisticUpdateAndFetchClassroomData(
+        classroomId,
+        async () => deleteClassroom(classroomId),
+        "remove",
+        setUserAndClassData,
+        refreshClassrooms
+      );
     } else {
       console.log("Classroom deletion cancelled."); //TODO: remove log message
     }
@@ -92,8 +99,7 @@ export default function ClassroomManagementButtons({
         onClick={() =>
           optimisticUpdateAndFetchClassroomData(
             classroomId,
-            async () =>
-              setArchiveStatusClassroom(classroomId, true),
+            async () => setArchiveStatusClassroom(classroomId, true),
             { archived: true },
             setUserAndClassData,
             refreshClassrooms

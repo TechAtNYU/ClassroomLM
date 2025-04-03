@@ -16,6 +16,7 @@ import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
 import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
 import { UserContextType } from "@/app/lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import MemberList from "../../memberList";
 
 export default function ClassroomManagementButtons({
   classroomId,
@@ -83,6 +84,11 @@ export default function ClassroomManagementButtons({
 
   return (
     <div>
+      {classroomInfo.Classroom_Members &&
+        classroomInfo.Classroom_Members.length > 0 && (
+          <MemberList classroom={classroomInfo} enableDeletion={true} />
+        )}
+
       {"Look at the class info: " + classroomInfo.name}
       <Link href={`upload`} passHref>
         <button

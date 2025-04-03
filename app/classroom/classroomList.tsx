@@ -28,12 +28,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { FaEdit, FaUsers } from "react-icons/fa";
-import { AiOutlineUserDelete } from "react-icons/ai";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
-
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import {
+  Edit,
+  LogOut,
+  MessageSquareMore,
+  Users,
+} from "lucide-react";
+import { SheetTrigger } from "@/components/ui/sheet";
 
 export default function ClassroomList() {
   const searchParams = useSearchParams();
@@ -112,10 +115,10 @@ export default function ClassroomList() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <TooltipProvider>
-                      <Tooltip delayDuration={300}>
-                        <TooltipTrigger>
-                          {!isAdmin && (
+                    {!isAdmin && (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
                             <button
                               type="button"
                               className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
@@ -130,65 +133,73 @@ export default function ClassroomList() {
                                 )
                               }
                             >
-                              <AiOutlineUserDelete />
+                              <LogOut />
                             </button>
-                          )}
-                        </TooltipTrigger>
-                        <TooltipContent>Leave Classroom</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                          </TooltipTrigger>
+                          <TooltipContent>Leave Classroom</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
 
                     <TooltipProvider>
                       <Tooltip delayDuration={300}>
-                        <TooltipTrigger>
+                        <TooltipTrigger asChild>
                           <Link href={`../chat/${classroom.id}`} passHref>
                             <button
                               type="button"
-                              className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                              className="me-2 rounded-lg px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                             >
-                              <IoChatboxEllipsesOutline />
+                              <MessageSquareMore />
                             </button>
                           </Link>
                         </TooltipTrigger>
                         <TooltipContent>Chat!</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-
-                    <TooltipProvider>
-                      <Tooltip delayDuration={300}>
-                        <TooltipTrigger>
-                          {isAdmin && (
+                    {isAdmin && (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
                             <Link
                               href={`/classroom/${classroom.id}/manage`}
                               passHref
                             >
                               <button
                                 type="button"
-                                className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                                className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                               >
-                                <FaEdit />
+                                <Edit />
                               </button>
                             </Link>
-                          )}
-                        </TooltipTrigger>
-                        <TooltipContent>Manage Classroom</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                          </TooltipTrigger>
+                          <TooltipContent>Manage Classroom</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
 
-                    <TooltipProvider>
-                      <Tooltip delayDuration={300}>
-                        <TooltipTrigger>
-                          {classroom.Classroom_Members &&
-                            classroom.Classroom_Members.length > 0 && (
-                              <MemberList
-                                classroom={classroom}
-                                enableDeletion={false}
-                              />
-                            )}
-                        </TooltipTrigger>
-                        <TooltipContent>View Members</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    {classroom.Classroom_Members &&
+                      classroom.Classroom_Members.length > 0 && (
+                        <MemberList
+                          classroom={classroom}
+                          enableDeletion={false}
+                          triggerButton={
+                            <TooltipProvider>
+                            <Tooltip delayDuration={300}>
+                      
+                            <SheetTrigger asChild>
+                                  <TooltipTrigger asChild>
+                                    <button className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900">
+                                      <Users />
+                                    </button>
+                                  </TooltipTrigger>
+                      
+                            </SheetTrigger>
+                            <TooltipContent>View Members</TooltipContent>
+                            </Tooltip>
+                            </TooltipProvider>
+                          }
+                        />
+                      )}
 
                     {/* 
                     {isAdmin && (

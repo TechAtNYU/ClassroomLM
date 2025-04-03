@@ -10,14 +10,22 @@ import {
 import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
-import { FaUsers } from "react-icons/fa";
+import { Users } from "lucide-react";
+import { ReactNode } from "react";
 
+/**
+ * 
+ * @param triggerButton make sure you wrap with a SheetTrigger with an asChild in order for the sheet to work 
+ * @returns 
+ */
 export default function MemberList({
   classroom,
   enableDeletion,
+  triggerButton
 }: {
   classroom: ClassroomWithMembers;
   enableDeletion: boolean;
+  triggerButton?: ReactNode;
 }) {
   if (!classroom.Classroom_Members) {
     return <h1>No members found!</h1>;
@@ -30,11 +38,14 @@ export default function MemberList({
   // other table implementation: https://data-table.openstatus.dev/
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        <button className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900">
-          <FaUsers />
+      {triggerButton ? triggerButton : (
+        <SheetTrigger asChild>
+        <button>
+          <Users/>
         </button>
-      </SheetTrigger>
+        </SheetTrigger>
+      )}
+
       {/* not used: https://github.com/shadcn-ui/ui/issues/16#issuecomment-1602565563 */}
       <SheetContent className="flex w-[55vw] items-center justify-center align-middle sm:max-w-5xl">
         <SheetHeader>

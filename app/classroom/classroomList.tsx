@@ -103,7 +103,7 @@ export default function ClassroomList() {
           return (
             <div key={classroom.id}>
               {!classroom.archived && (
-                <Card className="w-[450px]">
+                <Card className="w-[450px]" animated>
                   <CardHeader>
                     <CardTitle>{classroom.name}</CardTitle>
                     <CardDescription>

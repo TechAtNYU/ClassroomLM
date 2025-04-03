@@ -10,6 +10,7 @@ import {
 import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
+import { FaUsers } from "react-icons/fa";
 
 export default function MemberList({
   classroom,
@@ -22,17 +23,17 @@ export default function MemberList({
     return <h1>No members found!</h1>;
   }
 
-  const handleDelete = (memberId:any) => {
+  const handleDelete = (memberId: any) => {
     console.log("ID:" + memberId);
-  }
-
-  
+  };
 
   // other table implementation: https://data-table.openstatus.dev/
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button>Show Members</button>
+        <button className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900">
+          <FaUsers />
+        </button>
       </SheetTrigger>
       {/* not used: https://github.com/shadcn-ui/ui/issues/16#issuecomment-1602565563 */}
       <SheetContent className="flex w-[55vw] items-center justify-center align-middle sm:max-w-5xl">
@@ -45,25 +46,25 @@ export default function MemberList({
 
           {/* todo future, for smaller screens, make the width even smaller */}
           <div className="w-[50vw]">
-          <DataTable
-            columns={[
-              ...columns,
-              ...(enableDeletion
-                ? [
-                    {
-                      id: "actions",
-                      header: "Manage",
-                      cell: ({ row }) => (
-                        <button onClick={() => handleDelete("123")}>
-                          Delete
-                        </button>
-                      ),
-                    },
-                  ]
-                : []),
-            ]}
-            data={classroom.Classroom_Members.map((x) => x.Users)}
-          />
+            <DataTable
+              columns={[
+                ...columns,
+                ...(enableDeletion
+                  ? [
+                      {
+                        id: "actions",
+                        header: "Manage",
+                        cell: ({ row }) => (
+                          <button onClick={() => handleDelete("123")}>
+                            Delete
+                          </button>
+                        ),
+                      },
+                    ]
+                  : []),
+              ]}
+              data={classroom.Classroom_Members.map((x) => x.Users)}
+            />
           </div>
         </SheetHeader>
       </SheetContent>

@@ -27,6 +27,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { FaEdit, FaUsers } from "react-icons/fa";
+import { AiOutlineUserDelete } from "react-icons/ai";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 export default function ClassroomList() {
   const userContext = useContext(UserContext);
@@ -87,24 +90,7 @@ export default function ClassroomList() {
                   <CardContent>
                     <TooltipProvider>
                       <Tooltip delayDuration={300}>
-                        <TooltipTrigger>Buttons</TooltipTrigger>
-                        <TooltipContent>
-                          {classroom.Classroom_Members &&
-                            classroom.Classroom_Members.length > 0 && (
-                              <MemberList
-                                classroom={classroom}
-                                enableDeletion={false}
-                              />
-                            )}
-                          <Link href={`../chat/${classroom.id}`} passHref>
-                            <button
-                              type="button"
-                              className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                            >
-                              Chat!
-                            </button>
-                          </Link>
-
+                        <TooltipTrigger>
                           {!isAdmin && (
                             <button
                               type="button"
@@ -120,10 +106,33 @@ export default function ClassroomList() {
                                 )
                               }
                             >
-                              Leave Classroom
+                              <AiOutlineUserDelete />
                             </button>
                           )}
+                        </TooltipTrigger>
+                        <TooltipContent>Leave Classroom</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
+                    <TooltipProvider>
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger>
+                          <Link href={`../chat/${classroom.id}`} passHref>
+                            <button
+                              type="button"
+                              className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                            >
+                              <IoChatboxEllipsesOutline />
+                            </button>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>Chat!</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger>
                           {isAdmin && (
                             <Link
                               href={`/classroom/${classroom.id}/manage`}
@@ -133,11 +142,27 @@ export default function ClassroomList() {
                                 type="button"
                                 className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                               >
-                                Manage Classroom
+                                <FaEdit />
                               </button>
                             </Link>
                           )}
-                        </TooltipContent>
+                        </TooltipTrigger>
+                        <TooltipContent>Manage Classroom</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger>
+                          {classroom.Classroom_Members &&
+                            classroom.Classroom_Members.length > 0 && (
+                              <MemberList
+                                classroom={classroom}
+                                enableDeletion={false}
+                              />
+                            )}
+                        </TooltipTrigger>
+                        <TooltipContent>View Members</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
 

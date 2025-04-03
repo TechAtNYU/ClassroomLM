@@ -27,11 +27,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 import { FaEdit, FaUsers } from "react-icons/fa";
 import { AiOutlineUserDelete } from "react-icons/ai";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
+import { useSearchParams } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
+
 export default function ClassroomList() {
+  const searchParams = useSearchParams();
+
   const userContext = useContext(UserContext);
   // If the userContext is undefined still, give loading visual
   if (!userContext) {
@@ -62,6 +68,24 @@ export default function ClassroomList() {
   //     );
   //   }
   // };
+
+  const joinedClassSuccess = searchParams.get("join_success");
+  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
+    const joinClassInfo = userAndClassData.classroomsData.find(
+      (x) => x.id === Number(joinedClassSuccess)
+    );
+    if (joinClassInfo) {
+      toast({
+        description: (
+          <div>
+            Successfully joined classroom{" "}
+            <span className="font-bold">{joinClassInfo.name}</span>!
+          </div>
+        ),
+        duration: 10000,
+      });
+    }
+  }
 
   const refreshClassrooms = async () => {
     const refreshedData = await getUserAndClassroomData();

@@ -1,7 +1,6 @@
 "use client";
 import { useContext } from "react";
 import {
-  changeClassroomName,
   deleteClassroom,
   leaveClassroom,
   setArchiveStatusClassroom,
@@ -87,7 +86,7 @@ export default function ClassroomList() {
                   </CardHeader>
                   <CardContent>
                     <TooltipProvider>
-                      <Tooltip>
+                      <Tooltip delayDuration={300}>
                         <TooltipTrigger>Buttons</TooltipTrigger>
                         <TooltipContent>
                           {classroom.Classroom_Members &&

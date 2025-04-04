@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
-import { cn } from "./lib/utils";
 import UserContextProvider from "./lib/userContext/userContext";
 import { getUserAndClassroomData } from "./lib/userContext/contextFetcher";
+import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

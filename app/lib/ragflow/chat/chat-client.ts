@@ -697,6 +697,166 @@ export async function sendMessage(
   };
 }
 
+/* ===== DELETE FUNCTIONS ======*/
+
+/**
+ * Deletes an assistant for a given assistant (or the id as retrieved from a classroom if no assistantId provided),
+ * This doesn't follow the usual pattern of using a `chatClient` because we don't want to
+ * verify/create/etc a new chat assistant if we're just trying to delete it.
+ * @param classroomId
+ * @param assistantId
+ */
+export async function deleteAssistant(
+  assistantInfo:
+    | {
+        primaryKeyValuesAssistant: { key: string; value: unknown }[]; // to be used to match against the primary key (eg. classroomID)
+        assistantIdStorage: TableStorageInfo;
+      }
+    | string
+): Promise<{ ragflowCallSuccess: boolean }> {
+  //
+  if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
+    console.error(
+      "ChatClient service, assistant deletion function, no API key or URL"
+    );
+    return { ragflowCallSuccess: false };
+  }
+
+  // Default to using the assistantId provided, but attempt to retrieve it from Supabase
+  // if the user didn't provide a assistantId
+  let assistantIdToUse = assistantInfo;
+  if (typeof assistantIdToUse !== "string") {
+    const { assistantIdStorage, primaryKeyValuesAssistant } = assistantIdToUse;
+    const supabase = await createServiceClient();
+    let buildQuery = supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .from(assistantIdStorage.table as any) // we ignore error here cause its a pain to get the table column names within our TableStorage type
+      .select(assistantIdStorage.column);
+    for (const pair of primaryKeyValuesAssistant) {
+      buildQuery = buildQuery.eq(pair.key, pair.value);
+    }
+    // console.log(buildQuery)
+    const { data, error } = await buildQuery.single();
+
+    // If the row is missing the assistant ID, note that with supabaseHasAssistantId
+    // we do all this casting because (again) its a pain to make it verified as actual columns/tables within supabase typing
+    if (
+      !error &&
+      data &&
+      (
+        data as unknown as {
+          [assistantIdStorage.column]: string;
+        }
+      )[assistantIdStorage.column]
+    ) {
+      assistantIdToUse = (
+        data as unknown as {
+          [assistantIdStorage.column]: string;
+        }
+      )[assistantIdStorage.column];
+    }
+  }
+
+  // performs delete with Ragflow
+  const response = await fetch(getAssistantUrl(), {
+    method: "DELETE",
+    headers: getHeader(),
+    body: JSON.stringify({
+      ids: [assistantIdToUse],
+    }),
+  });
+
+  // Verifies that the call was successful
+  const jsonData = await response.json();
+  if (!response.ok) {
+    console.error(
+      "ChatClient, delete assistant exist, Ragflow call error:",
+      jsonData
+    );
+    return { ragflowCallSuccess: false };
+  }
+
+  return { ragflowCallSuccess: true };
+}
+
+/**
+ * TODO: NOT TESTED, NEED TO FIND ASSISTANT ID WITHIN THIS TOO??
+ * Deletes an session for a given session (or the id as retrieved from a table if no sessionId provided),
+ * This doesn't follow the usual pattern of using a `chatClient` because we don't want to
+ * verify/create/etc a new chat session if we're just trying to delete it.
+ * @param classroomId
+ * @param sessionId
+ */
+export async function deleteSession(
+  assistantId: string,
+  sessionId: string | undefined,
+  sessionInfo:
+  | {
+    primaryKeyValuesSessions: { key: string; value: unknown }[], // to be used to match against the primary key(s) (eg. classroomID)
+    sessionIdStorage: TableStorageInfo,
+    }
+  | string
+): Promise<{ ragflowCallSuccess: boolean }> {
+  //
+  if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
+    console.error(
+      "ChatClient service, session deletion function, no API key or URL"
+    );
+    return { ragflowCallSuccess: false };
+  }
+
+  // Default to using the sessionId provided, but attempt to retrieve it from Supabase
+  // if the user didn't provide a sessionId
+  let sessionIdToUse = sessionInfo;
+  if (typeof sessionIdToUse !== "string") {
+    const { sessionIdStorage, primaryKeyValuesSessions } = sessionIdToUse;
+    const supabase = await createServiceClient();
+    let buildQuery = supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .from(sessionIdStorage.table as any) // we ignore error here cause its a pain to get the table column names within our TableStorage type
+      .select(sessionIdStorage.column);
+    for (const pair of primaryKeyValuesSessions) {
+      buildQuery = buildQuery.eq(pair.key, pair.value);
+    }
+    // console.log(buildQuery)
+    const { data, error } = await buildQuery.single();
+
+    if (
+      !error &&
+      data &&
+      (
+        data as unknown as {
+          [sessionIdStorage.column]: string;
+        }
+      )[sessionIdStorage.column]
+    ) {
+      sessionIdToUse = (
+        data as unknown as {
+          [sessionIdStorage.column]: string;
+        }
+      )[sessionIdStorage.column];
+    }
+  }
+
+  // performs delete with Ragflow
+  const response = await fetch(getSessionUrl(assistantId), {
+    method: "DELETE",
+    headers: getHeader(),
+    body: JSON.stringify({
+      ids: [sessionIdToUse],
+    }),
+  });
+
+  // Verifies that the call was successful
+  const jsonData = await response.json();
+  if (!response.ok) {
+    console.error("ChatClient, delete session, Ragflow call error:", jsonData);
+    return { ragflowCallSuccess: false };
+  }
+
+  return { ragflowCallSuccess: true };
+}
+
 function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }

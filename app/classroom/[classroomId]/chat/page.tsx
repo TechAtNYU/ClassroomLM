@@ -91,7 +91,7 @@ export default async function ChatPage({
             // size={"iconLg"}
             asChild
           >
-            <Link href={`../upload`} passHref>
+            <Link href={`./upload`} passHref>
               <Upload className="scale-[200%]" />
             </Link>
           </Button>
@@ -105,7 +105,7 @@ export default async function ChatPage({
     }
     return <h1>Server error! </h1>; //TODO fixthis
   }
-  console.log(chatClient);
+  // console.log(chatClient);
 
   // const chatAssistantId = await getOrCreateAssistant(
   //   Number(classroomId),

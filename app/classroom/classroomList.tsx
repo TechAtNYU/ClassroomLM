@@ -98,38 +98,20 @@ export default function ClassroomList() {
     isAdmin: boolean
   ) {
     return (
-      <div className="flex flex-wrap justify-start gap-4">
-        {classroomList.map((classroom) => {
-          return (
-            <div key={classroom.id}>
-              {!classroom.archived && (
-                <Card className="w-[450px]" animated>
-                  <CardHeader>
-                    <CardTitle>{classroom.name}</CardTitle>
-                    <CardDescription>
-                      Join Code: {classroom.join_code || "N/A"}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <TooltipProvider>
-                      <Tooltip delayDuration={300}>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            variant={"ghost"}
-                            size={"iconLg"}
-                            asChild
-                            // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                          >
-                            <Link href={`../chat/${classroom.id}`} passHref>
-                              <MessageSquareMore className="scale-[200%]" />{" "}
-                            </Link>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Chat!</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    {isAdmin && (
+      <div>
+        <div className="flex flex-wrap justify-start gap-4">
+          {classroomList.map((classroom) => {
+            return (
+              <div key={classroom.id}>
+                {!classroom.archived && (
+                  <Card className="w-[450px]" animated>
+                    <CardHeader>
+                      <CardTitle>{classroom.name}</CardTitle>
+                      <CardDescription>
+                        Join Code: {classroom.join_code || "N/A"}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
                       <TooltipProvider>
                         <Tooltip delayDuration={300}>
                           <TooltipTrigger asChild>
@@ -140,73 +122,92 @@ export default function ClassroomList() {
                               asChild
                               // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                             >
-                              <Link
-                                href={`/classroom/${classroom.id}/manage`}
-                                passHref
-                              >
-                                <Edit className="scale-[200%]" />
+                              <Link href={`../chat/${classroom.id}`} passHref>
+                                <MessageSquareMore className="scale-[200%]" />{" "}
                               </Link>
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>Manage Classroom</TooltipContent>
+                          <TooltipContent>Chat!</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    )}
-
-                    {classroom.Classroom_Members &&
-                      classroom.Classroom_Members.length > 0 && (
-                        <MemberList
-                          classroom={classroom}
-                          enableDeletion={false}
-                          triggerButton={
-                            <TooltipProvider>
-                              <Tooltip delayDuration={300}>
-                                <SheetTrigger asChild>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      type="button"
-                                      variant={"ghost"}
-                                      size={"iconLg"}
-                                      // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                                    >
-                                      <Users className="scale-[200%]" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                </SheetTrigger>
-                                <TooltipContent>View Members</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          }
-                        />
+                      {isAdmin && (
+                        <TooltipProvider>
+                          <Tooltip delayDuration={300}>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant={"ghost"}
+                                size={"iconLg"}
+                                asChild
+                                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                              >
+                                <Link
+                                  href={`/classroom/${classroom.id}/manage`}
+                                  passHref
+                                >
+                                  <Edit className="scale-[200%]" />
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Manage Classroom</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
-                    {!isAdmin && (
-                      <TooltipProvider>
-                        <Tooltip delayDuration={300}>
-                          <TooltipTrigger asChild>
-                            <Button
-                              type="button"
-                              variant={"destructiveGhost"}
-                              size={"iconLg"}
-                              onClick={() =>
-                                optimisticUpdateAndFetchClassroomData(
-                                  classroom.id,
-                                  async () =>
-                                    leaveClassroom(classroom.id, userId),
-                                  "remove",
-                                  setUserAndClassData,
-                                  refreshClassrooms
-                                )
-                              }
-                              // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                            >
-                              <LogOut className="scale-[200%]" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Leave Classroom</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    {/* 
+
+                      {classroom.Classroom_Members &&
+                        classroom.Classroom_Members.length > 0 && (
+                          <MemberList
+                            classroom={classroom}
+                            enableDeletion={false}
+                            triggerButton={
+                              <TooltipProvider>
+                                <Tooltip delayDuration={300}>
+                                  <SheetTrigger asChild>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        type="button"
+                                        variant={"ghost"}
+                                        size={"iconLg"}
+                                        // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                                      >
+                                        <Users className="scale-[200%]" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                  </SheetTrigger>
+                                  <TooltipContent>View Members</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            }
+                          />
+                        )}
+                      {!isAdmin && (
+                        <TooltipProvider>
+                          <Tooltip delayDuration={300}>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant={"destructiveGhost"}
+                                size={"iconLg"}
+                                onClick={() =>
+                                  optimisticUpdateAndFetchClassroomData(
+                                    classroom.id,
+                                    async () =>
+                                      leaveClassroom(classroom.id, userId),
+                                    "remove",
+                                    setUserAndClassData,
+                                    refreshClassrooms
+                                  )
+                                }
+                                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                              >
+                                <LogOut className="scale-[200%]" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Leave Classroom</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {/* 
                     {isAdmin && (
                       <button
                         onClick={() => handleChangeClassroomName(classroom.id)}
@@ -216,85 +217,86 @@ export default function ClassroomList() {
                         Change Name
                       </button>
                     )} */}
-                  </CardContent>
-                  {/* <CardFooter>
+                    </CardContent>
+                    {/* <CardFooter>
                 <p>Card Footer</p>
               </CardFooter> */}
-                </Card>
-                // <>
-                //   <h1 className="text-xl">{classroom.name}</h1>
-                //   <h2>Classroom ID: {classroom.id}</h2>
-                //   <p>
-                //     Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
-                //   </p>
-                //   <p>Join Code: {classroom.join_code || "N/A"}</p>
+                  </Card>
+                  // <>
+                  //   <h1 className="text-xl">{classroom.name}</h1>
+                  //   <h2>Classroom ID: {classroom.id}</h2>
+                  //   <p>
+                  //     Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
+                  //   </p>
+                  //   <p>Join Code: {classroom.join_code || "N/A"}</p>
 
-                //   {classroom.Classroom_Members &&
-                //     classroom.Classroom_Members.length > 0 && (
-                //       <MemberList classroom={classroom} />
-                //     )}
+                  //   {classroom.Classroom_Members &&
+                  //     classroom.Classroom_Members.length > 0 && (
+                  //       <MemberList classroom={classroom} />
+                  //     )}
 
-                //   <InviteMember
-                //     classroomId={classroom.id}
-                //     onInviteSuccess={refreshClassrooms}
-                //   />
-                //   <Link href={`../chat/${classroom.id}`} passHref>
-                //     <button
-                //       type="button"
-                //       className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                //     >
-                //       Chat!
-                //     </button>
-                //   </Link>
-                //   <button
-                //     type="button"
-                //     className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                //     onClick={
-                //       isAdmin
-                //         ? () => deleteClassroomAndFetch(classroom.id)
-                //         : () => leaveClassroomAndFetch(classroom.id)
-                //     }
-                //   >
-                //     {isAdmin ? "Delete Classroom" : "Leave Classroom"}
-                //   </button>
+                  //   <InviteMember
+                  //     classroomId={classroom.id}
+                  //     onInviteSuccess={refreshClassrooms}
+                  //   />
+                  //   <Link href={`../chat/${classroom.id}`} passHref>
+                  //     <button
+                  //       type="button"
+                  //       className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  //     >
+                  //       Chat!
+                  //     </button>
+                  //   </Link>
+                  //   <button
+                  //     type="button"
+                  //     className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                  //     onClick={
+                  //       isAdmin
+                  //         ? () => deleteClassroomAndFetch(classroom.id)
+                  //         : () => leaveClassroomAndFetch(classroom.id)
+                  //     }
+                  //   >
+                  //     {isAdmin ? "Delete Classroom" : "Leave Classroom"}
+                  //   </button>
 
-                //   {isAdmin && (
-                //     <button
-                //       type="button"
-                //       className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                //       onClick={() => archiveClassroomAndFetch(classroom.id)}
-                //     >
-                //       Archive
-                //     </button>
-                //   )}
+                  //   {isAdmin && (
+                  //     <button
+                  //       type="button"
+                  //       className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                  //       onClick={() => archiveClassroomAndFetch(classroom.id)}
+                  //     >
+                  //       Archive
+                  //     </button>
+                  //   )}
 
-                //   {isAdmin && (
-                //     <Link href={`../upload/${classroom.id}`} passHref>
-                //       <button
-                //         type="button"
-                //         className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                //       >
-                //         Upload Materials
-                //       </button>
-                //     </Link>
-                //   )}
+                  //   {isAdmin && (
+                  //     <Link href={`../upload/${classroom.id}`} passHref>
+                  //       <button
+                  //         type="button"
+                  //         className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  //       >
+                  //         Upload Materials
+                  //       </button>
+                  //     </Link>
+                  //   )}
 
-                //   {isAdmin && (
-                //     <button
-                //       onClick={() => handleChangeClassroomName(classroom.id)}
-                //       type="button"
-                //       className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                //     >
-                //       Change Name
-                //     </button>
-                //   )}
+                  //   {isAdmin && (
+                  //     <button
+                  //       onClick={() => handleChangeClassroomName(classroom.id)}
+                  //       type="button"
+                  //       className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  //     >
+                  //       Change Name
+                  //     </button>
+                  //   )}
 
-                //   <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
-                // </>
-              )}
-            </div>
-          );
-        })}
+                  //   <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
+                  // </>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }

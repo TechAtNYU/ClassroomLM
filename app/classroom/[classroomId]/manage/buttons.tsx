@@ -84,11 +84,6 @@ export default function ClassroomManagementButtons({
 
   return (
     <div>
-      {classroomInfo.Classroom_Members &&
-        classroomInfo.Classroom_Members.length > 0 && (
-          <MemberList classroom={classroomInfo} enableDeletion={true} />
-        )}
-
       {"Look at the class info: " + classroomInfo.name}
       <Link href={`upload`} passHref>
         <button
@@ -131,7 +126,10 @@ export default function ClassroomManagementButtons({
       >
         Change Name
       </button>
-
+      {classroomInfo.Classroom_Members &&
+        classroomInfo.Classroom_Members.length > 0 && (
+          <MemberList classroom={classroomInfo} enableDeletion={true} />
+        )}
       <p>Invite Member:</p>
       <InviteMember classroomId={classroomId} />
     </div>

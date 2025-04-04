@@ -42,6 +42,6 @@ export const personalChatConfigTemplate = {
       frequency_penalty: 0.6,
       top_p: 0.3,
     },
-    promptType: "simple"
+    promptType: "simple",
   } as ModelSettings,
 };

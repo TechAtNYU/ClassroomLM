@@ -1,6 +1,6 @@
 "use server";
 
-import { getCurrentUserId } from "@/app/chat/[classroomId]/actions";
+import { getCurrentUserIdServer } from "@/app/lib/supabase/shared";
 // import { createDatasetClient } from "@/app/lib/ragflow/dataset-client";
 import { createClient } from "@/utils/supabase/server";
 
@@ -169,7 +169,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function isUserAdminForClassroom(classroomId: number) {
   const supabase = createClient();
-  const userId = await getCurrentUserId();
+  const userId = await getCurrentUserIdServer();
 
   const { data, error } = await (await supabase)
     .from("Classrooms")

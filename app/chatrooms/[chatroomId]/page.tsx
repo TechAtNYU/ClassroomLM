@@ -2,9 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
-import NewMessages from "./components/new-messages";
-import { sendMessageToChatroom } from "../actions";
-import MessageArea from "./components/new-messages";
+import MessageArea from "./components/message-area";
 
 const ChatroomPage = async ({
   params,
@@ -34,6 +32,7 @@ const ChatroomPage = async ({
       Classroom_Members (
         id,
         user_id,
+        classroom_id,
         Users(
           id,
           full_name,
@@ -128,9 +127,12 @@ const ChatroomPage = async ({
           </Link>
         </div>
       </div>
-      
-        <MessageArea chatHistory={messages} chatroomId={chatroomId} />
-      
+
+      <MessageArea
+        chatHistory={messages}
+        chatroomId={chatroomId}
+        chatroomMemberRecord={currentMember}
+      />
     </div>
   );
 };

@@ -1,10 +1,10 @@
-import { createClient } from "@/utils/supabase/server";
-import { createServiceClient } from "@/utils/supabase/service-server";
+// import { createClient } from "@/utils/supabase/server";
+// // import { createServiceClient } from "@/utils/supabase/service-server";
 
-// TODO: these helpers should probably be combined with the actions in /chat
+// // TODO: these helpers should probably be combined with the actions in /chat
 
-const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
-const API_KEY = process.env.RAGFLOW_API_KEY;
+// const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
+// const API_KEY = process.env.RAGFLOW_API_KEY;
 
 // export const findChatAssitantAndUpdate = async (
 //   datasetId: string | null,
@@ -103,7 +103,7 @@ const API_KEY = process.env.RAGFLOW_API_KEY;
 //       top_p: 0.3,
 //     },
 //     prompt: {
-//       prompt: `You are an advanced language model named 'Classroom LM' participating in a collaborative chat with a group of users. Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided. If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding. 
+//       prompt: `You are an advanced language model named 'Classroom LM' participating in a collaborative chat with a group of users. Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided. If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding.
 
 // In addition to answering questions, you can **generate exam materials** when requested. This includes:
 
@@ -282,57 +282,57 @@ const API_KEY = process.env.RAGFLOW_API_KEY;
 //   return await createSession(chatAssistantId, chatroomId, classroomId);
 // };
 
-export const deleteSession = async (
-  chatroomId: string,
-  assistantId: string
-) => {
-  const supabase = await createClient();
-  const { data: session, error: sessionError } = await supabase
-    .from("Chatrooms")
-    .select("ragflow_session_id")
-    .eq("id", chatroomId)
-    .single();
+// export const deleteSession = async (
+//   chatroomId: string,
+//   assistantId: string
+// ) => {
+//   const supabase = await createClient();
+//   const { data: session, error: sessionError } = await supabase
+//     .from("Chatrooms")
+//     .select("ragflow_session_id")
+//     .eq("id", chatroomId)
+//     .single();
 
-  if (sessionError) {
-    throw new Error("Error fetching session id");
-  }
+//   if (sessionError) {
+//     throw new Error("Error fetching session id");
+//   }
 
-  const body = {
-    ids: [session.ragflow_session_id],
-  };
+//   const body = {
+//     ids: [session.ragflow_session_id],
+//   };
 
-  try {
-    const res = await fetch(`${API_URL}/v1/chats/${assistantId}/sessions`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
+//   try {
+//     const res = await fetch(`${API_URL}/v1/chats/${assistantId}/sessions`, {
+//       method: "DELETE",
+//       headers: {
+//         Authorization: `Bearer ${API_KEY}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(body),
+//     });
 
-    if (!res.ok) throw new Error("Failed to delete session");
+//     if (!res.ok) throw new Error("Failed to delete session");
 
-    const resJson = await res.json();
-    console.log(resJson);
-  } catch (error) {
-    console.error("Error creating session:", error);
-    return null;
-  }
-};
+//     const resJson = await res.json();
+//     console.log(resJson);
+//   } catch (error) {
+//     console.error("Error creating session:", error);
+//     return null;
+//   }
+// };
 
-export const llmToChatroom = async (chatroomId: string, message: string) => {
-  const supabase = await createClient();
+// export const llmToChatroom = async (chatroomId: string, message: string) => {
+//   const supabase = await createClient();
 
-  const { error } = await supabase.from("Messages").insert([
-    {
-      chatroom_id: chatroomId,
-      content: message,
-      is_new: false,
-    },
-  ]);
+//   const { error } = await supabase.from("Messages").insert([
+//     {
+//       chatroom_id: chatroomId,
+//       content: message,
+//       is_new: false,
+//     },
+//   ]);
 
-  if (error) {
-    throw new Error("Error when sending message from LLM");
-  }
-};
+//   if (error) {
+//     throw new Error("Error when sending message from LLM");
+//   }
+// };

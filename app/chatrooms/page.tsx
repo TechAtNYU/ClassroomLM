@@ -51,7 +51,8 @@ const ChatroomsPage = async () => {
         classroom_id,
         creater_user_id,
         Classrooms(
-          name
+          name,
+          chatroom_assistant_id
         )
       )
     `
@@ -125,7 +126,8 @@ const ChatroomsPage = async () => {
                     action={deleteChatroom.bind(
                       null,
                       chatroom.id,
-                      chatroom.classroom_id
+                      chatroom.classroom_id,
+                      chatroom.Classrooms.chatroom_assistant_id
                     )}
                   >
                     <button

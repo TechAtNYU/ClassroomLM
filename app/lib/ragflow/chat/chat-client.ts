@@ -37,11 +37,13 @@ export interface ChatClientBaseConfig {
   assistantIdStorage: TableStorageInfo;
   modelSettings: ModelSettings;
   datasets: string[];
+  assistantPurpose: string;
 }
 
 export type ChatClientWithSessionConfig = ChatClientBaseConfig & {
   primaryKeyValuesSession: { key: string; value: unknown }[]; // to be used to match against the primary key (eg. classroomID)
   sessionIdStorage: TableStorageInfo;
+  sessionPurpose: string;
 };
 
 export type ChatBaseClient = {
@@ -279,6 +281,8 @@ export async function getClientWithRetrievedAssistantId<
   if (
     !(
       data as unknown as {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore TS1170 computed property name
         [client.clientConfig.assistantIdStorage.column]: string;
       }
     )[client.clientConfig.assistantIdStorage.column]
@@ -295,6 +299,8 @@ export async function getClientWithRetrievedAssistantId<
       ...client,
       assistantId: (
         data as unknown as {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore TS1170 computed property name
           [client.clientConfig.assistantIdStorage.column]: string;
         }
       )[client.clientConfig.assistantIdStorage.column],
@@ -351,7 +357,7 @@ export async function createAssociatedAssistant<T extends ChatBaseClient>(
 > {
   // First: make the call to Ragflow to create an assistant with correct properties
   const timestamp = Date.now();
-  const assistantName = `${client.clientConfig.associatedClassroomName}_${timestamp}`;
+  const assistantName = `${client.clientConfig.assistantPurpose}_${client.clientConfig.associatedClassroomName}_${timestamp}`;
   const ragflowResponse = await fetch(getAssistantUrl(), {
     method: "POST",
     headers: getHeader(),
@@ -411,6 +417,8 @@ export async function createAssociatedAssistant<T extends ChatBaseClient>(
     error ||
     !(
       updatedRow as unknown as {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore TS1170 computed property name
         [client.clientConfig.assistantIdStorage.column]: string;
       }
     )[client.clientConfig.assistantIdStorage.column]
@@ -477,9 +485,12 @@ export async function getClientWithRetrievedSessionId<
 
   // If the row is missing the session ID, note that with supabaseHasSessionId
   // we do all this casting because (again) its a pain to make it verified as actual columns/tables within supabase typing
+
   if (
     !(
       data as unknown as {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore TS1170 computed property name
         [client.clientConfig.sessionIdStorage.column]: string;
       }
     )[client.clientConfig.sessionIdStorage.column]
@@ -496,6 +507,8 @@ export async function getClientWithRetrievedSessionId<
       ...client,
       sessionId: (
         data as unknown as {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore TS1170 computed property name
           [client.clientConfig.sessionIdStorage.column]: string;
         }
       )[client.clientConfig.sessionIdStorage.column],
@@ -571,7 +584,7 @@ export async function createAssociatedSession<T extends ChatClientWithSession>(
     client.clientConfig.primaryKeyValuesSession.find((x) =>
       x.key.includes("user")
     )?.value ?? `${client.clientConfig.associatedClassroomName}_user`;
-  const sessionName = `personal_${userId}_${timestamp}`;
+  const sessionName = `${client.clientConfig.sessionPurpose}_${userId}_${timestamp}`;
   const ragflowResponse = await fetch(getSessionUrl(client.assistantId), {
     method: "POST",
     headers: getHeader(),
@@ -617,6 +630,8 @@ export async function createAssociatedSession<T extends ChatClientWithSession>(
     error ||
     !(
       updatedRow as unknown as {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore TS1170 computed property name
         [client.clientConfig.sessionIdStorage.column]: string;
       }
     )[client.clientConfig.sessionIdStorage.column]
@@ -745,12 +760,16 @@ export async function deleteAssistant(
       data &&
       (
         data as unknown as {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore TS1170 computed property name
           [assistantIdStorage.column]: string;
         }
       )[assistantIdStorage.column]
     ) {
       assistantIdToUse = (
         data as unknown as {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore TS1170 computed property name
           [assistantIdStorage.column]: string;
         }
       )[assistantIdStorage.column];
@@ -789,13 +808,12 @@ export async function deleteAssistant(
  */
 export async function deleteSession(
   assistantId: string,
-  sessionId: string | undefined,
   sessionInfo:
-  | {
-    primaryKeyValuesSessions: { key: string; value: unknown }[], // to be used to match against the primary key(s) (eg. classroomID)
-    sessionIdStorage: TableStorageInfo,
-    }
-  | string
+    | {
+        primaryKeyValuesSessions: { key: string; value: unknown }[]; // to be used to match against the primary key(s) (eg. classroomID)
+        sessionIdStorage: TableStorageInfo;
+      }
+    | string
 ): Promise<{ ragflowCallSuccess: boolean }> {
   //
   if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
@@ -826,12 +844,16 @@ export async function deleteSession(
       data &&
       (
         data as unknown as {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore TS1170 computed property name
           [sessionIdStorage.column]: string;
         }
       )[sessionIdStorage.column]
     ) {
       sessionIdToUse = (
         data as unknown as {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore TS1170 computed property name
           [sessionIdStorage.column]: string;
         }
       )[sessionIdStorage.column];

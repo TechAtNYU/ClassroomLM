@@ -23,9 +23,10 @@ export async function deleteClassroom(classroom_id: number) {
 
   // Deleting Associated Chat Assistant
   const chat_assistant_id = data.chat_assistant_id;
+  const chatroom_assistant_id = data.chatroom_assistant_id;
 
   if (chat_assistant_id) {
-    deleteAssistant(chat_assistant_id)
+    deleteAssistant(chat_assistant_id);
     // const requestChatBody = {
     //   ids: [chat_assistant_id],
     // };
@@ -44,6 +45,9 @@ export async function deleteClassroom(classroom_id: number) {
     //     `Failed while deleting assistant from Ragflow: ${chatResponse.statusText}`
     //   );
     // }
+  }
+  if (chatroom_assistant_id) {
+    deleteAssistant(chatroom_assistant_id);
   }
   //  else {
   //   // If no chat assistant, we don't want to error out
@@ -105,7 +109,7 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
 //         id,
 //         classroom_id,
 //         Users (
-//           id, 
+//           id,
 //           email,
 //           full_name,
 //           avatar_url

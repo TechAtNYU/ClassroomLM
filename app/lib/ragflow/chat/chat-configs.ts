@@ -1,6 +1,8 @@
 import { ModelSettings, TableStorageInfo } from "./chat-client";
 
 export const personalChatConfigTemplate = {
+  assistantPurpose: "classGeneral",
+  sessionPurpose: "personal",
   assistantIdStorage: {
     table: "Classrooms",
     column: "chat_assistant_id",
@@ -44,17 +46,19 @@ export const personalChatConfigTemplate = {
     },
     promptType: "simple",
   } as ModelSettings,
-};
+} as const;
 
-export const chatrooomConfigTemplate = {
+export const chatroomConfigTemplate = {
+  assistantPurpose: "classChatroom",
+  sessionPurpose: "chatroom",
   assistantIdStorage: {
     table: "Classrooms",
     column: "chatroom_assistant_id",
-  } as TableStorageInfo,
+  } as const as TableStorageInfo,
   sessionIdStorage: {
     table: "Chatrooms",
     column: "ragflow_session_id",
-  } as TableStorageInfo,
+  } as const as TableStorageInfo,
   modelSettings: {
     promptSettings: {
       prompt: `You are an advanced language model named 'Classroom LM' participating in a collaborative chat with a group of users. Your primary goal is to assist students with factual, well-structured answers based on the knowledge base provided. If the knowledge base has relevant content, use it to generate responses. If not, provide the best possible answer based on your general understanding. 
@@ -88,13 +92,11 @@ You will be given the chat history before your last response (if any), including
       show_quote: true,
     },
     llmSettings: {
-
-          frequency_penalty: 0.7,
-          presence_penalty: 0.4,
-          temperature: 0.1,
-          top_p: 0.3,
-
+      frequency_penalty: 0.7,
+      presence_penalty: 0.4,
+      temperature: 0.1,
+      top_p: 0.3,
     },
     promptType: "simple",
   } as ModelSettings,
-};
+} as const;

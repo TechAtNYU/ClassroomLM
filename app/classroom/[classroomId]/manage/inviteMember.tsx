@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { inviteMemberToClassroom } from "../../actions";
+import { toast } from "@/hooks/use-toast";
 
 export default function InviteMember({ classroomId }: { classroomId: number }) {
   const [email, setEmail] = useState("");
@@ -8,10 +9,19 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
     try {
       await inviteMemberToClassroom(email, classroomId);
       setEmail("");
+      toast({
+        title: "Added Member Successfully",
+        description: `${email} was added to the class.`,
+      });
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {
-        console.error(error.message);
+        toast({
+          variant: "destructive",
+          title: "The user is already part of the classroom.",
+          // description: { email } + "was added to the class.",
+        });
+        // console.error(error.message);
       } else {
         console.error("Error Occured");
       }

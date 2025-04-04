@@ -17,7 +17,7 @@ import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
 import { UserContextType } from "@/app/lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import MemberList from "../../memberList";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 
 export default function ClassroomManagementButtons({
@@ -31,8 +31,8 @@ export default function ClassroomManagementButtons({
   //   const classData = await retrieveClassroomData(userId);
   const classroomIdNumber = Number(classroomId);
   const { setUserAndClassData, userAndClassData } = userContext;
-
-  const searchParams = useSearchParams();
+  const router = useRouter();
+  // const searchParams = useSearchParams();
 
   const classroomInfo = userAndClassData.classroomsData.find(
     (x) => x.id === classroomId
@@ -74,6 +74,7 @@ export default function ClassroomManagementButtons({
       "Are you sure? This action can't be undone."
     );
     if (confirmation) {
+      router.replace("/classroom");
       optimisticUpdateAndFetchClassroomData(
         classroomId,
         async () => deleteClassroom(classroomId),
@@ -81,28 +82,33 @@ export default function ClassroomManagementButtons({
         setUserAndClassData,
         refreshClassrooms
       );
+      toast({
+        title: "Successfully deleted classroom.",
+      });
+
+      // Redirect to the classrooms page after deletion
     } else {
       console.log("Classroom deletion cancelled."); //TODO: remove log message
     }
   };
 
-  const deletedClassSuccess = searchParams.get("delete_success");
-  if (deletedClassSuccess && !isNaN(Number(deletedClassSuccess))) {
-    const deleteClassInfo = userAndClassData.classroomsData.find(
-      (x) => x.id === Number(deletedClassSuccess)
-    );
-    if (deleteClassInfo) {
-      toast({
-        description: (
-          <div>
-            Successfully deleted classroom{" "}
-            <span className="font-bold">{deleteClassInfo.name}</span>!
-          </div>
-        ),
-        duration: 10000,
-      });
-    }
-  }
+  // const deletedClassSuccess = searchParams.get("delete_success");
+  // if (deletedClassSuccess && !isNaN(Number(deletedClassSuccess))) {
+  //   const deleteClassInfo = userAndClassData.classroomsData.find(
+  //     (x) => x.id === Number(deletedClassSuccess)
+  //   );
+  //   if (deleteClassInfo) {
+  //     toast({
+  //       description: (
+  //         <div>
+  //           Successfully deleted classroom{" "}
+  //           <span className="font-bold">{deleteClassInfo.name}</span>!
+  //         </div>
+  //       ),
+  //       duration: 20000,
+  //     });
+  //   }
+  // }
 
   return (
     <div>

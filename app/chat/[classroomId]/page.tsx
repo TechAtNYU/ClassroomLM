@@ -1,21 +1,19 @@
 import Link from "next/link";
 import {
-  getCurrentUserId,
-  getRagflowDatasetId,
-  getOrCreateAssistant,
   getOrCreateSession,
   getDisplayInfo,
   retrieveMessageHistory,
 } from "./actions";
 
 import MessageBox from "./MessageBox";
+import { getCurrentUserIdServer } from "@/app/lib/supabase/shared";
 
 export default async function ChatPage({
   params,
 }: {
   params: Promise<{ classroomId: string }>;
 }) {
-  const userId = await getCurrentUserId();
+  const userId = await getCurrentUserIdServer();
   const { classroomId } = await params;
   const classroomIdNum = Number(classroomId);
   const datasetId = await getRagflowDatasetId(classroomIdNum);

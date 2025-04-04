@@ -70,6 +70,7 @@ const ChatroomsPage = async () => {
     <div className="container mx-auto p-4">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Your Chatrooms</h1>
+        {/* TODO: probably want to change this part to interactive? so that we can give error messagse and what not if createChatroom failed */}
         <form action={createChatroom} className="flex gap-2">
           <input
             type="text"

@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatClientWithSession } from "@/app/lib/ragflow/chat/chat-client";
 import { createClient } from "@/utils/supabase/client";
 import { Tables } from "@/utils/supabase/database.types";
 import Image from "next/image";
@@ -11,7 +12,7 @@ interface Message extends Tables<"Messages"> {
   avatar_url: string | null;
 }
 
-const NewMessages = ({
+const MessageArea = ({
   chatHistory,
   chatroomId,
 }: {
@@ -19,6 +20,28 @@ const NewMessages = ({
   chatroomId: string;
 }) => {
   const [messages, setMessages] = useState(chatHistory);
+  const [chatClient, setChatClient] = useState<ChatClientWithSession | null>(null);
+
+  const sendMessageToChatroom = async (content: string) =>  { 
+    const isAskCommand = content.startsWith("/ask ");
+    if (isAskCommand) {
+      content = content.substring(5).trim();
+      if (!content) {
+        console.log("/ask requires content after it!")
+      }
+    }
+  
+    // Insert the message
+    const { error: messageError } = await supabase.from("Messages").insert([
+      {
+        content,
+        member_id: chatroomMemberId,
+        chatroom_id: chatroomId,
+        is_ask: isAskCommand,
+      },
+    ]);
+    // INSERT PROPERLY ABOVE, keep ask llm as a single action that creates the client and returns it 
+  }
 
   useEffect(() => {
     const supabase = createClient();
@@ -94,56 +117,75 @@ const NewMessages = ({
   }, [chatroomId]);
 
   return (
-    <div className="space-y-2 p-4">
-      {messages.length === 0 ? (
-        <p className="text-gray-500">
-          No messages yet. Start the conversation!
-        </p>
-      ) : (
-        messages.map((message, index) => {
-          const isLLM = message.user_id === "llm";
-
-          return (
-            <div
-              key={message.id || index}
-              className="flex items-start gap-3 rounded border p-3"
+    <div className="flex-grow overflow-auto">
+      <div className="border-t p-4 text-black">
+            <input
+              type="text"
+              name="message"
+              placeholder="Type your message..."
+              className="flex-grow rounded border p-2"
+              required
+            />
+            <button
+              type="submit"
+              className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
             >
-              {isLLM ? (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-200 text-sm font-medium text-blue-600">
-                  AI
+              Send
+            </button>
+        </div>
+      <div className="space-y-2 p-4">
+        {messages.length === 0 ? (
+          <p className="text-gray-500">
+            No messages yet. Start the conversation!
+          </p>
+        ) : (
+          messages.map((message, index) => {
+            const isLLM = message.user_id === "llm";
+
+            return (
+              <div
+                key={message.id || index}
+                className="flex items-start gap-3 rounded border p-3"
+              >
+                {isLLM ? (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-200 text-sm font-medium text-blue-600">
+                    AI
+                  </div>
+                ) : message.avatar_url ? (
+                  <Image
+                    src={message.avatar_url}
+                    alt={message.full_name || "User"}
+                    referrerPolicy="no-referrer"
+                    width={25}
+                    height={25}
+                  />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600">
+                    {message.full_name?.charAt(0) || "?"}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-medium">
+                      {isLLM
+                        ? "AI Assistant"
+                        : message.full_name || "Unknown User"}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(message.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="mt-1">{message.content}</div>
                 </div>
-              ) : message.avatar_url ? (
-                <Image
-                  src={message.avatar_url}
-                  alt={message.full_name || "User"}
-                  referrerPolicy="no-referrer"
-                  width={25}
-                  height={25}
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600">
-                  {message.full_name?.charAt(0) || "?"}
-                </div>
-              )}
-              <div className="flex-1">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-medium">
-                    {isLLM
-                      ? "AI Assistant"
-                      : message.full_name || "Unknown User"}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(message.created_at).toLocaleString()}
-                  </span>
-                </div>
-                <div className="mt-1">{message.content}</div>
               </div>
-            </div>
-          );
-        })
-      )}
+            );
+          })
+        )}
+      </div> 
     </div>
-  );
+  )
 };
 
-export default NewMessages;
+
+
+export default MessageArea;

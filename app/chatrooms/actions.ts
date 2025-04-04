@@ -3,14 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import {
-  getRagflowDatasetId,
-  sendMessage,
-} from "../chat/[classroomId]/actions";
-import {
   deleteSession,
-  findChatAssistant,
-  getOrCreateAssistant,
-  getOrCreateSession,
   llmToChatroom,
 } from "./helpers";
 
@@ -21,7 +14,8 @@ export const createChatroom = async (formData: FormData) => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("No authenticated user found");
+    console.error("Unauthenticated user on chatroom page");
+    return; // {supabaseCallSuccess: false}
   }
 
   const name = (formData.get("name") as string) || "New Chatroom";
@@ -41,7 +35,8 @@ export const createChatroom = async (formData: FormData) => {
     .single();
 
   if (chatroomError) {
-    throw new Error(`Failed to create chatroom: ${chatroomError.message}`);
+    console.error(`Failed to create chatroom: ${chatroomError.message}`);
+    return; // {supabaseCallSuccess: false}
   }
 
   // Get the user's classroom member ID
@@ -53,7 +48,8 @@ export const createChatroom = async (formData: FormData) => {
     .single();
 
   if (memberError) {
-    throw new Error(`Failed to get member ID: ${memberError.message}`);
+    console.error(`Failed to get member ID: ${memberError.message}`);
+    return; //{supabaseCallSuccess: false}
   }
 
   // Add the user to the chatroom
@@ -67,12 +63,11 @@ export const createChatroom = async (formData: FormData) => {
     ]);
 
   if (chatMemberError) {
-    throw new Error(
-      `Failed to add user to chatroom: ${chatMemberError.message}`
-    );
+    console.error(`Failed to add user to chatroom: ${chatMemberError.message}`);
+    return; //{supabaseCallSuccess: false}
   }
-
   revalidatePath("/chatrooms");
+  return; //{supabaseCallSuccess: true}
 };
 
 export const deleteChatroom = async (

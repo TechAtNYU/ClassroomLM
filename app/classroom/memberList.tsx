@@ -14,14 +14,14 @@ import { Users } from "lucide-react";
 import { ReactNode } from "react";
 
 /**
- * 
- * @param triggerButton make sure you wrap with a SheetTrigger with an asChild in order for the sheet to work 
- * @returns 
+ *
+ * @param triggerButton make sure you wrap with a SheetTrigger with an asChild in order for the sheet to work
+ * @returns
  */
 export default function MemberList({
   classroom,
   enableDeletion,
-  triggerButton
+  triggerButton,
 }: {
   classroom: ClassroomWithMembers;
   enableDeletion: boolean;
@@ -38,11 +38,17 @@ export default function MemberList({
   // other table implementation: https://data-table.openstatus.dev/
   return (
     <Sheet>
-      {triggerButton ? triggerButton : (
+      {triggerButton ? (
+        triggerButton
+      ) : (
         <SheetTrigger asChild>
-        <button>
-          <Users/>
-        </button>
+          <button
+            type="button"
+            className="me-2 flex items-center rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+          >
+            Show Members
+            <Users className="ml-2" />
+          </button>
         </SheetTrigger>
       )}
 

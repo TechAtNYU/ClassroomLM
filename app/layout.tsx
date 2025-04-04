@@ -57,7 +57,7 @@ export default async function RootLayout({
             <SidebarProvider>
               <UserContextProvider userAndClassDataInitial={userData}>
                 <AppSidebar />
-                <SidebarInset>
+                <SidebarInset className="md:peer-data-[variant=inset]:mt-5">
                   <main>
                     <header className="flex h-16 shrink-0 items-center gap-2">
                       <div className="flex items-center gap-2 px-4">

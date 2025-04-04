@@ -174,10 +174,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      // style={{
-      //   backgroundImage:
-      //     "linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)",
-      // }}
+      style={{
+        backgroundImage:
+          "linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)",
+      }}
+      // className="bg-[linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)]"
       collapsible="icon"
       variant="inset"
     >

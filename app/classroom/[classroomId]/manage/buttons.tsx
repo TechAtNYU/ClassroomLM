@@ -17,6 +17,8 @@ import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
 import { UserContextType } from "@/app/lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import MemberList from "../../memberList";
+import { useSearchParams } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 export default function ClassroomManagementButtons({
   classroomId,
@@ -29,6 +31,8 @@ export default function ClassroomManagementButtons({
   //   const classData = await retrieveClassroomData(userId);
   const classroomIdNumber = Number(classroomId);
   const { setUserAndClassData, userAndClassData } = userContext;
+
+  const searchParams = useSearchParams();
 
   const classroomInfo = userAndClassData.classroomsData.find(
     (x) => x.id === classroomId
@@ -81,6 +85,24 @@ export default function ClassroomManagementButtons({
       console.log("Classroom deletion cancelled."); //TODO: remove log message
     }
   };
+
+  const deletedClassSuccess = searchParams.get("delete_success");
+  if (deletedClassSuccess && !isNaN(Number(deletedClassSuccess))) {
+    const deleteClassInfo = userAndClassData.classroomsData.find(
+      (x) => x.id === Number(deletedClassSuccess)
+    );
+    if (deleteClassInfo) {
+      toast({
+        description: (
+          <div>
+            Successfully deleted classroom{" "}
+            <span className="font-bold">{deleteClassInfo.name}</span>!
+          </div>
+        ),
+        duration: 10000,
+      });
+    }
+  }
 
   return (
     <div>

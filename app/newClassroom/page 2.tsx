@@ -2,41 +2,28 @@
 import { useState } from "react";
 import { newClassroom, getCurrentUserId } from "./actions";
 import Link from "next/link";
-import { toast } from "@/hooks/use-toast";
 
 export default function NewClassroomPage() {
   const [className, setClassName] = useState("");
   const [resultText, setResultText] = useState("");
-
   const addClassroom = async () => {
-    if (className.length != 0) {
-      try {
-        const userId = await getCurrentUserId();
-        const result = await newClassroom(className, userId);
-        if (!result) {
-          setResultText(`Error while making classroom!`);
-          return;
-        }
-        toast({
-          title: "Added classroom successfully!",
-        });
-        // setResultText(`Created classroom ${className} successfully!`);
-      } catch (error: unknown) {
-        //type unknown for typescript lint
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error("Error Occured");
-        }
+    try {
+      const userId = await getCurrentUserId();
+      const result = await newClassroom(className, userId);
+      if (!result) {
+        setResultText(`Error while making classroom!`);
+        return;
       }
-      setClassName("");
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Can't create classrooms with an empty name.",
-      });
+      setResultText(`Created classroom ${className} successfully!`);
+    } catch (error: unknown) {
+      //type unknown for typescript lint
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Error Occured");
+      }
     }
+    setClassName("");
   };
 
   return (

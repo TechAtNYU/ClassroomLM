@@ -24,7 +24,7 @@ export const optimisticUpdateAndFetchClassroomData = async <
   setUserAndClassDataFunction: React.Dispatch<
     React.SetStateAction<UserWithClassroomsData>
   >,
-  refreshFunction: () => Promise<unknown>
+  refreshFunction?: () => Promise<unknown>
 ) => {
   setUserAndClassDataFunction((prevData) => ({
     userData: prevData.userData,
@@ -37,5 +37,7 @@ export const optimisticUpdateAndFetchClassroomData = async <
     }),
   }));
   await action();
-  refreshFunction();
+  if (refreshFunction) {
+    refreshFunction();
+  }
 };

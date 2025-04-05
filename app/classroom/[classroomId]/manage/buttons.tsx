@@ -79,8 +79,7 @@ export default function ClassroomManagementButtons({
         classroomId,
         async () => deleteClassroom(classroomId),
         "remove",
-        setUserAndClassData,
-        refreshClassrooms
+        setUserAndClassData
       );
       toast({
         title: "Successfully deleted classroom.",

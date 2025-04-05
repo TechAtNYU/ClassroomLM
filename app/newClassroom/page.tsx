@@ -18,6 +18,7 @@ export default function NewClassroomPage() {
           return;
         }
         toast({
+          variant: "success",
           title: "Added classroom successfully!",
         });
         // setResultText(`Created classroom ${className} successfully!`);

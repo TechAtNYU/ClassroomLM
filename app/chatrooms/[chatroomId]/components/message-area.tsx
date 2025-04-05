@@ -49,10 +49,9 @@ const MessageArea = ({
     null
   );
   const [messageBoxValue, setMessageBoxValue] = useState("");
+  const supabase = createClient();
 
   useEffect(() => {
-    const supabase = createClient();
-
     const room = supabase.channel(`chatroom-${chatroomId}`);
 
     room.on(
@@ -121,7 +120,7 @@ const MessageArea = ({
     return () => {
       supabase.removeChannel(room);
     };
-  }, [chatroomId]);
+  }, [chatroomId, supabase]);
 
   // TODO: get all avatars/user info from here at the beginning using the context instead of every message
   const userContext = useContext(UserContext);

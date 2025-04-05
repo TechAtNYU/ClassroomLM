@@ -10,8 +10,17 @@ import {
 import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
-import { Users } from "lucide-react";
+import { Trash2, Users } from "lucide-react";
 import { ReactNode } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Tables } from "@/utils/supabase/database.types";
+import { Row } from "@tanstack/react-table";
 
 /**
  *
@@ -70,11 +79,24 @@ export default function MemberList({
                   ? [
                       {
                         id: "actions",
-                        header: "Manage",
-                        cell: ({ row }) => (
-                          <button onClick={() => handleDelete("123")}>
-                            Delete
-                          </button>
+                        // header: "Manage",
+                        cell: ({ row }: { row: Row<Tables<"Users">> }) => (
+                          <TooltipProvider>
+                            <Tooltip delayDuration={300}>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant={"destructiveGhost"}
+                                  size={"iconLg"}
+                                  onClick={() => handleDelete(row.original.id)}
+                                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                                >
+                                  <Trash2 />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Remove user</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         ),
                       },
                     ]

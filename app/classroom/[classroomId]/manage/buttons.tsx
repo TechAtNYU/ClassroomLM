@@ -30,6 +30,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+import { useState } from "react";
 
 export default function ClassroomManagementButtons({
   classroomId,
@@ -40,6 +54,7 @@ export default function ClassroomManagementButtons({
 }) {
   //   const userId = await getCurrentUserId();
   //   const classData = await retrieveClassroomData(userId);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const classroomIdNumber = Number(classroomId);
   const { setUserAndClassData, userAndClassData } = userContext;
   const router = useRouter();
@@ -48,6 +63,11 @@ export default function ClassroomManagementButtons({
   const classroomInfo = userAndClassData.classroomsData.find(
     (x) => x.id === classroomId
   );
+
+  const [newClassName, setNewClassName] = useState<string>(
+    classroomInfo?.name ?? ""
+  );
+
   if (!classroomInfo) {
     return (
       <div className="flex items-center space-x-4">
@@ -60,17 +80,38 @@ export default function ClassroomManagementButtons({
     );
   }
 
+  // const handleChangeClassroomName = async (classroomId: number) => {
+  //   // const newName = window.prompt("Enter new class name:");
+  //   // if (newName !== null && newName !== "") {
+  //   //   optimisticUpdateAndFetchClassroomData(
+  //   //     classroomId,
+  //   //     async () => changeClassroomName(classroomId, newName),
+  //   //     { name: newName },
+  //   //     setUserAndClassData,
+  //   //     refreshClassrooms
+  //   //   );
+  //   // }
+
+  //   optimisticUpdateAndFetchClassroomData(
+  //     classroomId,
+  //     async () => changeClassroomName(classroomId, newName),
+  //     { name: newName },
+  //     setUserAndClassData,
+  //     refreshClassrooms
+  //   );
+  // };
+
   const handleChangeClassroomName = async (classroomId: number) => {
-    const newName = window.prompt("Enter new class name:");
-    if (newName !== null && newName !== "") {
+    if (newClassName.trim() !== "") {
       optimisticUpdateAndFetchClassroomData(
         classroomId,
-        async () => changeClassroomName(classroomId, newName),
-        { name: newName },
+        async () => changeClassroomName(classroomId, newClassName),
+        { name: newClassName },
         setUserAndClassData,
         refreshClassrooms
       );
     }
+    setIsDialogOpen(false);
   };
 
   const refreshClassrooms = async () => {
@@ -85,12 +126,16 @@ export default function ClassroomManagementButtons({
     //   "Are you sure? This action can't be undone."
     // );
     // if (confirmation) {
-    const delete_success = new URL("/classroom");
-    delete_success.searchParams.append(
-      "delete_success",
-      classroomId.toString()
-    );
-    router.replace(delete_success.toString());
+
+    // const delete_success = new URL("/classroom");
+    // delete_success.searchParams.append(
+    //   "delete_success",
+    //   classroomId.toString()
+    // );
+
+    // router.replace(delete_success.toString());
+
+    router.replace("/classroom");
 
     optimisticUpdateAndFetchClassroomData(
       classroomId,
@@ -166,13 +211,47 @@ export default function ClassroomManagementButtons({
       </AlertDialog>
 
       {/* CHANGE NAME BUTTON */}
-      <button
+      {/* <button
         onClick={() => handleChangeClassroomName(classroomIdNumber)}
         type="button"
         className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
       >
         Change Name
-      </button>
+      </button> */}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline">Change Classroom Name</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Rename Classroom</DialogTitle>
+            <DialogDescription>
+              Make changes to the name of your classroom here.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Name</Label>
+              <Input
+                id="name"
+                value={newClassName}
+                className="col-span-3"
+                onChange={(e) => setNewClassName(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => handleChangeClassroomName(classroomIdNumber)}
+            >
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {classroomInfo.Classroom_Members &&
         classroomInfo.Classroom_Members.length > 0 && (
           <MemberList classroom={classroomInfo} enableDeletion={true} />

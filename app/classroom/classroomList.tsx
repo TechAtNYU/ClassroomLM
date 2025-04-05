@@ -67,7 +67,13 @@ export default function ClassroomList() {
   //     );
   //   }
   // };
-
+  const refreshClassrooms = async () => {
+    const refreshedData = await getUserAndClassroomData();
+    if (refreshedData) {
+      setUserAndClassData(refreshedData);
+    }
+  };
+  
   const joinedClassSuccess = searchParams.get("join_success");
   if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
     const joinClassInfo = userAndClassData.classroomsData.find(
@@ -77,21 +83,37 @@ export default function ClassroomList() {
       toast({
         description: (
           <div>
-            Successfully joined classroom{" "}
+            Successfully joined classroom
             <span className="font-bold">{joinClassInfo.name}</span>!
           </div>
         ),
         duration: 10000,
       });
+      refreshClassrooms();
+    }
+    
+  }
+
+  const deleteClassSuccess = searchParams.get("delete_success");
+  if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
+    const deleteClassInfo = userAndClassData.classroomsData.find(
+      (x) => x.id === Number(deleteClassSuccess)
+    );
+    if (deleteClassInfo) {
+      toast({
+        description: (
+          <div>
+            Successfully deleted classroom
+            <span className="font-bold">{deleteClassInfo.name}</span>!
+          </div>
+        ),
+        duration: 10000,
+      });
+      refreshClassrooms();
     }
   }
 
-  const refreshClassrooms = async () => {
-    const refreshedData = await getUserAndClassroomData();
-    if (refreshedData) {
-      setUserAndClassData(refreshedData);
-    }
-  };
+
 
   function mapToListItem(
     classroomList: ClassroomWithMembers[],

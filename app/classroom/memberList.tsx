@@ -31,7 +31,7 @@ export default function MemberList({
     return <h1>No members found!</h1>;
   }
 
-  const handleDelete = (memberId: any) => {
+  const handleDelete = (memberId: string) => {
     console.log("ID:" + memberId);
   };
 

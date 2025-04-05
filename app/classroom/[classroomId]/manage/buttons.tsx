@@ -17,7 +17,7 @@ import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
 import { UserContextType } from "@/app/lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import MemberList from "../../memberList";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 
 export default function ClassroomManagementButtons({
@@ -74,7 +74,10 @@ export default function ClassroomManagementButtons({
       "Are you sure? This action can't be undone."
     );
     if (confirmation) {
-      router.replace("/classroom");
+      const delete_success = new URL("/classroom")
+      delete_success.searchParams.append("delete_success",classroomId.toString())
+      router.replace(delete_success.toString());
+
       optimisticUpdateAndFetchClassroomData(
         classroomId,
         async () => deleteClassroom(classroomId),

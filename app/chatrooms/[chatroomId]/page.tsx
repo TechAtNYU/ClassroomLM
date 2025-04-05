@@ -132,6 +132,8 @@ const ChatroomPage = async ({
         chatHistory={messages}
         chatroomId={chatroomId}
         chatroomMemberRecord={currentMember}
+        supabaseClientUrl={process.env.NEXT_PUBLIC_SUPABASE_URL!}
+        supabaseClientKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}
       />
     </div>
   );

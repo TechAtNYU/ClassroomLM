@@ -5,11 +5,12 @@ import { UserContext } from "@/app/lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { createClient } from "@/utils/supabase/client";
-import { Tables } from "@/utils/supabase/database.types";
+import { Database, Tables } from "@/utils/supabase/database.types";
 // import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { askLLM } from "../../actions";
+import { createBrowserClient } from "@supabase/ssr";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -39,10 +40,14 @@ const MessageArea = ({
   chatHistory,
   chatroomId,
   chatroomMemberRecord,
+  supabaseClientUrl,
+  supabaseClientKey,
 }: {
   chatHistory: Message[];
   chatroomId: string;
   chatroomMemberRecord: ChatroomMemberRecord;
+  supabaseClientUrl: string;
+  supabaseClientKey: string;
 }) => {
   const [messages, setMessages] = useState(chatHistory);
   const [chatClient, setChatClient] = useState<ChatClientWithSession | null>(
@@ -51,8 +56,10 @@ const MessageArea = ({
   const [messageBoxValue, setMessageBoxValue] = useState("");
 
   useEffect(() => {
-    const supabase = createClient();
-
+    const supabase = createBrowserClient<Database>(
+      supabaseClientUrl,
+      supabaseClientKey
+    );
     const room = supabase.channel(`chatroom-${chatroomId}`);
 
     room.on(
@@ -121,7 +128,7 @@ const MessageArea = ({
     return () => {
       supabase.removeChannel(room);
     };
-  }, [chatroomId]);
+  }, [chatroomId, supabaseClientKey, supabaseClientUrl]);
 
   // TODO: get all avatars/user info from here at the beginning using the context instead of every message
   const userContext = useContext(UserContext);

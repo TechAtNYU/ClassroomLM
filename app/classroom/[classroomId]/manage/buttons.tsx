@@ -19,6 +19,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import MemberList from "../../memberList";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ClassroomManagementButtons({
   classroomId,
@@ -70,47 +81,32 @@ export default function ClassroomManagementButtons({
   };
 
   const deleteClassroomFunction = async (classroomId: number) => {
-    const confirmation = window.confirm(
-      "Are you sure? This action can't be undone."
+    // const confirmation = window.confirm(
+    //   "Are you sure? This action can't be undone."
+    // );
+    // if (confirmation) {
+    const delete_success = new URL("/classroom");
+    delete_success.searchParams.append(
+      "delete_success",
+      classroomId.toString()
     );
-    if (confirmation) {
-      const delete_success = new URL("/classroom")
-      delete_success.searchParams.append("delete_success",classroomId.toString())
-      router.replace(delete_success.toString());
+    router.replace(delete_success.toString());
 
-      optimisticUpdateAndFetchClassroomData(
-        classroomId,
-        async () => deleteClassroom(classroomId),
-        "remove",
-        setUserAndClassData
-      );
-      toast({
-        title: "Successfully deleted classroom.",
-      });
+    optimisticUpdateAndFetchClassroomData(
+      classroomId,
+      async () => deleteClassroom(classroomId),
+      "remove",
+      setUserAndClassData
+    );
+    toast({
+      title: "Successfully deleted classroom.",
+    });
 
-      // Redirect to the classrooms page after deletion
-    } else {
-      console.log("Classroom deletion cancelled."); //TODO: remove log message
-    }
+    // Redirect to the classrooms page after deletion
+    // } else {
+    //   console.log("Classroom deletion cancelled."); //TODO: remove log message
+    // }
   };
-
-  // const deletedClassSuccess = searchParams.get("delete_success");
-  // if (deletedClassSuccess && !isNaN(Number(deletedClassSuccess))) {
-  //   const deleteClassInfo = userAndClassData.classroomsData.find(
-  //     (x) => x.id === Number(deletedClassSuccess)
-  //   );
-  //   if (deleteClassInfo) {
-  //     toast({
-  //       description: (
-  //         <div>
-  //           Successfully deleted classroom{" "}
-  //           <span className="font-bold">{deleteClassInfo.name}</span>!
-  //         </div>
-  //       ),
-  //       duration: 20000,
-  //     });
-  //   }
-  // }
 
   return (
     <div>
@@ -140,13 +136,34 @@ export default function ClassroomManagementButtons({
         Archive
       </button>
 
-      <button
+      {/* <button
         type="button"
         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
         onClick={() => deleteClassroomFunction(classroomIdNumber)}
       >
         Delete
-      </button>
+      </button> */}
+
+      <AlertDialog>
+        <AlertDialogTrigger>Delete</AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this
+              classroom.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteClassroomFunction(classroomIdNumber)}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* CHANGE NAME BUTTON */}
       <button

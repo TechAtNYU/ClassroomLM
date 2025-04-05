@@ -1,10 +1,15 @@
 "use client";
 import { useState } from "react";
-import { RagFlowMessages, sendMessage } from "./actions";
+import {
+  ChatClientWithSession,
+  RagFlowMessage,
+  RagFlowMessages,
+  sendMessage,
+} from "@/app/lib/ragflow/chat/chat-client";
+import { toast } from "@/hooks/use-toast";
 
 function MessageBox(props: {
-  assistantId: string;
-  chatSessionId: string;
+  chatClient: ChatClientWithSession;
   messageHistory: RagFlowMessages | null;
 }) {
   const [value, setValue] = useState("");
@@ -14,22 +19,28 @@ function MessageBox(props: {
   );
 
   async function handle() {
-    const ownMessage = { role: "user", content: value };
+    const ownMessage = { role: "user", content: value } as RagFlowMessage;
 
     setMessage((oldArray) => [...oldArray, ownMessage]);
 
     setValue("");
 
-    const response: string = await sendMessage(
-      value,
-      props.assistantId,
-      props.chatSessionId
-    );
+    const messageResponse = await sendMessage(props.chatClient, value);
 
-    // alert(response);
-    // alert("can we even print anything");
+    if (!messageResponse.ragflowCallSuccess) {
+      toast({
+        title: "Error sending message",
+        description: `Please try refreshing the page`,
+        duration: 10000,
+        variant: "destructive",
+      });
+      return;
+    }
 
-    const messageData = { role: "assistant", content: response };
+    const messageData = {
+      role: "assistant",
+      content: messageResponse.response,
+    } as RagFlowMessage;
 
     setMessage((oldArray) => [...oldArray, messageData]);
     // console.log("response thingy2", messages);

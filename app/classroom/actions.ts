@@ -2,9 +2,10 @@
 import { createServiceClient } from "@/utils/supabase/service-server";
 import { createClient } from "@/utils/supabase/server";
 import { deleteDataset } from "../lib/ragflow/dataset-client";
+import { deleteAssistant } from "../lib/ragflow/chat/chat-client";
 
-const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
-const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
+// const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
+// const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function deleteClassroom(classroom_id: number) {
   // Deleting Associated Supabase
@@ -22,30 +23,36 @@ export async function deleteClassroom(classroom_id: number) {
 
   // Deleting Associated Chat Assistant
   const chat_assistant_id = data.chat_assistant_id;
+  const chatroom_assistant_id = data.chatroom_assistant_id;
 
   if (chat_assistant_id) {
-    const requestChatBody = {
-      ids: [chat_assistant_id],
-    };
+    deleteAssistant(chat_assistant_id);
+    // const requestChatBody = {
+    //   ids: [chat_assistant_id],
+    // };
 
-    const chatResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/chats`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RAGFLOW_API_KEY}`,
-      },
-      body: JSON.stringify(requestChatBody),
-    });
+    // const chatResponse = await fetch(`${RAGFLOW_SERVER_URL}/api/v1/chats`, {
+    //   method: "DELETE",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${RAGFLOW_API_KEY}`,
+    //   },
+    //   body: JSON.stringify(requestChatBody),
+    // });
 
-    if (!chatResponse.ok) {
-      throw new Error(
-        `Failed while deleting assistant from Ragflow: ${chatResponse.statusText}`
-      );
-    }
-  } else {
-    // If no chat assistant, we don't want to error out
-    console.log("No chat assistant found for classroom when deleting");
+    // if (!chatResponse.ok) {
+    //   throw new Error(
+    //     `Failed while deleting assistant from Ragflow: ${chatResponse.statusText}`
+    //   );
+    // }
   }
+  if (chatroom_assistant_id) {
+    deleteAssistant(chatroom_assistant_id);
+  }
+  //  else {
+  //   // If no chat assistant, we don't want to error out
+  //   console.log("No chat assistant found for classroom when deleting");
+  // }
 
   // Deleting associated RAGFlow dataset if exists
   if (data.ragflow_dataset_id) {
@@ -94,26 +101,26 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
   return data || [];
 }
 
-export async function getUserClassrooms() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("Classrooms").select(`
-      *,
-      Classroom_Members (
-        id,
-        classroom_id,
-        Users (
-          id, 
-          email,
-          full_name,
-          avatar_url
-        )
-      )
-    `);
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data || [];
-}
+// export async function getUserClassrooms() {
+//   const supabase = await createClient();
+//   const { data, error } = await supabase.from("Classrooms").select(`
+//       *,
+//       Classroom_Members (
+//         id,
+//         classroom_id,
+//         Users (
+//           id,
+//           email,
+//           full_name,
+//           avatar_url
+//         )
+//       )
+//     `);
+//   if (error) {
+//     throw new Error(error.message);
+//   }
+//   return data || [];
+// }
 
 export async function inviteMemberToClassroom(
   email: string,

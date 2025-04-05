@@ -25,15 +25,16 @@ export type UserWithClassroomsData = {
   classroomsData: ClassroomWithMembers[];
 };
 
-export async function getUserAndClassroomData(): Promise<UserWithClassroomsData | null> {
-  const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+export const getUserAndClassroomData =
+  async (): Promise<UserWithClassroomsData | null> => {
+    const supabase = await createClient();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
 
-  // if just this errors, it's fine cause they're probably just logged out
-  if (userError) {
-    return null;
-  }
-  const { data, error } = await supabase.from("Classrooms").select(`
+    // if just this errors, it's fine cause they're probably just logged out
+    if (userError) {
+      return null;
+    }
+    const { data, error } = await supabase.from("Classrooms").select(`
         *,
         Classroom_Members (
           id,
@@ -47,23 +48,12 @@ export async function getUserAndClassroomData(): Promise<UserWithClassroomsData 
         )
       `);
 
-  if (error) {
-    console.log(
-      "Fetching classroom data within main layout context, supabase error: ",
-      error
-    );
-    return null;
-  }
-  return { classroomsData: data, userData: userData.user };
-}
-
-export async function getCurrentUserId(): Promise<string | null> {
-  const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  if (userError || !userData?.user) {
-    return null;
-  }
-
-  return userData.user.id;
-}
+    if (error) {
+      console.log(
+        "Fetching classroom data within main layout context, supabase error: ",
+        error
+      );
+      return null;
+    }
+    return { classroomsData: data, userData: userData.user };
+  };

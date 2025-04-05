@@ -44,7 +44,7 @@ type DatasetReadOnlyOperationResult = object;
  */
 export async function createDatasetClient(
   classroomConfig: DatasetClassroomConfig,
-  datasetId: string | undefined = undefined
+  datasetId: string | null = null
 ): Promise<DatasetMutableOperationResult | null> {
   try {
     if (!process.env.RAGFLOW_API_KEY || !process.env.RAGFLOW_API_URL) {
@@ -155,7 +155,7 @@ export async function createAssociatedDataset(client: DatasetClient): Promise<
   });
   // Verify the Ragflow API call result
   const ragflowResponseData = await ragflowResponse.json();
-  if (!ragflowResponse.ok) {
+  if (!ragflowResponse.ok || !ragflowResponseData?.data?.id) {
     console.error(
       "DatasetService, creating dataset in RAGFlow:",
       ragflowResponseData

@@ -13,7 +13,7 @@ import {
   UploadIcon,
 } from "lucide-react";
 
-import Image from "next/image";
+// import Image from "next/image";
 
 import {
   Sidebar,
@@ -43,6 +43,7 @@ import { Skeleton } from "../skeleton";
 import { useContext } from "react";
 import { UserContext } from "@/app/lib/userContext/userContext";
 import { ClassroomWithMembers } from "@/app/lib/userContext/contextFetcher";
+import LogoComponent from "@/components/Logo";
 
 // Menu items.
 // const items = [
@@ -174,10 +175,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)",
-      }}
+      // style={{
+      //   backgroundImage:
+      //     "linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)",
+      // }}
+      // className="bg-[linear-gradient(to bottom, #263843, #25374e, #223457, #203160, #1c2d71, #1f3073, #273574, #2b3875)]"
       collapsible="icon"
       variant="inset"
     >
@@ -186,10 +188,11 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center text-sidebar-primary-foreground">
-                  <div className="relative h-[90%] w-[90%] object-contain">
-                    <Image src={"/logo.svg"} fill alt="Logo" />
-                  </div>
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
+                  {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
+                  <LogoComponent className="fill-sidebar-primary-foreground" />
+                  {/* </div> */}
                 </div>
                 <div className="grid flex-1 text-left text-lg leading-tight">
                   <span className="truncate font-semibold">ClassroomLM</span>

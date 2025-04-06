@@ -127,12 +127,12 @@ export default function ClassroomManagementButtons({
     // );
     // if (confirmation) {
 
-    // const delete_success = new URL("/classroom");
-    // delete_success.searchParams.append(
-    //   "delete_success",
-    //   classroomId.toString()
-    // );
-
+    const delete_success = new URL("/classroom");
+    delete_success.searchParams.append(
+      "delete_success",
+      classroomId.toString()
+    );
+    // router.push(/classroom?delete_success=${classroomId.toString()})
     // router.replace(delete_success.toString());
 
     router.replace("/classroom");

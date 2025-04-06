@@ -1,8 +1,10 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   deleteClassroom,
+  getCurrentUserId,
   leaveClassroom,
+  newClassroom,
   setArchiveStatusClassroom,
 } from "./actions";
 import Link from "next/link";
@@ -28,14 +30,28 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import {
+  Dialog,
+  DialogContent,
+  // DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { Edit, LogOut, MessageSquareMore, Trash2, Users } from "lucide-react";
 import { SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Input } from "@/components/ui/input";
 
 export default function ClassroomList() {
   const searchParams = useSearchParams();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newClassName, setNewClassName] = useState("");
 
   const userContext = useContext(UserContext);
   // If the userContext is undefined still, give loading visual
@@ -73,7 +89,7 @@ export default function ClassroomList() {
       setUserAndClassData(refreshedData);
     }
   };
-  
+
   const joinedClassSuccess = searchParams.get("join_success");
   if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
     const joinClassInfo = userAndClassData.classroomsData.find(
@@ -91,7 +107,6 @@ export default function ClassroomList() {
       });
       refreshClassrooms();
     }
-    
   }
 
   const deleteClassSuccess = searchParams.get("delete_success");
@@ -112,8 +127,6 @@ export default function ClassroomList() {
       refreshClassrooms();
     }
   }
-
-
 
   function mapToListItem(
     classroomList: ClassroomWithMembers[],
@@ -372,8 +385,69 @@ export default function ClassroomList() {
     (classroom) => classroom.admin_user_id != userId
   );
 
+  const addClassroom = async () => {
+    if (newClassName.length != 0) {
+      try {
+        const userId = await getCurrentUserId();
+        const result = await newClassroom(newClassName, userId);
+        if (!result) {
+          // setResultText(`Error while making classroom!`);
+          return;
+        }
+        toast({
+          variant: "success",
+          title: "Added classroom successfully!",
+        });
+        // setResultText(`Created classroom ${className} successfully!`);
+      } catch (error: unknown) {
+        //type unknown for typescript lint
+        if (error instanceof Error) {
+          console.error(error.message);
+        } else {
+          console.error("Error Occured");
+        }
+      }
+      setIsDialogOpen(false);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Can't create classrooms with an empty name.",
+      });
+    }
+  };
+
   return (
     <>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline">Create a Classroom</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Create a Classroom</DialogTitle>
+            {/* <DialogDescription>
+              Make changes to the name of your classroom here.
+            </DialogDescription> */}
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Name</Label>
+              <Input
+                id="name"
+                value={newClassName}
+                className="col-span-3"
+                onChange={(e) => setNewClassName(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" onClick={() => addClassroom()}>
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
       {/* ADMIN CLASSES */}

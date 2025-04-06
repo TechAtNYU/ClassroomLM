@@ -7,6 +7,7 @@ import {
   sendMessage,
 } from "@/app/lib/ragflow/chat/chat-client";
 import { toast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
 
 function MessageBox(props: {
   chatClient: ChatClientWithSession;
@@ -66,7 +67,7 @@ function MessageBox(props: {
             }`}
           >
             <p className="font-medium text-gray-800">
-              {cleanMessage(aMessage.content)}
+              <ReactMarkdown>{cleanMessage(aMessage.content)}</ReactMarkdown>
             </p>
           </div>
         ))}

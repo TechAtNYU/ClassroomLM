@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createServiceClient } from "@/utils/supabase/service-server";
-import { getCurrentUserIdServer } from "@/app/lib/supabase/shared";
+import { createServiceClient } from "@shared/utils/supabase/service-server";
+import { getCurrentUserIdServer } from "@shared/lib/supabase/shared";
 
 export async function GET(
   request: NextRequest,

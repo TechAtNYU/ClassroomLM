@@ -1,8 +1,8 @@
 "use server";
-import { createServiceClient } from "@/utils/supabase/service-server";
-import { createClient } from "@/utils/supabase/server";
-import { deleteDataset } from "../lib/ragflow/dataset-client";
-import { deleteAssistant } from "../lib/ragflow/chat/chat-client";
+import { createServiceClient } from "@shared/utils/supabase/service-server";
+import { createClient } from "@shared/utils/supabase/server";
+import { deleteDataset } from "@shared/lib/ragflow/dataset-client";
+import { deleteAssistant } from "@shared/lib/ragflow/chat/chat-client";
 
 // const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 // const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;

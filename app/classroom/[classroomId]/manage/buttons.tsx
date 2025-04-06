@@ -11,7 +11,6 @@ import {
   changeClassroomName,
   deleteClassroom,
   setArchiveStatusClassroom,
-  removeMember,
 } from "../../actions";
 import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
 import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";

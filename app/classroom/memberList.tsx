@@ -38,6 +38,13 @@ export default function MemberList({
   triggerButton?: ReactNode;
 }) {
   const [adminId, setAdminId] = useState<string | null>(null);
+  const [members, setMembers] = useState<Tables<"Users">[]>([]);
+
+  useEffect(() => {
+    if (classroom.Classroom_Members) {
+      setMembers(classroom.Classroom_Members.map((x) => x.Users));
+    }
+  }, [classroom.Classroom_Members]);
 
   useEffect(() => {
     const fetchAdminId = async () => {
@@ -57,7 +64,8 @@ export default function MemberList({
   // };
 
   const removeMemberFunction = async (memberId: string) => {
-    removeMember(classroom.id, memberId);
+    await removeMember(classroom.id, memberId);
+    setMembers((prev) => prev.filter((member) => member.id !== memberId));
   };
 
   // other table implementation: https://data-table.openstatus.dev/
@@ -128,7 +136,7 @@ export default function MemberList({
                     ]
                   : []),
               ]}
-              data={classroom.Classroom_Members.map((x) => x.Users)}
+              data={members}
             />
           </div>
         </SheetHeader>

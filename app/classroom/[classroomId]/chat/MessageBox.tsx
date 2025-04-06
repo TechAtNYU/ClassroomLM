@@ -18,6 +18,11 @@ function MessageBox(props: {
     props.messageHistory ? props.messageHistory : []
   );
 
+  function cleanMessage(content: string): string {
+    // Remove any reference patterns like ##number$$
+    return content.replace(/##\d+\$\$/g, "").trim();
+  }
+
   async function handle() {
     const ownMessage = { role: "user", content: value } as RagFlowMessage;
 
@@ -60,7 +65,9 @@ function MessageBox(props: {
                 : "justify-self-start bg-blue-200 hover:bg-blue-300"
             }`}
           >
-            <p className="font-medium text-gray-800">{aMessage.content}</p>
+            <p className="font-medium text-gray-800">
+              {cleanMessage(aMessage.content)}
+            </p>
           </div>
         ))}
       </div>

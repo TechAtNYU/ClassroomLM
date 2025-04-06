@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@shared/utils/supabase/server";
 
 /** Server-side component, get current ID */
 export async function getCurrentUserIdServer(): Promise<string | null> {

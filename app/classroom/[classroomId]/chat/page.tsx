@@ -1,14 +1,14 @@
 import Link from "next/link";
 
 import MessageBox from "./MessageBox";
-import { createDatasetClient } from "@/app/lib/ragflow/dataset-client";
-import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
+import { createDatasetClient } from "@shared/lib/ragflow/dataset-client";
+import { getUserAndClassroomData } from "@shared/lib/userContext/contextFetcher";
 import {
   ChatClientWithSession,
   createChatClient,
-} from "@/app/lib/ragflow/chat/chat-client";
-import { personalChatConfigTemplate } from "@/app/lib/ragflow/chat/chat-configs";
-import { Button } from "@/components/ui/button";
+} from "@shared/lib/ragflow/chat/chat-client";
+import { personalChatConfigTemplate } from "@shared/lib/ragflow/chat/chat-configs";
+import { Button } from "@shared/components/ui/button";
 import { Upload } from "lucide-react";
 
 export default async function ChatPage({

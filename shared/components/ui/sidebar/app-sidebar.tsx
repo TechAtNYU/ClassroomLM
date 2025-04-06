@@ -28,22 +28,22 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarMenuSub,
-} from "@/components/ui/sidebar";
+} from "@shared/components/ui/sidebar";
 
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+} from "@shared/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
 import { usePathname } from "next/navigation";
 import { getPageAspectsByPath } from "./nav-utils";
 import { Skeleton } from "../skeleton";
 import { useContext } from "react";
-import { UserContext } from "@/app/lib/userContext/userContext";
-import { ClassroomWithMembers } from "@/app/lib/userContext/contextFetcher";
-import LogoComponent from "@/components/Logo";
+import { UserContext } from "@shared/lib/userContext/userContext";
+import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
+import LogoComponent from "@shared/components/Logo";
 
 // Menu items.
 // const items = [

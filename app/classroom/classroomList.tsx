@@ -12,9 +12,9 @@ import MemberList from "./memberList";
 import {
   ClassroomWithMembers,
   getUserAndClassroomData,
-} from "../lib/userContext/contextFetcher";
-import { UserContext } from "../lib/userContext/userContext";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@shared/lib/userContext/contextFetcher";
+import { UserContext } from "@shared/lib/userContext/userContext";
+import { Skeleton } from "@shared/components/ui/skeleton";
 
 export default function ClassroomList() {
   const userContext = useContext(UserContext);

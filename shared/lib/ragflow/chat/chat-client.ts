@@ -1,5 +1,5 @@
 "use server";
-import { createServiceClient } from "@/utils/supabase/service-server";
+import { createServiceClient } from "@shared/utils/supabase/service-server";
 
 export type TableStorageInfo = {
   column: string;

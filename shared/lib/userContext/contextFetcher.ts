@@ -1,6 +1,6 @@
 "use server";
-import { Tables } from "@/utils/supabase/database.types";
-import { createClient } from "@/utils/supabase/server";
+import { Tables } from "@shared/utils/supabase/database.types";
+import { createClient } from "@shared/utils/supabase/server";
 import { User } from "@supabase/supabase-js";
 
 // TODO: see if we can make the interface like below instead of hardcoded

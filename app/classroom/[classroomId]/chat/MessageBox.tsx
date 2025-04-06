@@ -5,8 +5,8 @@ import {
   RagFlowMessage,
   RagFlowMessages,
   sendMessage,
-} from "@/app/lib/ragflow/chat/chat-client";
-import { toast } from "@/hooks/use-toast";
+} from "@shared/lib/ragflow/chat/chat-client";
+import { toast } from "@shared/hooks/use-toast";
 
 function MessageBox(props: {
   chatClient: ChatClientWithSession;

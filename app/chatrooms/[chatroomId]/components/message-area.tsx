@@ -1,11 +1,11 @@
 "use client";
 
-import { ChatClientWithSession } from "@/app/lib/ragflow/chat/chat-client";
-import { UserContext } from "@/app/lib/userContext/userContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "@/hooks/use-toast";
-import { createClient } from "@/utils/supabase/client";
-import { Database, Tables } from "@/utils/supabase/database.types";
+import { ChatClientWithSession } from "@shared/lib/ragflow/chat/chat-client";
+import { UserContext } from "@shared/lib/userContext/userContext";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import { toast } from "@shared/hooks/use-toast";
+import { createClient } from "@shared/utils/supabase/client";
+import { Database, Tables } from "@shared/utils/supabase/database.types";
 // import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";

@@ -66,9 +66,9 @@ function MessageBox(props: {
                 : "justify-self-start bg-blue-200 hover:bg-blue-300"
             }`}
           >
-            <p className="font-medium text-gray-800">
+            <div className="font-medium text-gray-800">
               <ReactMarkdown>{cleanMessage(aMessage.content)}</ReactMarkdown>
-            </p>
+            </div>
           </div>
         ))}
       </div>

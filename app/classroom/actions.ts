@@ -81,6 +81,21 @@ export async function deleteClassroom(classroom_id: number) {
   return data || [];
 }
 
+export async function removeMember(classroom_id: number, user_id: string) {
+  const supabase = await createServiceClient();
+  const { data, error } = await supabase
+    .from("Classroom_Members")
+    .delete()
+    .eq("classroom_id", classroom_id)
+    .eq("user_id", user_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data || [];
+}
+
 export async function leaveClassroom(classroom_id: number, user_id: string) {
   const supabase = await createServiceClient();
   const { data, error } = await supabase

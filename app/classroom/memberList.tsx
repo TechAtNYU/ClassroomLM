@@ -11,7 +11,7 @@ import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
 import { Trash2, Users } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tables } from "@/utils/supabase/database.types";
 import { Row } from "@tanstack/react-table";
+import { getCurrentUserId, removeMember } from "./actions";
 
 /**
  *
@@ -36,12 +37,30 @@ export default function MemberList({
   enableDeletion: boolean;
   triggerButton?: ReactNode;
 }) {
+  const [adminId, setAdminId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAdminId = async () => {
+      const id = await getCurrentUserId();
+      setAdminId(id);
+    };
+
+    fetchAdminId();
+  }, []); // Fetch once when the component mounts
+
   if (!classroom.Classroom_Members) {
     return <h1>No members found!</h1>;
   }
 
-  const handleDelete = (memberId: string) => {
-    console.log("ID:" + memberId);
+  // const handleDelete = (memberId: string) => {
+  //   console.log("ID:" + memberId);
+  // };
+
+  const removeMemberFunction = async (memberId: string) => {
+    console.log(classroom.id);
+    // console.log(classroom.);
+
+    removeMember(classroom.id, memberId);
   };
 
   // other table implementation: https://data-table.openstatus.dev/
@@ -79,25 +98,35 @@ export default function MemberList({
                   ? [
                       {
                         id: "actions",
-                        // header: "Manage",
-                        cell: ({ row }: { row: Row<Tables<"Users">> }) => (
-                          <TooltipProvider>
-                            <Tooltip delayDuration={300}>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  type="button"
-                                  variant={"destructiveGhost"}
-                                  size={"iconLg"}
-                                  onClick={() => handleDelete(row.original.id)}
-                                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                                >
-                                  <Trash2 />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Remove user</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        ),
+                        cell: ({ row }: { row: Row<Tables<"Users">> }) => {
+                          // const adminId = getCurrentUserId();
+                          const isAdmin = row.original.id === adminId; // Check if the current row is the admin
+
+                          // Only render the delete button if the current row is NOT the admin
+                          if (isAdmin) {
+                            return null; // Return null, which removes the button from the row
+                          }
+
+                          return (
+                            <TooltipProvider>
+                              <Tooltip delayDuration={300}>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    variant={"destructiveGhost"}
+                                    size={"iconLg"}
+                                    onClick={() =>
+                                      removeMemberFunction(row.original.id)
+                                    }
+                                  >
+                                    <Trash2 />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Remove user</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          );
+                        },
                       },
                     ]
                   : []),

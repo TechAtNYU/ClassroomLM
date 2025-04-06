@@ -57,9 +57,6 @@ export default function MemberList({
   // };
 
   const removeMemberFunction = async (memberId: string) => {
-    console.log(classroom.id);
-    // console.log(classroom.);
-
     removeMember(classroom.id, memberId);
   };
 

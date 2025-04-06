@@ -110,6 +110,7 @@ export default function ClassroomList() {
   }
 
   const deleteClassSuccess = searchParams.get("delete_success");
+
   if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
     const deleteClassInfo = userAndClassData.classroomsData.find(
       (x) => x.id === Number(deleteClassSuccess)
@@ -120,6 +121,26 @@ export default function ClassroomList() {
           <div>
             Successfully deleted classroom
             <span className="font-bold">{deleteClassInfo.name}</span>!
+          </div>
+        ),
+        duration: 10000,
+      });
+      refreshClassrooms();
+    }
+  }
+
+  const archiveClassSuccess = searchParams.get("archiveClassSuccess");
+
+  if (archiveClassSuccess && !isNaN(Number(archiveClassSuccess))) {
+    const archiveClassInfo = userAndClassData.classroomsData.find(
+      (x) => x.id === Number(archiveClassSuccess)
+    );
+    if (archiveClassInfo) {
+      toast({
+        description: (
+          <div>
+            Successfully archived classroom
+            <span className="font-bold">{archiveClassInfo.name}</span>!
           </div>
         ),
         duration: 10000,

@@ -36,8 +36,9 @@ export const optimisticUpdateAndFetchClassroomData = async <
       return classroom;
     }),
   }));
-  await action();
+  const returnVal = await action();
   if (refreshFunction) {
     refreshFunction();
   }
+  return returnVal;
 };

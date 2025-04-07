@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   deleteClassroom,
   getCurrentUserId,
@@ -89,65 +89,67 @@ export default function ClassroomList() {
       setUserAndClassData(refreshedData);
     }
   };
+//   useEffect(() => {
+//   const joinedClassSuccess = searchParams.get("join_success");
+//   if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
+//     const joinClassInfo = userAndClassData.classroomsData.find(
+//       (x) => x.id === Number(joinedClassSuccess)
+//     );
+//     if (joinClassInfo) {
+//       refreshClassrooms();
+//       toast({
+//         description: (
+//           <div>
+//             Successfully joined classroom
+//             <span className="font-bold"> {joinClassInfo.name}</span>!
+//           </div>
+//         ),
+//         duration: 10000,
+//       });
+//     }
+//   }
 
-  const joinedClassSuccess = searchParams.get("join_success");
-  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
-    const joinClassInfo = userAndClassData.classroomsData.find(
-      (x) => x.id === Number(joinedClassSuccess)
-    );
-    if (joinClassInfo) {
-      toast({
-        description: (
-          <div>
-            Successfully joined classroom
-            <span className="font-bold">{joinClassInfo.name}</span>!
-          </div>
-        ),
-        duration: 10000,
-      });
-      refreshClassrooms();
-    }
-  }
+//   const deleteClassSuccess = searchParams.get("delete_success");
 
-  const deleteClassSuccess = searchParams.get("delete_success");
+//   if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
+//     const deleteClassInfo = userAndClassData.classroomsData.find(
+//       (x) => x.id === Number(deleteClassSuccess)
+//     );
+//     if (deleteClassInfo) {
+//       setUserAndClassData(userAndClassData);
+//       // toast({
+//       //   description: (
+//       //     <div>
+//       //       Successfully deleted classroom
+//       //       <span className="font-bold">{deleteClassInfo.name}</span>!
+//       //     </div>
+//       //   ),
+//       //   duration: 10000,
+//       // });
+//     }
+//   }
 
-  if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
-    const deleteClassInfo = userAndClassData.classroomsData.find(
-      (x) => x.id === Number(deleteClassSuccess)
-    );
-    if (deleteClassInfo) {
-      toast({
-        description: (
-          <div>
-            Successfully deleted classroom
-            <span className="font-bold">{deleteClassInfo.name}</span>!
-          </div>
-        ),
-        duration: 10000,
-      });
-      refreshClassrooms();
-    }
-  }
+//   const archiveClassSuccess = searchParams.get("archiveClassSuccess");
 
-  const archiveClassSuccess = searchParams.get("archiveClassSuccess");
-
-  if (archiveClassSuccess && !isNaN(Number(archiveClassSuccess))) {
-    const archiveClassInfo = userAndClassData.classroomsData.find(
-      (x) => x.id === Number(archiveClassSuccess)
-    );
-    if (archiveClassInfo) {
-      toast({
-        description: (
-          <div>
-            Successfully archived classroom
-            <span className="font-bold">{archiveClassInfo.name}</span>!
-          </div>
-        ),
-        duration: 10000,
-      });
-      refreshClassrooms();
-    }
-  }
+//   if (archiveClassSuccess && !isNaN(Number(archiveClassSuccess))) {
+//     const archiveClassInfo = userAndClassData.classroomsData.find(
+//       (x) => x.id === Number(archiveClassSuccess)
+//     );
+//     if (archiveClassInfo) {
+//       toast({
+//         description: (
+//           <div>
+//             Successfully archived classroom
+//             <span className="font-bold">{archiveClassInfo.name}</span>!
+//           </div>
+//         ),
+//         duration: 10000,
+//       });
+//       refreshClassrooms();
+//     }
+//   }
+  
+// }, [searchParams]);
 
   function mapToListItem(
     classroomList: ClassroomWithMembers[],
@@ -406,11 +408,16 @@ export default function ClassroomList() {
     (classroom) => classroom.admin_user_id != userId
   );
 
-  const addClassroom = async () => {
+  const addClassroom = async (classId: number) => {
     if (newClassName.length != 0) {
       try {
-        const userId = await getCurrentUserId();
-        const result = await newClassroom(newClassName, userId);
+        const result = await optimisticUpdateAndFetchClassroomData(
+          classId,
+          async () => newClassroom(newClassName, userId),
+          { archived: true },
+          setUserAndClassData,
+          refreshClassrooms
+        );
         if (!result) {
           // setResultText(`Error while making classroom!`);
           return;

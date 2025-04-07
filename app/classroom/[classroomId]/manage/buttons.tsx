@@ -122,7 +122,8 @@ export default function ClassroomManagementButtons({
   };
 
   const deleteClassroomFunction = async (classroomId: number) => {
-    // const confirmation = window.confirm(
+    await deleteClassroom(classroomId)
+        // const confirmation = window.confirm(
     //   "Are you sure? This action can't be undone."
     // );
     // if (confirmation) {
@@ -132,29 +133,11 @@ export default function ClassroomManagementButtons({
     //   "delete_success",
     //   classroomId.toString()
     // );
+    // redirect(delete_success)
     router.push(`/classroom?delete_success=${classroomId.toString()}`);
-    // router.replace(delete_success.toString());
-
-    // router.replace("/classroom");
-
-    optimisticUpdateAndFetchClassroomData(
-      classroomId,
-      async () => deleteClassroom(classroomId),
-      "remove",
-      setUserAndClassData
-    );
-    toast({
-      title: "Successfully deleted classroom.",
-    });
-
-    // Redirect to the classrooms page after deletion
-    // } else {
-    //   console.log("Classroom deletion cancelled."); //TODO: remove log message
-    // }
   };
 
   function archiveClassroom() {
-    router.push(`/classroom?archive_success=${classroomId.toString()}`);
     optimisticUpdateAndFetchClassroomData(
       classroomId,
       async () => setArchiveStatusClassroom(classroomId, true),
@@ -166,6 +149,7 @@ export default function ClassroomManagementButtons({
     toast({
       title: "Successfully archived classroom.",
     });
+    router.push(`/classroom?archive_success=${classroomId.toString()}`);
   }
 
   return (

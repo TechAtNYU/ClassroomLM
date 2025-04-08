@@ -103,13 +103,13 @@ export function AppSidebar() {
   const items = {
     enrolled: {
       title: "Enrolled",
-      url: "/classroom",
+      url: "/classrooms",
       icon: BookText,
       isActive: false,
     },
     adminManage: {
       title: "Manage courses",
-      url: "/classroom",
+      url: "/classrooms",
       icon: UserRoundCog,
       isActive: false,
     },

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@shared/components/ui/toaster";
 
 import {
   SidebarInset,
@@ -14,6 +13,7 @@ import UserContextProvider from "@shared/lib/userContext/userContext";
 import { getUserAndClassroomData } from "@shared/lib/userContext/contextFetcher";
 import { cn } from "@shared/lib/utils";
 import { Separator } from "@shared/components/ui/separator";
+import { Toaster } from "@/shared/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,7 +73,19 @@ export default async function RootLayout({
                       <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
                     </div>
                   </main>
-                  <Toaster />
+                  <Toaster
+                    // richColors
+                    duration={40000}
+                    expand
+                    // richColors
+                    closeButton
+                    toastOptions={{
+                      classNames: {
+                        closeButton:
+                          "!absolute !left-[99%] !top-[2px]" //!bg-background !border-black !text-foreground",
+                      },
+                    }}
+                  />
                 </SidebarInset>
               </UserContextProvider>
             </SidebarProvider>

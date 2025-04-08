@@ -13,8 +13,8 @@ import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { ReactNode, useState } from "react";
-import { toast } from "@shared/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SaveClassroomDialog({
   // isDialogOpen,
@@ -39,19 +39,15 @@ export default function SaveClassroomDialog({
     // startTransition(async () => {
     const result = await optimisticUpdateCallback(newClassName);
     if (!result) {
-      toast({
-        variant: "destructive",
-        title: `Uh oh! Something went wrong when attempting to ${actionText.toLocaleLowerCase()} the classroom.`,
+      toast.error(`Uh oh! Something went wrong when attempting to ${actionText.toLocaleLowerCase()} the classroom.`, {
         description: `Please refresh and try again`,
       });
       return;
     }
-    toast({
-      variant: "success",
-      title: `${capitalize(actionText)} classroom successfully!`,
-    });
+    toast.success(`${capitalize(actionText)}d classroom successfully!`);
     setIsDialogOpen(false);
     setIsPending(false);
+    setNewClassName("");
     // });
     return;
   };

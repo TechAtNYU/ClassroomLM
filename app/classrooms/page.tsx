@@ -25,10 +25,10 @@ import {
 } from "./clientUtils";
 
 import { useSearchParams } from "next/navigation";
-import { toast } from "@shared/hooks/use-toast";
 import { Edit, LogOut, MessageSquareMore, Users } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
+import { toast } from "sonner";
 
 export default function ClassroomPage() {
   const userContext = useContext(UserContext);
@@ -81,16 +81,13 @@ function ClassroomList({
         // const params = new URLSearchParams(searchParams.toString());
         // params.set('sort', sortOrder);
         if (typeof window !== "undefined") {
-          toast({
-            description: (
-              <div>
+          toast.success(
+              (<div>
                 Successfully joined classroom
                 <span className="font-bold"> {joinClassInfo.name}</span>!
-              </div>
-            ),
-            duration: 10000,
-          });
-          window.history.replaceState(null, "", "/classroom");
+              </div>), {duration:10000}
+          );
+          window.history.replaceState(null, "", "/classrooms");
         }
       }
     }
@@ -109,25 +106,6 @@ function ClassroomList({
     // }
   }, [searchParams, userAndClassData.classroomsData]);
 
-  //   const deleteClassSuccess = searchParams.get("delete_success");
-
-  //   if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
-  //     const deleteClassInfo = userAndClassData.classroomsData.find(
-  //       (x) => x.id === Number(deleteClassSuccess)
-  //     );
-  //     if (deleteClassInfo) {
-  //       setUserAndClassData(userAndClassData);
-  //       // toast({
-  //       //   description: (
-  //       //     <div>
-  //       //       Successfully deleted classroom
-  //       //       <span className="font-bold">{deleteClassInfo.name}</span>!
-  //       //     </div>
-  //       //   ),
-  //       //   duration: 10000,
-  //       // });
-  //     }
-  //   }
 
   //   const archiveClassSuccess = searchParams.get("archiveClassSuccess");
 
@@ -151,14 +129,6 @@ function ClassroomList({
 
   // }, [searchParams]);
 
-  // function mapToListItem(
-  //   classroomList: ClassroomWithMembers[],
-  //   isAdmin: boolean
-  // ) {
-  //   return (
-  //     <
-  //   );
-  // }
 
   // function mapToListItemArchived(
   //   classroomList: ClassroomWithMembers[],
@@ -335,7 +305,7 @@ function ClassroomList({
                   asChild
                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                 >
-                  <Link href={`/classroom/${classroom.id}/manage`} passHref>
+                  <Link href={`/classrooms/${classroom.id}/manage`} passHref>
                     <Edit className="scale-[200%]" />
                   </Link>
                 </Button>

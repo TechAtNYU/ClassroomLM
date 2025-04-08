@@ -18,7 +18,6 @@ import {
   UserWithClassroomsData,
 } from "@shared/lib/userContext/contextFetcher";
 import { useRouter } from "next/navigation";
-import { toast } from "@shared/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +36,7 @@ import { Skeleton } from "@shared/components/ui/skeleton";
 import MemberList from "../../_components/memberList";
 import InviteMember from "./_components/inviteMember";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ClassroomManagementButtons({
   userData,
@@ -76,13 +76,11 @@ export default function ClassroomManagementButtons({
   };
 
   const deleteClassroomFunction = async () => {
-    router.push(`/classroom`);
+    router.push(`/classrooms`);
     startTransition(async () => {
       await deleteClassroom(classroomData.id);
     });
-    toast({
-      title: "Successfully deleted classroom",
-    });
+    toast.success( "Successfully deleted classroom");
     // const confirmation = window.confirm(
     //   "Are you sure? This action can't be undone."
     // );
@@ -107,10 +105,8 @@ export default function ClassroomManagementButtons({
     //   refreshClassrooms
     // );
     setArchiveStatusClassroom(classroomData.id, true);
-    toast({
-      title: "Successfully archived classroom",
-    });
-    router.push(`/classroom`);
+    toast.success( "Successfully archived classroom");
+    router.push(`/classrooms`);
     // router.push(`/classroom?archive_success=${classroomData.id.toString()}`);
     refreshClassrooms();
   };

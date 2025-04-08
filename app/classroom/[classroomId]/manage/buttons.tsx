@@ -76,6 +76,7 @@ export default function ClassroomManagementButtons({
   };
 
   const deleteClassroomFunction = async () => {
+    router.push(`/classroom`);
     startTransition(async () => {
       await deleteClassroom(classroomData.id);
     });
@@ -93,7 +94,7 @@ export default function ClassroomManagementButtons({
     //   classroomId.toString()
     // );
     // redirect(delete_success)
-    router.push(`/classroom`);
+
     refreshClassrooms();
   };
 

@@ -6,10 +6,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@shared/components/ui/sheet";
 import { columns } from "./_components/columns";
-import { DataTable } from "@/components/ui/data-table";
-import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
+import { DataTable } from "@shared/components/ui/data-table";
+import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 import { Trash2, Users } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
 import {
@@ -17,9 +17,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { Tables } from "@/utils/supabase/database.types";
+} from "@shared/components/ui/tooltip";
+import { Button } from "@shared/components/ui/button";
+import { Tables } from "@shared/utils/supabase/database.types";
 import { Row } from "@tanstack/react-table";
 import { removeMember } from "./actions";
 

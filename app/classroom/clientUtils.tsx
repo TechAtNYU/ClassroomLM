@@ -4,14 +4,14 @@ import React, { ReactNode } from "react";
 import {
   ClassroomWithMembers,
   UserWithClassroomsData,
-} from "../lib/userContext/contextFetcher";
+} from "@shared/lib/userContext/contextFetcher";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { SheetTrigger } from "@/components/ui/sheet";
+} from "@shared/components/ui/tooltip";
+import { SheetTrigger } from "@shared/components/ui/sheet";
 
 /**
  * Called "optimistic" because it changes the data in the UI (eg. the name or deletes

@@ -6,25 +6,28 @@ import MemberList from "./memberList";
 import {
   ClassroomWithMembers,
   getUserAndClassroomData,
-} from "../lib/userContext/contextFetcher";
-import { UserContext, UserContextType } from "../lib/userContext/userContext";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@shared/lib/userContext/contextFetcher";
+import {
+  UserContext,
+  UserContextType,
+} from "@shared/lib/userContext/userContext";
+import { Skeleton } from "@shared/components/ui/skeleton";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@shared/components/ui/card";
 import {
   optimisticUpdateAndFetchClassroomData,
   TooltipUtil,
 } from "./clientUtils";
 
 import { useSearchParams } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@shared/hooks/use-toast";
 import { Edit, LogOut, MessageSquareMore, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
 
 export default function ClassroomList() {

@@ -16,9 +16,9 @@ import {
   ClassroomWithMembers,
   getUserAndClassroomData,
   UserWithClassroomsData,
-} from "@/app/lib/userContext/contextFetcher";
+} from "@shared/lib/userContext/contextFetcher";
 import { useRouter } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@shared/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,11 +29,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@shared/components/ui/alert-dialog";
 import { Dispatch, SetStateAction, useTransition } from "react";
 import { User } from "@supabase/supabase-js";
 import SaveClassroomDialog from "../../_components/saveClassroomDialog";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@shared/components/ui/skeleton";
 import MemberList from "../../memberList";
 import InviteMember from "./_components/inviteMember";
 import { Loader2 } from "lucide-react";

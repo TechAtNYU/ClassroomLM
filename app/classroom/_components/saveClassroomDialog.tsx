@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,12 +8,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@shared/components/ui/dialog";
+import { Input } from "@shared/components/ui/input";
+import { Label } from "@shared/components/ui/label";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { ReactNode, useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@shared/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 export default function SaveClassroomDialog({

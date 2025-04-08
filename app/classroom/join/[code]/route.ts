@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createServiceClient } from "@/utils/supabase/service-server";
-import { getCurrentUserId } from "@/app/lib/userContext/contextFetcher";
+import { createServiceClient } from "@shared/utils/supabase/service-server";
+import { getCurrentUserIdServer } from "@shared/lib/supabase/shared";
 
 export async function GET(
   request: NextRequest,
@@ -25,7 +25,7 @@ export async function GET(
   }
 
   //ensures that the user is authenticated
-  const userId = await getCurrentUserId();
+  const userId = await getCurrentUserIdServer();
 
   if (!userId) {
     console.error("User is not authenticated");

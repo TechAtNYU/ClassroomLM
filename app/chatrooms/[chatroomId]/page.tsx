@@ -1,9 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@shared/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
-import NewMessages from "./components/new-messages";
-import { sendMessageToChatroom } from "../actions";
+import MessageArea from "./components/message-area";
 
 const ChatroomPage = async ({
   params,
@@ -33,6 +32,7 @@ const ChatroomPage = async ({
       Classroom_Members (
         id,
         user_id,
+        classroom_id,
         Users(
           id,
           full_name,
@@ -127,32 +127,14 @@ const ChatroomPage = async ({
           </Link>
         </div>
       </div>
-      <div className="flex-grow overflow-auto">
-        <NewMessages chatHistory={messages} chatroomId={chatroomId} />
-      </div>
-      <div className="border-t p-4 text-black">
-        <form action={sendMessageToChatroom} className="flex gap-2">
-          <input type="hidden" name="chatroomId" value={chatroomId} />
-          <input
-            type="hidden"
-            name="chatroomMemberId"
-            value={currentMember.id}
-          />
-          <input
-            type="text"
-            name="message"
-            placeholder="Type your message..."
-            className="flex-grow rounded border p-2"
-            required
-          />
-          <button
-            type="submit"
-            className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-          >
-            Send
-          </button>
-        </form>
-      </div>
+
+      <MessageArea
+        chatHistory={messages}
+        chatroomId={chatroomId}
+        chatroomMemberRecord={currentMember}
+        supabaseClientUrl={process.env.NEXT_PUBLIC_SUPABASE_URL!}
+        supabaseClientKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}
+      />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { inviteMemberToClassroom } from "../../../actions";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@shared/hooks/use-toast";
 
 export default function InviteMember({ classroomId }: { classroomId: number }) {
   const [email, setEmail] = useState("");

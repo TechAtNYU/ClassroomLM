@@ -6,10 +6,10 @@
 import { useContext, useEffect, useState } from "react";
 import ClassroomManagementButtons from "./buttons";
 import Link from "next/link";
-import { UserContext } from "@/app/lib/userContext/userContext";
+import { UserContext } from "@shared/lib/userContext/userContext";
 import { useParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ClassroomWithMembers } from "@/app/lib/userContext/contextFetcher";
+import { Skeleton } from "@shared/components/ui/skeleton";
+import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 
 export default function ClassroomManagementPage() {
   const { classroomId } = useParams<{ classroomId: string }>();

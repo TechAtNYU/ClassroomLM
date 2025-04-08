@@ -247,16 +247,19 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup> */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Classes</SidebarGroupLabel>
-          <SidebarMenu>
+        <SidebarGroup >
+          <SidebarGroupLabel       className="text-lg"
+          >Classes</SidebarGroupLabel>
+          <SidebarMenu className="space-y-1">
             {Object.entries(items).map(([itemKey, item]) => (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem  key={item.title}>
                 <SidebarMenuButton
+                      className="text-lg"
+
                   tooltip={item.title}
                   isActive={item.isActive}
                   asChild
-                  // size="lg"
+                  size="default"
                 >
                   <a href={item.url}>
                     {item.icon && <item.icon />}
@@ -267,13 +270,15 @@ export function AppSidebar() {
                   classroomInfo &&
                   ((itemKey == "enrolled" && !isAdminOfActiveClass) ||
                     (itemKey == "adminManage" && isAdminOfActiveClass)) && (
-                    <SidebarMenuSub>
+                    <SidebarMenuSub >
                       <SidebarMenuSubItem
                         key={activePageHierarchy?.activeClassroom?.id}
+                        
                       >
                         <SidebarMenuSubButton
                           // size="md"
                           isActive
+                          className="mt-2 text-lg"
                         >
                           {/* {item.icon && <item.icon />} */}
                           <span>{classroomInfo.name}</span>

@@ -57,6 +57,18 @@ export default async function RootLayout({
             <SidebarProvider>
               <UserContextProvider userAndClassDataInitial={userData}>
                 <AppSidebar />
+                <Toaster
+                  // richColors
+                  duration={40000}
+                  expand
+                  // richColors
+                  closeButton
+                  toastOptions={{
+                    classNames: {
+                      closeButton: "!absolute !left-[99%] !top-[2px]", //!bg-background !border-black !text-foreground",
+                    },
+                  }}
+                />
                 <SidebarInset className="md:peer-data-[variant=inset]:mt-5">
                   <main>
                     <header className="flex h-16 shrink-0 items-center gap-2">
@@ -70,22 +82,8 @@ export default async function RootLayout({
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                       {children}
-                      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
                     </div>
                   </main>
-                  <Toaster
-                    // richColors
-                    duration={40000}
-                    expand
-                    // richColors
-                    closeButton
-                    toastOptions={{
-                      classNames: {
-                        closeButton:
-                          "!absolute !left-[99%] !top-[2px]" //!bg-background !border-black !text-foreground",
-                      },
-                    }}
-                  />
                 </SidebarInset>
               </UserContextProvider>
             </SidebarProvider>

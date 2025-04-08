@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { leaveClassroom, newClassroom } from "./actions";
 import Link from "next/link";
 import MemberList from "./_components/memberList";
@@ -16,6 +16,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@shared/components/ui/card";
@@ -29,6 +30,13 @@ import { Edit, LogOut, MessageSquareMore, Users } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
 import { toast } from "sonner";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/shared/components/ui/tabs";
+import { Separator } from "@/shared/components/ui/separator";
 
 export default function ClassroomPage() {
   const userContext = useContext(UserContext);
@@ -48,12 +56,9 @@ export default function ClassroomPage() {
   return <ClassroomList userContext={userContext} />;
 }
 
-function ClassroomList({
-  userContext,
-}: {
-  userContext: UserContextType;
-}) {
+function ClassroomList({ userContext }: { userContext: UserContextType }) {
   const searchParams = useSearchParams();
+  const [currentTab, setCurrentTab] = useState("enrolled");
 
   // get the data and setter from the context (these are just a regular useState, so treat them like that)
   const { setUserAndClassData, userAndClassData } = userContext;
@@ -68,6 +73,22 @@ function ClassroomList({
   };
 
   useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && (tab == "enrolled" || tab == "admin")) {
+      setCurrentTab(tab);
+    }
+  }, [searchParams]);
+
+  const joinedClassSuccess = searchParams.get("join_success");
+  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
+    const joinClassInfo = userAndClassData.classroomsData.find(
+      (x) => x.id === Number(joinedClassSuccess)
+    );
+    if (joinClassInfo) {
+    }
+  }
+
+  useEffect(() => {
     const joinedClassSuccess = searchParams.get("join_success");
     if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
       const joinClassInfo = userAndClassData.classroomsData.find(
@@ -80,13 +101,14 @@ function ClassroomList({
         // https://nextjs.org/blog/next-14-1#windowhistorypushstate-and-windowhistoryreplacestate
         // const params = new URLSearchParams(searchParams.toString());
         // params.set('sort', sortOrder);
+        toast.success(
+          <div>
+            Successfully joined classroom
+            <span className="font-bold"> {joinClassInfo.name}</span>!
+          </div>,
+          { duration: 10000 }
+        );
         if (typeof window !== "undefined") {
-          toast.success(
-              (<div>
-                Successfully joined classroom
-                <span className="font-bold"> {joinClassInfo.name}</span>!
-              </div>), {duration:10000}
-          );
           window.history.replaceState(null, "", "/classrooms");
         }
       }
@@ -105,7 +127,6 @@ function ClassroomList({
     //   );
     // }
   }, [searchParams, userAndClassData.classroomsData]);
-
 
   //   const archiveClassSuccess = searchParams.get("archiveClassSuccess");
 
@@ -128,7 +149,6 @@ function ClassroomList({
   //   }
 
   // }, [searchParams]);
-
 
   // function mapToListItemArchived(
   //   classroomList: ClassroomWithMembers[],
@@ -265,19 +285,23 @@ function ClassroomList({
     isAdmin: boolean;
   }) {
     return (
-      <Card className="w-[450px]" animated>
+      <Card className="w-1/5" animated>
         <CardHeader>
-          <CardTitle>{classroom.name}</CardTitle>
-          <CardDescription>
+          <CardTitle animated>{classroom.name}</CardTitle>
+          <CardDescription animated>
             <div className="flex flex-row gap-3">
               Join Code:{" "}
               {classroom.join_code || (
                 <Skeleton className="h-5 w-5/12 self-center" />
               )}
             </div>
+            
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="aspect-video rounded-xl mt-5 bg-gradient-to-r from-sky-500 to-indigo-500" />
+        </CardContent>
+        <CardFooter animated>
           <TooltipUtil
             trigger={
               <Button
@@ -354,58 +378,91 @@ function ClassroomList({
               content={"Leave Classroom"}
             />
           )}
-        </CardContent>
+        </CardFooter>
       </Card>
     );
   }
 
   return (
-    <>
+    <div 
+        className=""
+    >
       <SaveClassroomDialog
         // isDialogOpen={isDialogOpen}
         // setIsDialogOpen={setIsDialogOpen}
         optimisticUpdateCallback={addOptimistic}
         actionText="create"
       />
-      <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
-      <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
+      
+      {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
+      <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
       {/* ADMIN CLASSES */}
-      <div>
-        <div className="flex flex-wrap justify-start gap-4">
-          {adminClasses.map((classroom) => (
-            <ClassroomCard
-              key={classroom.id}
-              classroom={classroom}
-              isAdmin={true}
-            />
-          ))}
-        </div>
-      </div>
-      <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
-      <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
-      {/* NON-ADMIN CLASSES */}
-      <div>
-        <div className="flex flex-wrap justify-start gap-4">
-          {memberClasses.map((classroom) => (
-            <ClassroomCard
-              key={classroom.id}
-              classroom={classroom}
-              isAdmin={false}
-            />
-          ))}
-        </div>
-      </div>
-      <hr className="my-5 h-5 border-0 bg-gray-800 dark:bg-white" />
-      <h1 className={"mb-5 text-center text-3xl underline"}>
-        Archived Classrooms
-      </h1>
-      <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
-      {/* {mapToListItemArchived(adminClasses, true)} */}
+      <h1 className="text-5xl font-medium mb-10">Classrooms</h1>
 
-      <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
-      <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
-      {/* NON-ADMIN CLASSES */}
-      {/* {mapToListItemArchived(memberClasses, false)} */}
-    </>
+      <Tabs
+        value={currentTab}
+        onValueChange={setCurrentTab}
+        defaultValue="enrolled"
+        // className="w-[75vw] bg-"
+      >
+        <TabsList className="grid w-full max-w-[20vw] grid-cols-2 rounded-full bg-inherit">
+          <TabsTrigger
+            className="flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+            value="enrolled"
+            data-active={currentTab === "enrolled"}
+          >
+            Enrolled
+          </TabsTrigger>
+          <TabsTrigger
+            className="flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+            value="admin"
+            data-active={currentTab === "admin"}
+          >
+            Admin
+          </TabsTrigger>
+        </TabsList>
+        <Separator className="my-4 mb-10" />
+        <TabsContent value="admin">
+          <div>
+            <div className="flex flex-wrap justify-start gap-4">
+              {adminClasses.map((classroom) => (
+                <ClassroomCard
+                  key={classroom.id}
+                  classroom={classroom}
+                  isAdmin={true}
+                />
+              ))}
+            </div>
+          </div>
+          
+        </TabsContent>
+        <TabsContent value="enrolled">
+          {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}
+          {/* NON-ADMIN CLASSES */}
+          <div>
+            <div className="flex flex-wrap justify-start gap-4">
+              {memberClasses.map((classroom) => (
+                <ClassroomCard
+                  key={classroom.id}
+                  classroom={classroom}
+                  isAdmin={false}
+                />
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+        {/* <hr className="my-5 h-5 border-0 bg-gray-800 dark:bg-white" />
+        <h1 className={"mb-5 text-center text-3xl underline"}>
+          Archived Classrooms
+        </h1> */}
+        {/* <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
+        {/* {mapToListItemArchived(adminClasses, true)} */}
+
+        {/* <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" /> */}
+        {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}
+        {/* NON-ADMIN CLASSES */}
+        {/* {mapToListItemArchived(memberClasses, false)} */}
+      </Tabs>
+    </div>
   );
 }

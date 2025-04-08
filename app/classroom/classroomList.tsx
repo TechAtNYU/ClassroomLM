@@ -1,19 +1,13 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import {
-  deleteClassroom,
-  getCurrentUserId,
-  leaveClassroom,
-  newClassroom,
-  setArchiveStatusClassroom,
-} from "./actions";
+import { useContext, useEffect } from "react";
+import { leaveClassroom, newClassroom } from "./actions";
 import Link from "next/link";
 import MemberList from "./memberList";
 import {
   ClassroomWithMembers,
   getUserAndClassroomData,
 } from "../lib/userContext/contextFetcher";
-import { UserContext } from "../lib/userContext/userContext";
+import { UserContext, UserContextType } from "../lib/userContext/userContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
@@ -22,39 +16,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { optimisticUpdateAndFetchClassroomData } from "./clientUtils";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  optimisticUpdateAndFetchClassroomData,
+  TooltipUtil,
+} from "./clientUtils";
 
-import {
-  Dialog,
-  DialogContent,
-  // DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { Edit, LogOut, MessageSquareMore, Trash2, Users } from "lucide-react";
-import { SheetTrigger } from "@/components/ui/sheet";
+import { Edit, LogOut, MessageSquareMore, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { Input } from "@/components/ui/input";
+import SaveClassroomDialog from "./_components/saveClassroomDialog";
 
 export default function ClassroomList() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newClassName, setNewClassName] = useState("");
-
   const userContext = useContext(UserContext);
   // If the userContext is undefined still, give loading visual
   if (!userContext) {
@@ -69,450 +42,392 @@ export default function ClassroomList() {
     );
   }
 
+  return <ClassroomListWithContext userContext={userContext} />;
+}
+
+function ClassroomListWithContext({
+  userContext,
+}: {
+  userContext: UserContextType;
+}) {
+  const searchParams = useSearchParams();
+
   // get the data and setter from the context (these are just a regular useState, so treat them like that)
   const { setUserAndClassData, userAndClassData } = userContext;
+
   const userId = userAndClassData.userData.id;
 
-  // const handleChangeClassroomName = async (classroomId: number) => {
-  //   const newName = window.prompt("Enter new class name:");
-  //   if (newName !== null && newName !== "") {
-  //     optimisticUpdateAndFetchClassroomData(
-  //       classroomId,
-  //       async () => changeClassroomName(classroomId, newName),
-  //       { name: newName },
-  //       setUserAndClassData,
-  //       refreshClassrooms
-  //     );
-  //   }
-  // };
   const refreshClassrooms = async () => {
     const refreshedData = await getUserAndClassroomData();
     if (refreshedData) {
       setUserAndClassData(refreshedData);
     }
   };
-  
-  const joinedClassSuccess = searchParams.get("join_success");
-  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
-    const joinClassInfo = userAndClassData.classroomsData.find(
-      (x) => x.id === Number(joinedClassSuccess)
-    );
-    if (joinClassInfo) {
-      // Join class doesn't need to refresh classroom data since we know its fresh 
-      // since it's coming from a redirect from a reoute
-      toast({
-        description: (
-          <div>
-            Successfully joined classroom
-            <span className="font-bold"> {joinClassInfo.name}</span>!
-          </div>
-        ),
-        duration: 10000,
-      });
-      router.replace("/classroom", {scroll: false})
-    }
-  }
 
-//   const deleteClassSuccess = searchParams.get("delete_success");
-
-//   if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
-//     const deleteClassInfo = userAndClassData.classroomsData.find(
-//       (x) => x.id === Number(deleteClassSuccess)
-//     );
-//     if (deleteClassInfo) {
-//       setUserAndClassData(userAndClassData);
-//       // toast({
-//       //   description: (
-//       //     <div>
-//       //       Successfully deleted classroom
-//       //       <span className="font-bold">{deleteClassInfo.name}</span>!
-//       //     </div>
-//       //   ),
-//       //   duration: 10000,
-//       // });
-//     }
-//   }
-
-//   const archiveClassSuccess = searchParams.get("archiveClassSuccess");
-
-//   if (archiveClassSuccess && !isNaN(Number(archiveClassSuccess))) {
-//     const archiveClassInfo = userAndClassData.classroomsData.find(
-//       (x) => x.id === Number(archiveClassSuccess)
-//     );
-//     if (archiveClassInfo) {
-//       toast({
-//         description: (
-//           <div>
-//             Successfully archived classroom
-//             <span className="font-bold">{archiveClassInfo.name}</span>!
-//           </div>
-//         ),
-//         duration: 10000,
-//       });
-//       refreshClassrooms();
-//     }
-//   }
-  
-// }, [searchParams]);
-
-  function mapToListItem(
-    classroomList: ClassroomWithMembers[],
-    isAdmin: boolean
-  ) {
-    return (
-      <div>
-        <div className="flex flex-wrap justify-start gap-4">
-          {classroomList.map((classroom) => {
-            return (
-              <div key={classroom.id}>
-                {!classroom.archived && (
-                  <Card className="w-[450px]" animated>
-                    <CardHeader>
-                      <CardTitle>{classroom.name}</CardTitle>
-                      <CardDescription>
-                        Join Code: {classroom.join_code || "N/A"}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <TooltipProvider>
-                        <Tooltip delayDuration={300}>
-                          <TooltipTrigger asChild>
-                            <Button
-                              type="button"
-                              variant={"ghost"}
-                              size={"iconLg"}
-                              asChild
-                              // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                            >
-                              <Link href={`../chat/${classroom.id}`} passHref>
-                                <MessageSquareMore className="scale-[200%]" />{" "}
-                              </Link>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Chat!</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      {isAdmin && (
-                        <TooltipProvider>
-                          <Tooltip delayDuration={300}>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant={"ghost"}
-                                size={"iconLg"}
-                                asChild
-                                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                              >
-                                <Link
-                                  href={`/classroom/${classroom.id}/manage`}
-                                  passHref
-                                >
-                                  <Edit className="scale-[200%]" />
-                                </Link>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Manage Classroom</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-
-                      {classroom.Classroom_Members &&
-                        classroom.Classroom_Members.length > 0 && (
-                          <MemberList
-                            classroom={classroom}
-                            enableDeletion={false}
-                            triggerButton={
-                              <TooltipProvider>
-                                <Tooltip delayDuration={300}>
-                                  <SheetTrigger asChild>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        type="button"
-                                        variant={"ghost"}
-                                        size={"iconLg"}
-                                        // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                                      >
-                                        <Users className="scale-[200%]" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                  </SheetTrigger>
-                                  <TooltipContent>View Members</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            }
-                            userId={userId}
-                          />
-                        )}
-                      {!isAdmin && (
-                        <TooltipProvider>
-                          <Tooltip delayDuration={300}>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant={"destructiveGhost"}
-                                size={"iconLg"}
-                                onClick={() =>
-                                  optimisticUpdateAndFetchClassroomData(
-                                    classroom.id,
-                                    async () =>
-                                      leaveClassroom(classroom.id, userId),
-                                    "remove",
-                                    setUserAndClassData,
-                                    refreshClassrooms
-                                  )
-                                }
-                                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                              >
-                                <LogOut className="scale-[200%]" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Leave Classroom</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  function mapToListItemArchived(
-    classroomList: ClassroomWithMembers[],
-    isAdmin: boolean
-  ) {
-    return classroomList.map((classroom) => {
-      return (
-        <div key={classroom.id}>
-          {classroom.archived && (
-            <>
-              <Card className="w-[450px]" animated>
-                <CardHeader>
-                  <CardTitle>{classroom.name}</CardTitle>
-                  {/* <CardDescription>
-                        Join Code: {classroom.join_code || "N/A"}
-                      </CardDescription> */}
-                </CardHeader>
-                <CardContent>
-                  {classroom.Classroom_Members &&
-                    classroom.Classroom_Members.length > 0 && (
-                      <MemberList
-                        classroom={classroom}
-                        enableDeletion={false}
-                        triggerButton={
-                          <TooltipProvider>
-                            <Tooltip delayDuration={300}>
-                              <SheetTrigger asChild>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    type="button"
-                                    variant={"ghost"}
-                                    size={"iconLg"}
-                                    // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                                  >
-                                    <Users className="scale-[200%]" />
-                                  </Button>
-                                </TooltipTrigger>
-                              </SheetTrigger>
-                              <TooltipContent>View Members</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        }
-                      />
-                    )}
-                  <Button
-                    type="button"
-                    variant={"ghost"}
-                    size={"iconLg"}
-                    onClick={() =>
-                      optimisticUpdateAndFetchClassroomData(
-                        classroom.id,
-                        isAdmin
-                          ? async () => deleteClassroom(classroom.id)
-                          : async () => leaveClassroom(classroom.id, userId),
-                        "remove",
-                        setUserAndClassData,
-                        refreshClassrooms
-                      )
-                    }
-                    // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                  >
-                    <Trash2 className="scale-[200%]" />
-                    {isAdmin ? "Delete Classroom" : "Remove Classroom"}
-                  </Button>
-
-                  {isAdmin && (
-                    <Button
-                      type="button"
-                      variant={"ghost"}
-                      size={"iconLg"}
-                      // className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                      onClick={() =>
-                        optimisticUpdateAndFetchClassroomData(
-                          classroom.id,
-                          async () =>
-                            setArchiveStatusClassroom(classroom.id, false),
-                          { archived: false },
-                          setUserAndClassData,
-                          refreshClassrooms
-                        )
-                      }
-                    >
-                      Unarchive
-                    </Button>
-                  )}
-                </CardContent>{" "}
-              </Card>
-              {/* <h2>Classroom ID: {classroom.id}</h2>
-              <p>
-                Ragflow Dataset ID: {classroom.ragflow_dataset_id || "null"}
-              </p> */}
-
-              {/* {classroom.Classroom_Members &&
-                classroom.Classroom_Members.length > 0 && (
-                  <div>
-                    <h3>Members:</h3>
-                    <ul>
-                      {classroom.Classroom_Members.map((member) => (
-                        <li key={member.id}>User ID: {member.id}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )} */}
-
-              {/* <InviteMember
-               classroomId={classroom.id}
-               onInviteSuccess={refreshClassrooms}
-             /> */}
-              {/* <Link href={`../chat/${classroom.id}`} passHref>
-               <button
-                 type="button"
-                 className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-               >
-                 Chat!
-               </button>
-             </Link> */}
-
-              <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
-            </>
-          )}
-        </div>
+  useEffect(() => {
+    const joinedClassSuccess = searchParams.get("join_success");
+    if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
+      const joinClassInfo = userAndClassData.classroomsData.find(
+        (x) => x.id === Number(joinedClassSuccess)
       );
-    });
-  }
-
-  const adminClasses = userAndClassData.classroomsData.filter(
-    (classroom) => classroom.admin_user_id == userId
-  );
-
-  const memberClasses = userAndClassData.classroomsData.filter(
-    (classroom) => classroom.admin_user_id != userId
-  );
-
-  const addClassroom = async (classId: number) => {
-    if (newClassName.length != 0) {
-      try {
-        const result = await optimisticUpdateAndFetchClassroomData(
-          classId,
-          async () => newClassroom(newClassName, userId),
-          { archived: true },
-          setUserAndClassData,
-          refreshClassrooms
-        );
-        if (!result) {
-          // setResultText(`Error while making classroom!`);
-          return;
-        }
+      if (joinClassInfo) {
+        // Join class doesn't need to refresh classroom data since we know its fresh
+        // since it's coming from a redirect from a reoute
         toast({
-          variant: "success",
-          title: "Added classroom successfully!",
+          description: (
+            <div>
+              Successfully joined classroom
+              <span className="font-bold"> {joinClassInfo.name}</span>!
+            </div>
+          ),
+          duration: 10000,
         });
-        // setResultText(`Created classroom ${className} successfully!`);
-      } catch (error: unknown) {
-        //type unknown for typescript lint
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error("Error Occured");
+        // router.replace("/classroom", { scroll: false });
+        // https://nextjs.org/blog/next-14-1#windowhistorypushstate-and-windowhistoryreplacestate
+        // const params = new URLSearchParams(searchParams.toString());
+        // params.set('sort', sortOrder);
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", "/classroom");
         }
       }
-      setIsDialogOpen(false);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "Can't create classrooms with an empty name.",
-      });
     }
+    // const deleteSuccess = searchParams.get("delete_success");
+    // if (deleteSuccess && !isNaN(Number(deleteSuccess))) {
+    //   if (typeof window !== "undefined") {
+    //     window.history.replaceState(null, "", "/classroom");
+    //   }
+    //   optimisticUpdateAndFetchClassroomData(
+    //     async () => undefined,
+    //     "remove",
+    //     setUserAndClassData,
+    //     Number(deleteSuccess),
+    //     refreshClassrooms
+    //   );
+    // }
+  }, [searchParams, userAndClassData.classroomsData]);
+
+  //   const deleteClassSuccess = searchParams.get("delete_success");
+
+  //   if (deleteClassSuccess && !isNaN(Number(deleteClassSuccess))) {
+  //     const deleteClassInfo = userAndClassData.classroomsData.find(
+  //       (x) => x.id === Number(deleteClassSuccess)
+  //     );
+  //     if (deleteClassInfo) {
+  //       setUserAndClassData(userAndClassData);
+  //       // toast({
+  //       //   description: (
+  //       //     <div>
+  //       //       Successfully deleted classroom
+  //       //       <span className="font-bold">{deleteClassInfo.name}</span>!
+  //       //     </div>
+  //       //   ),
+  //       //   duration: 10000,
+  //       // });
+  //     }
+  //   }
+
+  //   const archiveClassSuccess = searchParams.get("archiveClassSuccess");
+
+  //   if (archiveClassSuccess && !isNaN(Number(archiveClassSuccess))) {
+  //     const archiveClassInfo = userAndClassData.classroomsData.find(
+  //       (x) => x.id === Number(archiveClassSuccess)
+  //     );
+  //     if (archiveClassInfo) {
+  //       toast({
+  //         description: (
+  //           <div>
+  //             Successfully archived classroom
+  //             <span className="font-bold">{archiveClassInfo.name}</span>!
+  //           </div>
+  //         ),
+  //         duration: 10000,
+  //       });
+  //       refreshClassrooms();
+  //     }
+  //   }
+
+  // }, [searchParams]);
+
+  // function mapToListItem(
+  //   classroomList: ClassroomWithMembers[],
+  //   isAdmin: boolean
+  // ) {
+  //   return (
+  //     <
+  //   );
+  // }
+
+  // function mapToListItemArchived(
+  //   classroomList: ClassroomWithMembers[],
+  //   isAdmin: boolean
+  // ) {
+  //   return classroomList.map((classroom) => {
+  //     return (
+  //       <div key={classroom.id}>
+  //         {classroom.archived && (
+  //           <>
+  //             <Card className="w-[450px]" animated>
+  //               <CardHeader>
+  //                 <CardTitle>{classroom.name}</CardTitle>
+  //                 {/* <CardDescription>
+  //                       Join Code: {classroom.join_code || "N/A"}
+  //                     </CardDescription> */}
+  //               </CardHeader>
+  //               <CardContent>
+  //                 {classroom.Classroom_Members &&
+  //                   classroom.Classroom_Members.length > 0 && (
+  //                     <MemberList
+  //                       classroom={classroom}
+  //                       enableDeletion={false}
+  //                       triggerButton={
+  //                         <TooltipProvider>
+  //                           <Tooltip delayDuration={300}>
+  //                             <SheetTrigger asChild>
+  //                               <TooltipTrigger asChild>
+  //                                 <Button
+  //                                   type="button"
+  //                                   variant={"ghost"}
+  //                                   size={"iconLg"}
+  //                                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+  //                                 >
+  //                                   <Users className="scale-[200%]" />
+  //                                 </Button>
+  //                               </TooltipTrigger>
+  //                             </SheetTrigger>
+  //                             <TooltipContent>View Members</TooltipContent>
+  //                           </Tooltip>
+  //                         </TooltipProvider>
+  //                       }
+  //                     />
+  //                   )}
+  //                 <Button
+  //                   type="button"
+  //                   variant={"ghost"}
+  //                   size={"iconLg"}
+  //                   onClick={() =>
+  //                     optimisticUpdateAndFetchClassroomData(
+  //                       classroom.id,
+  //                       isAdmin
+  //                         ? async () => deleteClassroom(classroom.id)
+  //                         : async () => leaveClassroom(classroom.id, userId),
+  //                       "remove",
+  //                       setUserAndClassData,
+  //                       refreshClassrooms
+  //                     )
+  //                   }
+  //                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+  //                 >
+  //                   <Trash2 className="scale-[200%]" />
+  //                   {isAdmin ? "Delete Classroom" : "Remove Classroom"}
+  //                 </Button>
+
+  //                 {isAdmin && (
+  //                   <Button
+  //                     type="button"
+  //                     variant={"ghost"}
+  //                     size={"iconLg"}
+  //                     // className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+  //                     onClick={() =>
+  //                       optimisticUpdateAndFetchClassroomData(
+  //                         classroom.id,
+  //                         async () =>
+  //                           setArchiveStatusClassroom(classroom.id, false),
+  //                         { archived: false },
+  //                         setUserAndClassData,
+  //                         refreshClassrooms
+  //                       )
+  //                     }
+  //                   >
+  //                     Unarchive
+  //                   </Button>
+  //                 )}
+  //               </CardContent>{" "}
+  //             </Card>
+
+  //             <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
+  //           </>
+  //         )}
+  //       </div>
+  //     );
+  //   });
+  // }
+
+  const adminClasses = userAndClassData?.classroomsData
+    .filter((classroom) => classroom.admin_user_id == userId)
+    .sort((x, y) =>
+      (x?.name ?? "").toLowerCase().localeCompare((y?.name ?? "").toLowerCase())
+    );
+
+  const memberClasses = userAndClassData?.classroomsData
+    .filter((classroom) => classroom.admin_user_id != userId)
+    .sort((x, y) =>
+      (x?.name ?? "").toLowerCase().localeCompare((y?.name ?? "").toLowerCase())
+    );
+
+  const addOptimistic = async (newName: string) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => newClassroom(newName, userId),
+      { name: newName, archived: false, admin_user_id: userId, id: -1 },
+      setUserAndClassData,
+      undefined,
+      refreshClassrooms
+    );
   };
+
+  const leaveOptimistic = async (classroomId: number) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => leaveClassroom(classroomId, userId),
+      "remove",
+      setUserAndClassData,
+      classroomId,
+      refreshClassrooms
+    );
+  };
+
+  function ClassroomCard({
+    classroom,
+    isAdmin,
+  }: {
+    classroom: ClassroomWithMembers;
+    isAdmin: boolean;
+  }) {
+    return (
+      <Card className="w-[450px]" animated>
+        <CardHeader>
+          <CardTitle>{classroom.name}</CardTitle>
+          <CardDescription>
+            Join Code: {classroom.join_code || "N/A"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TooltipUtil
+            trigger={
+              <Button
+                type="button"
+                variant={"ghost"}
+                size={"iconLg"}
+                asChild
+                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+              >
+                <Link href={`../chat/${classroom.id}`} passHref>
+                  <MessageSquareMore className="scale-[200%]" />{" "}
+                </Link>
+              </Button>
+            }
+            content={"Chat!"}
+          />
+
+          {isAdmin && (
+            <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <Link href={`/classroom/${classroom.id}/manage`} passHref>
+                    <Edit className="scale-[200%]" />
+                  </Link>
+                </Button>
+              }
+              content={"Manage Classroom"}
+            />
+          )}
+
+          {classroom.Classroom_Members &&
+            classroom.Classroom_Members.length > 0 && (
+              <MemberList
+                classroom={classroom}
+                enableDeletion={false}
+                triggerButton={
+                  <TooltipUtil
+                    trigger={
+                      <Button
+                        type="button"
+                        variant={"ghost"}
+                        size={"iconLg"}
+                        // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                      >
+                        <Users className="scale-[200%]" />
+                      </Button>
+                    }
+                    content={"View Members"}
+                    useSheetTrigger
+                  />
+                }
+                userId={userId}
+              />
+            )}
+          {!isAdmin && (
+            <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"destructiveGhost"}
+                  size={"iconLg"}
+                  onClick={() => leaveOptimistic(classroom.id)}
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <LogOut className="scale-[200%]" />
+                </Button>
+              }
+              content={"Leave Classroom"}
+            />
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline">Create a Classroom</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Create a Classroom</DialogTitle>
-            {/* <DialogDescription>
-              Make changes to the name of your classroom here.
-            </DialogDescription> */}
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Name</Label>
-              <Input
-                id="name"
-                value={newClassName}
-                className="col-span-3"
-                onChange={(e) => setNewClassName(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" onClick={() => addClassroom()}>
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SaveClassroomDialog
+        // isDialogOpen={isDialogOpen}
+        // setIsDialogOpen={setIsDialogOpen}
+        optimisticUpdateCallback={addOptimistic}
+        actionText="create"
+      />
       <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
       {/* ADMIN CLASSES */}
-      {mapToListItem(adminClasses, true)}
+      <div>
+        <div className="flex flex-wrap justify-start gap-4">
+          {adminClasses.map((classroom) => (
+            <ClassroomCard
+              key={classroom.id}
+              classroom={classroom}
+              isAdmin={true}
+            />
+          ))}
+        </div>
+      </div>
       <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
       <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
       {/* NON-ADMIN CLASSES */}
-      {mapToListItem(memberClasses, false)}
+      <div>
+        <div className="flex flex-wrap justify-start gap-4">
+          {memberClasses.map((classroom) => (
+            <ClassroomCard
+              key={classroom.id}
+              classroom={classroom}
+              isAdmin={false}
+            />
+          ))}
+        </div>
+      </div>
       <hr className="my-5 h-5 border-0 bg-gray-800 dark:bg-white" />
       <h1 className={"mb-5 text-center text-3xl underline"}>
         Archived Classrooms
       </h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2>
-      {mapToListItemArchived(adminClasses, true)}
+      {/* {mapToListItemArchived(adminClasses, true)} */}
 
       <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" />
       <h2 className={"text-center text-2xl"}>Member Classrooms</h2>
       {/* NON-ADMIN CLASSES */}
-      {mapToListItemArchived(memberClasses, false)}
-      {/* <Link href="newClassroom/">
-          <button
-            type="button"
-            className="dark:focus:green-red-900 mb-2 me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white"
-          >
-            Create a Classroom
-          </button>
-        </Link> */}
-      {/* <ArchivedClassroomList
-          userId={userId}
-          initialAdminData={adminClasses}
-          initialMemberData={memberClasses}
-        /> */}
+      {/* {mapToListItemArchived(memberClasses, false)} */}
     </>
   );
 }

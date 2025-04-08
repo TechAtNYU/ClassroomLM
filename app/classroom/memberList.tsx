@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { columns } from "./columns";
+import { columns } from "./_components/columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
 import { Trash2, Users } from "lucide-react";
@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tables } from "@/utils/supabase/database.types";
 import { Row } from "@tanstack/react-table";
-import { getCurrentUserId, removeMember } from "./actions";
+import { removeMember } from "./actions";
 
 /**
  *
@@ -33,10 +33,9 @@ export default function MemberList({
   userId,
   enableDeletion,
   triggerButton,
-} : {
+}: {
   classroom: ClassroomWithMembers;
-  userId: string
-
+  userId: string;
   enableDeletion: boolean;
   triggerButton?: ReactNode;
 }) {
@@ -47,7 +46,6 @@ export default function MemberList({
       setMembers(classroom.Classroom_Members.map((x) => x.Users));
     }
   }, [classroom.Classroom_Members]);
-
 
   if (!classroom.Classroom_Members) {
     return <h1>No members found!</h1>;

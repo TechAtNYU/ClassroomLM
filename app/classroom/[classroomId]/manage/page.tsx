@@ -11,10 +11,9 @@ import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClassroomManagementPage() {
-  const {classroomId} = useParams<{  classroomId: string }>()
-  
+  const { classroomId } = useParams<{ classroomId: string }>();
+
   const userContext = useContext(UserContext);
-  // If the userContext is undefined still, give loading visual
   if (!userContext) {
     return (
       <div className="flex items-center space-x-4">
@@ -26,15 +25,32 @@ export default function ClassroomManagementPage() {
       </div>
     );
   }
-
-  // get the data and setter from the context (these are just a regular useState, so treat them like that)
-  // const { setUserAndClassData, userAndClassData } = userContext;
-  // const userId = userAndClassData.userData.id;
+  const classroomIdNumber = Number(classroomId);
+  const { setUserAndClassData, userAndClassData } = userContext;
+  const classroomInfo = userAndClassData.classroomsData.find(
+    (x) => x.id === classroomIdNumber
+  );
+  // If the userContext is undefined still, give loading visual
+  if (!classroomInfo) {
+    return (
+      <div className="flex items-center space-x-4">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <h1>Hello this is classroom {classroomId}</h1>
-      <ClassroomManagementButtons classroomId={Number(classroomId)} userContext={userContext} />
+      <ClassroomManagementButtons
+        classroomData={classroomInfo}
+        setUserAndClassCallback={setUserAndClassData}
+        userData={userAndClassData.userData}
+      />
       <Link href={`/classroom`} passHref>
         <button
           type="button"

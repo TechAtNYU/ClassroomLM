@@ -4,7 +4,6 @@
 // import { getCurrentUserId, retrieveClassroomData } from "../../classroom/actions";
 "use client";
 
-import InviteMember from "./inviteMember";
 import Link from "next/link";
 // import MemberList from "../../classroom/memberList";
 import {
@@ -13,10 +12,11 @@ import {
   setArchiveStatusClassroom,
 } from "../../actions";
 import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
-import { getUserAndClassroomData } from "@/app/lib/userContext/contextFetcher";
-import { UserContextType } from "@/app/lib/userContext/userContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import MemberList from "../../memberList";
+import {
+  ClassroomWithMembers,
+  getUserAndClassroomData,
+  UserWithClassroomsData,
+} from "@/app/lib/userContext/contextFetcher";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -30,55 +30,40 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
+import { User } from "@supabase/supabase-js";
+import SaveClassroomDialog from "../../_components/saveClassroomDialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import MemberList from "../../memberList";
+import InviteMember from "./_components/inviteMember";
 
 export default function ClassroomManagementButtons({
-  classroomId,
-  userContext,
+  userData,
+  classroomData,
+  setUserAndClassCallback,
 }: {
-  classroomId: number;
-  userContext: UserContextType;
+  userData: User;
+  classroomData: ClassroomWithMembers;
+  setUserAndClassCallback: Dispatch<SetStateAction<UserWithClassroomsData>>;
 }) {
-  //   const userId = await getCurrentUserId();
-  //   const classData = await retrieveClassroomData(userId);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const classroomIdNumber = Number(classroomId);
-  const { setUserAndClassData, userAndClassData } = userContext;
   const router = useRouter();
   // const searchParams = useSearchParams();
 
-  const classroomInfo = userAndClassData.classroomsData.find(
-    (x) => x.id === classroomId
-  );
+  // const [newClassName, setNewClassName] = useState<string>(
+  //   classroomInfo?.name ?? ""
+  // );
 
-  const [newClassName, setNewClassName] = useState<string>(
-    classroomInfo?.name ?? ""
-  );
-
-  if (!classroomInfo) {
-    return (
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-12 w-12 rounded-full" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
-    );
-  }
+  // if (!classroomInfo) {
+  //   return (
+  //     <div className="flex items-center space-x-4">
+  //       <Skeleton className="h-12 w-12 rounded-full" />
+  //       <div className="space-y-2">
+  //         <Skeleton className="h-4 w-[250px]" />
+  //         <Skeleton className="h-4 w-[200px]" />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // const handleChangeClassroomName = async (classroomId: number) => {
   //   // const newName = window.prompt("Enter new class name:");
@@ -100,30 +85,26 @@ export default function ClassroomManagementButtons({
   //     refreshClassrooms
   //   );
   // };
-
-  const handleChangeClassroomName = async (classroomId: number) => {
-    if (newClassName.trim() !== "") {
-      optimisticUpdateAndFetchClassroomData(
-        classroomId,
-        async () => changeClassroomName(classroomId, newClassName),
-        { name: newClassName },
-        setUserAndClassData,
-        refreshClassrooms
-      );
-    }
-    setIsDialogOpen(false);
-  };
-
   const refreshClassrooms = async () => {
     const refreshedData = await getUserAndClassroomData();
     if (refreshedData) {
-      setUserAndClassData(refreshedData);
+      setUserAndClassCallback(refreshedData);
     }
   };
 
-  const deleteClassroomFunction = async (classroomId: number) => {
-    await deleteClassroom(classroomId)
-        // const confirmation = window.confirm(
+  const handleChangeClassroomName = async (newName: string) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => changeClassroomName(classroomData.id, newName),
+      { name: newName },
+      setUserAndClassCallback,
+      classroomData.id,
+      refreshClassrooms
+    );
+  };
+
+  const deleteClassroomFunction = async () => {
+    await deleteClassroom(classroomData.id);
+    // const confirmation = window.confirm(
     //   "Are you sure? This action can't be undone."
     // );
     // if (confirmation) {
@@ -134,27 +115,29 @@ export default function ClassroomManagementButtons({
     //   classroomId.toString()
     // );
     // redirect(delete_success)
-    router.push(`/classroom?delete_success=${classroomId.toString()}`);
+
+    router.push(`/classroom?delete_success=${classroomData.id.toString()}`);
   };
 
-  function archiveClassroom() {
-    optimisticUpdateAndFetchClassroomData(
-      classroomId,
-      async () => setArchiveStatusClassroom(classroomId, true),
-      { archived: true },
-      setUserAndClassData,
-      refreshClassrooms
-    );
-
+  const archiveClassroomCallback = async () => {
+    // optimisticUpdateAndFetchClassroomData(
+    //   classroomId,
+    //   async () => setArchiveStatusClassroom(classroomId, true),
+    //   { archived: true },
+    //   setUserAndClassData,
+    //   refreshClassrooms
+    // );
+    setArchiveStatusClassroom(classroomData.id, true);
     toast({
       title: "Successfully archived classroom.",
     });
-    router.push(`/classroom?archive_success=${classroomId.toString()}`);
-  }
+    router.push(`/classroom?archive_success=${classroomData.id.toString()}`);
+    refreshClassrooms();
+  };
 
   return (
     <div>
-      {"Look at the class info: " + classroomInfo.name}
+      {"Look at the class info: " + classroomData.name}
       <Link href={`upload`} passHref>
         <button
           type="button"
@@ -167,7 +150,7 @@ export default function ClassroomManagementButtons({
       <button
         type="button"
         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-        onClick={() => archiveClassroom()}
+        onClick={() => archiveClassroomCallback()}
       >
         Archive
       </button>
@@ -192,63 +175,32 @@ export default function ClassroomManagementButtons({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteClassroomFunction(classroomIdNumber)}
-            >
+            <AlertDialogAction onClick={() => deleteClassroomFunction()}>
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* CHANGE NAME BUTTON */}
-      {/* <button
-        onClick={() => handleChangeClassroomName(classroomIdNumber)}
-        type="button"
-        className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-      >
-        Change Name
-      </button> */}
+      <SaveClassroomDialog
+        // isDialogOpen={isDialogOpen}
+        // setIsDialogOpen={setIsDialogOpen}
+        optimisticUpdateCallback={handleChangeClassroomName}
+        actionText="update"
+      />
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline">Change Classroom Name</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Rename Classroom</DialogTitle>
-            <DialogDescription>
-              Make changes to the name of your classroom here.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Name</Label>
-              <Input
-                id="name"
-                value={newClassName}
-                className="col-span-3"
-                onChange={(e) => setNewClassName(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              onClick={() => handleChangeClassroomName(classroomIdNumber)}
-            >
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {classroomInfo.Classroom_Members &&
-        classroomInfo.Classroom_Members.length > 0 && (
-          <MemberList classroom={classroomInfo} enableDeletion={true} userId={userAndClassData.userData.id}/>
-        )}
+      {classroomData.Classroom_Members &&
+      classroomData.Classroom_Members.length > 0 ? (
+        <MemberList
+          classroom={classroomData}
+          enableDeletion={true}
+          userId={userData.id}
+        />
+      ) : (
+        <Skeleton></Skeleton>
+      )}
       <p>Invite Member:</p>
-      <InviteMember classroomId={classroomId} />
+      <InviteMember classroomId={classroomData.id} />
     </div>
   );
 }

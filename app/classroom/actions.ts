@@ -214,7 +214,7 @@ export async function newClassroom(name: string, id: string) {
   const supabase = await createServiceClient();
   const { data, error } = await supabase
     .from("Classrooms")
-    .insert([{ name: name, admin_user_id: id }])
+    .insert([{ name: name, admin_user_id: id,archived: false }])
     .select("id");
 
   if (error) {
@@ -240,14 +240,14 @@ export async function newClassroom(name: string, id: string) {
   return data;
 }
 
-export async function getCurrentUserId() {
-  const supabase = await createClient();
+// export async function getCurrentUserId() {
+//   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw Error("No authenticated user found");
-  }
-  return user.id;
-}
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser();
+//   if (!user) {
+//     throw Error("No authenticated user found");
+//   }
+//   return user.id;
+// }

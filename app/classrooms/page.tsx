@@ -76,6 +76,8 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     const tab = searchParams.get("tab");
     if (tab && (tab == "enrolled" || tab == "admin")) {
       setCurrentTab(tab);
+    }else{
+      setCurrentTab("enrolled");
     }
   }, [searchParams]);
 
@@ -285,7 +287,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     isAdmin: boolean;
   }) {
     return (
-      <Card className="w-1/5" animated>
+      <Card className="w-1/5 min-w-[300px]" animated>
         <CardHeader>
           <CardTitle animated>{classroom.name}</CardTitle>
           <CardDescription animated>
@@ -311,7 +313,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 asChild
                 // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
               >
-                <Link href={`../chat/${classroom.id}`} passHref>
+                <Link href={`/classrooms/${classroom.id}/chat`} passHref>
                   <MessageSquareMore className="scale-[200%]" />{" "}
                 </Link>
               </Button>
@@ -401,7 +403,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
 
       <Tabs
         value={currentTab}
-        onValueChange={setCurrentTab}
+        onValueChange={(value) => {window.history.replaceState(null, "", `/classrooms?tab=${value}`); setCurrentTab(value)}}
         defaultValue="enrolled"
         // className="w-[75vw] bg-"
       >
@@ -424,7 +426,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <Separator className="my-4 mb-10" />
         <TabsContent value="admin">
           <div>
-            <div className="flex flex-wrap justify-start gap-4">
+            <div className="flex flex-wrap gap-4">
               {adminClasses.map((classroom) => (
                 <ClassroomCard
                   key={classroom.id}

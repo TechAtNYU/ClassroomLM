@@ -1,3 +1,5 @@
+import { ReadonlyURLSearchParams } from "next/navigation";
+
 type PageStructure =
   | PickOne<{
       classroomLanding: PickOne<{
@@ -20,7 +22,7 @@ type PageStructure =
   | undefined;
 
 // TODO: once structure is finalized, fix this
-export function getPageAspectsByPath(pathname: string): PageStructure {
+export function getPageAspectsByPath(pathname: string, searchParams: ReadonlyURLSearchParams): PageStructure {
   if (pathname == "/") {
     return undefined;
   }
@@ -28,7 +30,10 @@ export function getPageAspectsByPath(pathname: string): PageStructure {
   const split = pathname.split("/");
 
   if (pathname.includes("classroom") && split.length == 2) {
-    // TODO: add admin separate
+    const tab = searchParams.get("tab")
+    if (tab && tab === "admin" ){
+      return { classroomLanding: { admin: true } };
+    }
     return { classroomLanding: { enrolled: true } };
   }
 

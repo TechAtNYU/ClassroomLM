@@ -6,7 +6,7 @@ import {
   RagFlowMessages,
   sendMessage,
 } from "@shared/lib/ragflow/chat/chat-client";
-import { toast } from "@shared/hooks/use-toast";
+import { toast } from "sonner";
 
 function MessageBox(props: {
   chatClient: ChatClientWithSession;
@@ -28,11 +28,10 @@ function MessageBox(props: {
     const messageResponse = await sendMessage(props.chatClient, value);
 
     if (!messageResponse.ragflowCallSuccess) {
-      toast({
-        title: "Error sending message",
+      toast.error("Error sending message",
+        {
         description: `Please try refreshing the page`,
         duration: 10000,
-        variant: "destructive",
       });
       return;
     }

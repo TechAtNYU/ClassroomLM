@@ -245,7 +245,7 @@ export default function ClassroomManagementButtons({
 
       {classroomInfo.Classroom_Members &&
         classroomInfo.Classroom_Members.length > 0 && (
-          <MemberList classroom={classroomInfo} enableDeletion={true} />
+          <MemberList classroom={classroomInfo} enableDeletion={true} userId={userAndClassData.userData.id}/>
         )}
       <p>Invite Member:</p>
       <InviteMember classroomId={classroomId} />

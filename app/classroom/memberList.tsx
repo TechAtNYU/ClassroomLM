@@ -30,14 +30,16 @@ import { getCurrentUserId, removeMember } from "./actions";
  */
 export default function MemberList({
   classroom,
+  userId,
   enableDeletion,
   triggerButton,
-}: {
+} : {
   classroom: ClassroomWithMembers;
+  userId: string
+
   enableDeletion: boolean;
   triggerButton?: ReactNode;
 }) {
-  const [adminId, setAdminId] = useState<string | null>(null);
   const [members, setMembers] = useState<Tables<"Users">[]>([]);
 
   useEffect(() => {
@@ -46,14 +48,6 @@ export default function MemberList({
     }
   }, [classroom.Classroom_Members]);
 
-  useEffect(() => {
-    const fetchAdminId = async () => {
-      const id = await getCurrentUserId();
-      setAdminId(id);
-    };
-
-    fetchAdminId();
-  }, []); // Fetch once when the component mounts
 
   if (!classroom.Classroom_Members) {
     return <h1>No members found!</h1>;
@@ -105,7 +99,7 @@ export default function MemberList({
                         id: "actions",
                         cell: ({ row }: { row: Row<Tables<"Users">> }) => {
                           // const adminId = getCurrentUserId();
-                          const isAdmin = row.original.id === adminId; // Check if the current row is the admin
+                          const isAdmin = row.original.id === userId; // Check if the current row is the admin
 
                           // Only render the delete button if the current row is NOT the admin
                           if (isAdmin) {

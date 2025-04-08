@@ -18,23 +18,22 @@ import {
 export const optimisticUpdateAndFetchClassroomData = async <
   K extends keyof ClassroomWithMembers,
 >(
-  classroomId: number,
   action: () => Promise<unknown>,
-  newValue: { [k in K]: ClassroomWithMembers[k] } | "remove",
+  newValue: { [k in K]: ClassroomWithMembers[k] } | ClassroomWithMembers | "remove",
   setUserAndClassDataFunction: React.Dispatch<
     React.SetStateAction<UserWithClassroomsData>
   >,
+  classroomId?: number,
   refreshFunction?: () => Promise<unknown>
 ) => {
   setUserAndClassDataFunction((prevData) => ({
     userData: prevData.userData,
     classroomsData: prevData.classroomsData.flatMap((classroom) => {
-      console.log(classroom.name);
       if (classroom.id === classroomId) {
         return newValue === "remove" ? [] : { ...classroom, ...newValue };
       }
       return classroom;
-    }),
+    }).concat(typeof newValue === 'object' && "id" in newValue ? newValue : [] ),
   }));
   const returnVal = await action();
   if (refreshFunction) {

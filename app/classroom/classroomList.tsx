@@ -40,7 +40,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { Edit, LogOut, MessageSquareMore, Trash2, Users } from "lucide-react";
 import { SheetTrigger } from "@/components/ui/sheet";
@@ -50,6 +50,8 @@ import { Input } from "@/components/ui/input";
 
 export default function ClassroomList() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newClassName, setNewClassName] = useState("");
 
@@ -89,25 +91,27 @@ export default function ClassroomList() {
       setUserAndClassData(refreshedData);
     }
   };
-//   useEffect(() => {
-//   const joinedClassSuccess = searchParams.get("join_success");
-//   if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
-//     const joinClassInfo = userAndClassData.classroomsData.find(
-//       (x) => x.id === Number(joinedClassSuccess)
-//     );
-//     if (joinClassInfo) {
-//       refreshClassrooms();
-//       toast({
-//         description: (
-//           <div>
-//             Successfully joined classroom
-//             <span className="font-bold"> {joinClassInfo.name}</span>!
-//           </div>
-//         ),
-//         duration: 10000,
-//       });
-//     }
-//   }
+  
+  const joinedClassSuccess = searchParams.get("join_success");
+  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
+    const joinClassInfo = userAndClassData.classroomsData.find(
+      (x) => x.id === Number(joinedClassSuccess)
+    );
+    if (joinClassInfo) {
+      // Join class doesn't need to refresh classroom data since we know its fresh 
+      // since it's coming from a redirect from a reoute
+      toast({
+        description: (
+          <div>
+            Successfully joined classroom
+            <span className="font-bold"> {joinClassInfo.name}</span>!
+          </div>
+        ),
+        duration: 10000,
+      });
+      router.replace("/classroom", {scroll: false})
+    }
+  }
 
 //   const deleteClassSuccess = searchParams.get("delete_success");
 
@@ -236,6 +240,7 @@ export default function ClassroomList() {
                                 </Tooltip>
                               </TooltipProvider>
                             }
+                            userId={userId}
                           />
                         )}
                       {!isAdmin && (

@@ -1,5 +1,5 @@
 import { signInWithGoogle } from "@/app/login/actions";
-import GoogleSignInButton from "@/app/login/components/GoogleSignInButton";
+import GoogleSignInButton from "@/shared/components/GoogleSignInButton";
 
 export default async function LoginPage() {
   return (

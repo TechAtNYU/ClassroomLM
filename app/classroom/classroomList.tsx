@@ -73,20 +73,20 @@ function ClassroomListWithContext({
       if (joinClassInfo) {
         // Join class doesn't need to refresh classroom data since we know its fresh
         // since it's coming from a redirect from a reoute
-        toast({
-          description: (
-            <div>
-              Successfully joined classroom
-              <span className="font-bold"> {joinClassInfo.name}</span>!
-            </div>
-          ),
-          duration: 10000,
-        });
         // router.replace("/classroom", { scroll: false });
         // https://nextjs.org/blog/next-14-1#windowhistorypushstate-and-windowhistoryreplacestate
         // const params = new URLSearchParams(searchParams.toString());
         // params.set('sort', sortOrder);
         if (typeof window !== "undefined") {
+          toast({
+            description: (
+              <div>
+                Successfully joined classroom
+                <span className="font-bold"> {joinClassInfo.name}</span>!
+              </div>
+            ),
+            duration: 10000,
+          });
           window.history.replaceState(null, "", "/classroom");
         }
       }
@@ -296,7 +296,7 @@ function ClassroomListWithContext({
         <CardHeader>
           <CardTitle>{classroom.name}</CardTitle>
           <CardDescription>
-            Join Code: {classroom.join_code || "N/A"}
+            <div className="flex flex-row gap-3">Join Code: {classroom.join_code|| <Skeleton className="h-5 w-5/12 self-center" />}</div>
           </CardDescription>
         </CardHeader>
         <CardContent>

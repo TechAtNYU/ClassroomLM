@@ -30,12 +30,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useTransition } from "react";
 import { User } from "@supabase/supabase-js";
 import SaveClassroomDialog from "../../_components/saveClassroomDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import MemberList from "../../memberList";
 import InviteMember from "./_components/inviteMember";
+import { Loader2 } from "lucide-react";
 
 export default function ClassroomManagementButtons({
   userData,
@@ -47,35 +48,7 @@ export default function ClassroomManagementButtons({
   setUserAndClassCallback: Dispatch<SetStateAction<UserWithClassroomsData>>;
 }) {
   const router = useRouter();
-  // const searchParams = useSearchParams();
-
-  // const [newClassName, setNewClassName] = useState<string>(
-  //   classroomInfo?.name ?? ""
-  // );
-
-  // if (!classroomInfo) {
-  //   return (
-  //     <div className="flex items-center space-x-4">
-  //       <Skeleton className="h-12 w-12 rounded-full" />
-  //       <div className="space-y-2">
-  //         <Skeleton className="h-4 w-[250px]" />
-  //         <Skeleton className="h-4 w-[200px]" />
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  // const handleChangeClassroomName = async (classroomId: number) => {
-  //   // const newName = window.prompt("Enter new class name:");
-  //   // if (newName !== null && newName !== "") {
-  //   //   optimisticUpdateAndFetchClassroomData(
-  //   //     classroomId,
-  //   //     async () => changeClassroomName(classroomId, newName),
-  //   //     { name: newName },
-  //   //     setUserAndClassData,
-  //   //     refreshClassrooms
-  //   //   );
-  //   // }
+  const [isPending, startTransition] = useTransition();
 
   //   optimisticUpdateAndFetchClassroomData(
   //     classroomId,
@@ -103,7 +76,12 @@ export default function ClassroomManagementButtons({
   };
 
   const deleteClassroomFunction = async () => {
-    await deleteClassroom(classroomData.id);
+    startTransition(async () => {
+     await deleteClassroom(classroomData.id);
+    });
+    toast({
+      title: "Successfully deleted classroom",
+    });
     // const confirmation = window.confirm(
     //   "Are you sure? This action can't be undone."
     // );
@@ -115,8 +93,8 @@ export default function ClassroomManagementButtons({
     //   classroomId.toString()
     // );
     // redirect(delete_success)
-
-    router.push(`/classroom?delete_success=${classroomData.id.toString()}`);
+    router.push(`/classroom`);
+    refreshClassrooms();
   };
 
   const archiveClassroomCallback = async () => {
@@ -129,9 +107,10 @@ export default function ClassroomManagementButtons({
     // );
     setArchiveStatusClassroom(classroomData.id, true);
     toast({
-      title: "Successfully archived classroom.",
+      title: "Successfully archived classroom",
     });
-    router.push(`/classroom?archive_success=${classroomData.id.toString()}`);
+    router.push(`/classroom`);
+    // router.push(`/classroom?archive_success=${classroomData.id.toString()}`);
     refreshClassrooms();
   };
 
@@ -175,8 +154,8 @@ export default function ClassroomManagementButtons({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteClassroomFunction()}>
-              Continue
+            <AlertDialogAction disabled={isPending} onClick={() => deleteClassroomFunction()}>
+            {isPending && <Loader2 className="animate-spin" />} Continue
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

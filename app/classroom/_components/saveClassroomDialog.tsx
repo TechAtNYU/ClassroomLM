@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { ReactNode, useState, useTransition } from "react";
+import { ReactNode, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
@@ -31,12 +31,12 @@ export default function SaveClassroomDialog({
 }) {
   const [newClassName, setNewClassName] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   const saveClassroomCallback = async () => {
-    startTransition(async () => {
-      setIsDialogOpen(false);
+    setIsDialogOpen(false);
+    setIsPending(true)
+    // startTransition(async () => {
       const result = await optimisticUpdateCallback(newClassName);
       if (!result) {
         toast({
@@ -51,7 +51,8 @@ export default function SaveClassroomDialog({
         title: `${capitalize(actionText)} classroom successfully!`,
       });
       setIsDialogOpen(false);
-    });
+      setIsPending(false);
+    // });
     return;
   };
 

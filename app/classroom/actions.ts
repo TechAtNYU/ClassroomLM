@@ -42,10 +42,11 @@ export async function deleteClassroom(classroom_id: number) {
         `Failed while deleting assistant from Ragflow: ${chatResponse.statusText}`
       );
     }
-  } else {
-    // If no chat assistant, we don't want to error out
-    console.log("No chat assistant found for classroom when deleting");
-  }
+  } 
+  // else {
+  //   // If no chat assistant, we don't want to error out
+  //   console.log("No chat assistant found for classroom when deleting");
+  // }
 
   // Deleting associated RAGFlow dataset if exists
   if (data.ragflow_dataset_id) {

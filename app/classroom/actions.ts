@@ -42,7 +42,7 @@ export async function deleteClassroom(classroom_id: number) {
         `Failed while deleting assistant from Ragflow: ${chatResponse.statusText}`
       );
     }
-  } 
+  }
   // else {
   //   // If no chat assistant, we don't want to error out
   //   console.log("No chat assistant found for classroom when deleting");
@@ -215,7 +215,7 @@ export async function newClassroom(name: string, id: string) {
   const supabase = await createServiceClient();
   const { data, error } = await supabase
     .from("Classrooms")
-    .insert([{ name: name, admin_user_id: id,archived: false }])
+    .insert([{ name: name, admin_user_id: id, archived: false }])
     .select("id");
 
   if (error) {

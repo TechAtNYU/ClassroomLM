@@ -296,7 +296,12 @@ function ClassroomListWithContext({
         <CardHeader>
           <CardTitle>{classroom.name}</CardTitle>
           <CardDescription>
-            <div className="flex flex-row gap-3">Join Code: {classroom.join_code|| <Skeleton className="h-5 w-5/12 self-center" />}</div>
+            <div className="flex flex-row gap-3">
+              Join Code:{" "}
+              {classroom.join_code || (
+                <Skeleton className="h-5 w-5/12 self-center" />
+              )}
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent>

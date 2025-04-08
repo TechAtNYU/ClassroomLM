@@ -38,7 +38,7 @@ export default function ClassroomManagementPage() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     setStaleDataIfDeleted(structuredClone(classroomInfo));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // If the userContext is undefined still, give loading visual
@@ -58,8 +58,8 @@ export default function ClassroomManagementPage() {
         </div>
       );
     }
-  }else{
-    classToRender=classroomInfo;
+  } else {
+    classToRender = classroomInfo;
   }
 
   return (

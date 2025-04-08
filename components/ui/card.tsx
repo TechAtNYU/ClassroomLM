@@ -2,27 +2,24 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-
-export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   animated?: boolean;
 }
 
-
-const Card = React.forwardRef<
-  HTMLDivElement,
-CardProps
->(({ className,animated = false,  ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      animated ? "shadow-input row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-neutral-200 bg-white p-4 transition duration-200 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
-      : "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-));
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, animated = false, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        animated
+          ? "row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-neutral-200 bg-white p-4 shadow-input transition duration-200 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none"
+          : "rounded-lg border bg-card text-card-foreground shadow-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<

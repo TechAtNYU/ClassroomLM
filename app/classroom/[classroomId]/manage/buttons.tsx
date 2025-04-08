@@ -77,7 +77,7 @@ export default function ClassroomManagementButtons({
 
   const deleteClassroomFunction = async () => {
     startTransition(async () => {
-     await deleteClassroom(classroomData.id);
+      await deleteClassroom(classroomData.id);
     });
     toast({
       title: "Successfully deleted classroom",
@@ -154,8 +154,11 @@ export default function ClassroomManagementButtons({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction disabled={isPending} onClick={() => deleteClassroomFunction()}>
-            {isPending && <Loader2 className="animate-spin" />} Continue
+            <AlertDialogAction
+              disabled={isPending}
+              onClick={() => deleteClassroomFunction()}
+            >
+              {isPending && <Loader2 className="animate-spin" />} Continue
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

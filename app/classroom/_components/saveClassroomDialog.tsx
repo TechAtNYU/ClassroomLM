@@ -35,23 +35,23 @@ export default function SaveClassroomDialog({
 
   const saveClassroomCallback = async () => {
     setIsDialogOpen(false);
-    setIsPending(true)
+    setIsPending(true);
     // startTransition(async () => {
-      const result = await optimisticUpdateCallback(newClassName);
-      if (!result) {
-        toast({
-          variant: "destructive",
-          title: `Uh oh! Something went wrong when attempting to ${actionText.toLocaleLowerCase()} the classroom.`,
-          description: `Please refresh and try again`,
-        });
-        return;
-      }
+    const result = await optimisticUpdateCallback(newClassName);
+    if (!result) {
       toast({
-        variant: "success",
-        title: `${capitalize(actionText)} classroom successfully!`,
+        variant: "destructive",
+        title: `Uh oh! Something went wrong when attempting to ${actionText.toLocaleLowerCase()} the classroom.`,
+        description: `Please refresh and try again`,
       });
-      setIsDialogOpen(false);
-      setIsPending(false);
+      return;
+    }
+    toast({
+      variant: "success",
+      title: `${capitalize(actionText)} classroom successfully!`,
+    });
+    setIsDialogOpen(false);
+    setIsPending(false);
     // });
     return;
   };

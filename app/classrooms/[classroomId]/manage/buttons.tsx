@@ -34,7 +34,7 @@ import { Dispatch, SetStateAction, useTransition } from "react";
 import { User } from "@supabase/supabase-js";
 import SaveClassroomDialog from "../../_components/saveClassroomDialog";
 import { Skeleton } from "@shared/components/ui/skeleton";
-import MemberList from "../../memberList";
+import MemberList from "../../_components/memberList";
 import InviteMember from "./_components/inviteMember";
 import { Loader2 } from "lucide-react";
 

@@ -21,7 +21,7 @@ export async function GET(
 
   if (classroomError || !classroom) {
     console.error("Classroom not found:", classroomError);
-    return NextResponse.redirect(new URL("/classroom", request.url));
+    return NextResponse.redirect(new URL("/classrooms", request.url));
   }
 
   //ensures that the user is authenticated
@@ -43,11 +43,11 @@ export async function GET(
 
   if (memberError) {
     console.error("Error checking membership:", memberError);
-    return NextResponse.redirect(new URL("/classroom", request.url));
+    return NextResponse.redirect(new URL("/classrooms", request.url));
   }
 
   if (existingMember) {
-    return NextResponse.redirect(new URL("/classroom", request.url));
+    return NextResponse.redirect(new URL("/classrooms", request.url));
   }
 
   const { error: insertError } = await supabase
@@ -59,11 +59,11 @@ export async function GET(
 
   if (insertError) {
     console.error("Error adding member to classroom:", insertError);
-    return NextResponse.redirect(new URL("/classroom", request.url));
+    return NextResponse.redirect(new URL("/classrooms", request.url));
   }
   //redirect to classroom
 
-  const success_url = new URL("/classroom", request.url);
+  const success_url = new URL("/classrooms", request.url);
   success_url.searchParams.append("join_success", classroom.id.toString());
   return NextResponse.redirect(success_url);
 }

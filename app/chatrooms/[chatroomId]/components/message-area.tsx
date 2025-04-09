@@ -3,7 +3,6 @@
 import { ChatClientWithSession } from "@shared/lib/ragflow/chat/chat-client";
 import { UserContext } from "@shared/lib/userContext/userContext";
 import { Skeleton } from "@shared/components/ui/skeleton";
-import { toast } from "@shared/hooks/use-toast";
 import { createClient } from "@shared/utils/supabase/client";
 import { Database, Tables } from "@shared/utils/supabase/database.types";
 import { useContext, useEffect, useState } from "react";
@@ -20,6 +19,7 @@ import {
   ChatBubbleMessage,
 } from "@/shared/components/ui/chat/chat-bubble";
 import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -198,9 +198,7 @@ const MessageArea = ({
     ]);
 
     if (messageError) {
-      toast({
-        variant: "destructive",
-        title: "Error sending message to chatroom",
+      toast.error("Error sending message to chatroom", {
         description: "Please refresh and try again",
       });
       setMessageBoxValue("");
@@ -215,9 +213,7 @@ const MessageArea = ({
       if (!askResult.clientCreationSuccess) {
         if (!askResult.failedBecauseEmptyDataset) {
           // TODO: ask result has more detailed error differntiations if we want to tell the user
-          toast({
-            variant: "destructive",
-            title: "Error sending communicating with LLM",
+          toast.error("Error sending communicating with LLM", {
             description: "Please refresh and try again",
           });
           setChatClient(null); // In case client is bad, clear it out

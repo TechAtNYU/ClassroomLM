@@ -15,7 +15,7 @@ import {
   RagFlowMessages,
   sendMessage,
 } from "@shared/lib/ragflow/chat/chat-client";
-import { toast } from "@shared/hooks/use-toast";
+import { toast } from "sonner";
 import Logo from "@/shared/components/Logo";
 import { SendIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -51,11 +51,9 @@ export default function MessageBox({
     setIsLoading(false);
 
     if (!response.ragflowCallSuccess) {
-      toast({
-        title: "Error sending message",
-        description: "Please try refreshing the page",
+      toast.error("Error sending message", {
+        description: `Please try refreshing the page`,
         duration: 10000,
-        variant: "destructive",
       });
       return;
     }

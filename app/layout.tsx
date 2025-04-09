@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@shared/components/ui/toaster";
 
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { ThemeProvider } from "@/components/ui/theme-provider";
-import { AppSidebar } from "@/components/ui/sidebar/app-sidebar";
-import UserContextProvider from "./lib/userContext/userContext";
-import { getUserAndClassroomData } from "./lib/userContext/contextFetcher";
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+} from "@shared/components/ui/sidebar";
+import { ThemeProvider } from "@shared/components/ui/theme-provider";
+import { AppSidebar } from "@shared/components/ui/sidebar/app-sidebar";
+import UserContextProvider from "@shared/lib/userContext/userContext";
+import { getUserAndClassroomData } from "@shared/lib/userContext/contextFetcher";
+import { cn } from "@shared/lib/utils";
+import { Separator } from "@shared/components/ui/separator";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

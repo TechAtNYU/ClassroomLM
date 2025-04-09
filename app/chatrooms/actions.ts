@@ -1,16 +1,16 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@shared/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import {
   ChatClientWithSession,
   createChatClient,
   deleteSession,
   sendMessage,
-} from "../lib/ragflow/chat/chat-client";
-import { ClassroomWithMembers } from "../lib/userContext/contextFetcher";
-import { createDatasetClient } from "../lib/ragflow/dataset-client";
-import { chatroomConfigTemplate } from "../lib/ragflow/chat/chat-configs";
+} from "@shared/lib/ragflow/chat/chat-client";
+import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
+import { createDatasetClient } from "@shared/lib/ragflow/dataset-client";
+import { chatroomConfigTemplate } from "@shared/lib/ragflow/chat/chat-configs";
 
 export const createChatroom = async (formData: FormData) => {
   const supabase = await createClient();

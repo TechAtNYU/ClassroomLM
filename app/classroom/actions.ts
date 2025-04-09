@@ -1,8 +1,8 @@
 "use server";
-import { createServiceClient } from "@/utils/supabase/service-server";
-import { createClient } from "@/utils/supabase/server";
-import { deleteDataset } from "../lib/ragflow/dataset-client";
-import { deleteAssistant } from "../lib/ragflow/chat/chat-client";
+import { createServiceClient } from "@shared/utils/supabase/service-server";
+import { createClient } from "@shared/utils/supabase/server";
+import { deleteDataset } from "@shared/lib/ragflow/dataset-client";
+import { deleteAssistant } from "@shared/lib/ragflow/chat/chat-client";
 
 // const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 // const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
@@ -84,6 +84,21 @@ export async function deleteClassroom(classroom_id: number) {
   //     `Failed to delete dataset from Ragflow: ${ragflowResponse.statusText}`
   //   );
   // }
+
+  return data || [];
+}
+
+export async function removeMember(classroom_id: number, user_id: string) {
+  const supabase = await createServiceClient();
+  const { data, error } = await supabase
+    .from("Classroom_Members")
+    .delete()
+    .eq("classroom_id", classroom_id)
+    .eq("user_id", user_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return data || [];
 }
@@ -201,3 +216,45 @@ export async function setArchiveStatusClassroom(
 
   return { success: true, data };
 }
+
+export async function newClassroom(name: string, id: string) {
+  const supabase = await createServiceClient();
+  const { data, error } = await supabase
+    .from("Classrooms")
+    .insert([{ name: name, admin_user_id: id, archived: false }])
+    .select("id");
+
+  if (error) {
+    console.error("Error inserting classroom:", error);
+    return null;
+  }
+
+  // add yourself to member list
+  if (data && data.length > 0) {
+    const classroomId = data[0].id;
+    console.log("Classroom ID:", classroomId);
+    const { error } = await supabase
+      .from("Classroom_Members")
+      .insert([{ classroom_id: classroomId, user_id: id }])
+      .select();
+
+    if (error) {
+      console.error("Error inserting admin to classroom member list:", error);
+      return null;
+    }
+  }
+
+  return data;
+}
+
+// export async function getCurrentUserId() {
+//   const supabase = await createClient();
+
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser();
+//   if (!user) {
+//     throw Error("No authenticated user found");
+//   }
+//   return user.id;
+// }

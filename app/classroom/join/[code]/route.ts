@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createServiceClient } from "@/utils/supabase/service-server";
-import { getCurrentUserIdServer } from "@/app/lib/supabase/shared";
+import { createServiceClient } from "@shared/utils/supabase/service-server";
+import { getCurrentUserIdServer } from "@shared/lib/supabase/shared";
 
 export async function GET(
   request: NextRequest,
@@ -62,5 +62,8 @@ export async function GET(
     return NextResponse.redirect(new URL("/classroom", request.url));
   }
   //redirect to classroom
-  return NextResponse.redirect(new URL("/classroom", request.url));
+
+  const success_url = new URL("/classroom", request.url);
+  success_url.searchParams.append("join_success", classroom.id.toString());
+  return NextResponse.redirect(success_url);
 }

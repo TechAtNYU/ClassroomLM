@@ -10,6 +10,13 @@ import {
   uploadFile,
 } from "@shared/lib/ragflow/dataset-client";
 import { Input } from "@shared/components/ui/input";
+import { Button } from "@shared/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@shared/components/ui/card";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { ScrollArea } from "@shared/components/ui/scroll-area";
 import { toast } from "sonner";
@@ -105,10 +112,6 @@ export default function UploadComponent({
 
     setLoading(false);
 
-    // if (!response || typeof response !== "object") {
-    //   setErrorMessage("Invalid response from server.");
-    //   return;
-    // }
     if (
       response.isAdmin &&
       response.parseCallSuccess &&
@@ -128,43 +131,47 @@ export default function UploadComponent({
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 text-black">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
-        <h1 className="mb-4 text-xl font-bold">File Upload</h1>
-        {datasetClient == undefined || uploadedFiles == null ? (
-          <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-        ) : (
-          <>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <Input
-                  type="file"
-                  onChange={handleFileChange}
-                  ref={inputFile}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
-                />
+    <div className="flex min-h-screen flex-col items-center justify-center p-6">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>File Upload</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {datasetClient == undefined || uploadedFiles == null ? (
+            <div className="flex items-center space-x-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
               </div>
+            </div>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Input
+                    type="file"
+                    onChange={handleFileChange}
+                    ref={inputFile}
+                    className="w-full"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                disabled={!file || loading}
-                className="w-full rounded-md bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300"
-              >
-                {loading ? "Uploading..." : "Upload"}
-              </button>
-            </form>
+                <Button
+                  type="submit"
+                  disabled={!file || loading}
+                  className="w-full"
+                >
+                  {loading ? "Uploading..." : "Upload"}
+                </Button>
+              </form>
 
-            {/* Move to component with files passed in as props so that newly fetch data doesn't trigger a rerender (and thus another fetch) infinitely so*/}
-            <FileList uploadedFiles={uploadedFiles} />
-          </>
-        )}
-      </div>
+              {/* Move to component with files passed in as props so that newly fetch data doesn't trigger a rerender (and thus another fetch) infinitely so*/}
+              <FileList uploadedFiles={uploadedFiles} />
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -173,21 +180,21 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
   const pathname = usePathname();
   return (
     uploadedFiles.length > 0 && (
-      <ScrollArea className="mt-5 max-h-[50vh] rounded-md border px-3">
+      <ScrollArea className="mt-5 max-h-[50vh]">
         <div className="mt-6">
           <h2 className="text-lg font-semibold">Uploaded Files</h2>
           <ul className="my-2 space-y-2">
             {uploadedFiles.map((file) => (
-              <li key={file.id} className="rounded-md bg-gray-100 p-3">
+              <li key={file.id} className="rounded-md border p-3">
                 <Link
                   href={`${pathname}/preview?documentId=${file.id}&datasetId=${file.datasetId}`}
                   rel="noopener noreferrer"
                   target="_blank"
-                  className="font-medium"
+                  className="font-medium hover:underline"
                 >
                   {file.name}
                 </Link>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
                   <strong>{file.status}</strong>
                 </p>

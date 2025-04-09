@@ -16,8 +16,9 @@ import {
   sendMessage,
 } from "@shared/lib/ragflow/chat/chat-client";
 import { toast } from "@shared/hooks/use-toast";
-import LogoComponent from "@/shared/components/Logo";
+import Logo from "@/shared/components/Logo";
 import { SendIcon } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface MessageBoxProps {
   chatClient: ChatClientWithSession;
@@ -33,6 +34,11 @@ export default function MessageBox({
     messageHistory || []
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  function cleanMessage(content: string): string {
+    // Remove any reference patterns like ##number$$
+    return content.replace(/##\d+\$\$/g, "").trim();
+  }
 
   async function handleSend() {
     if (!value.trim()) return;
@@ -63,7 +69,7 @@ export default function MessageBox({
 
   return (
     <div className="flex h-[600px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
-      <LogoComponent
+      <Logo
         className={"size-24 place-self-center stroke-black stroke-[10px]"}
       />
       {/* doesn't seem like 400 px does much */}
@@ -81,9 +87,9 @@ export default function MessageBox({
               )}
               <ChatBubbleMessage
                 variant={msg.role === "assistant" ? "received" : "sent"}
-                className="p-2"
+                className="prose p-2 font-medium marker:text-inherit"
               >
-                {msg.content}
+                <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
               </ChatBubbleMessage>
             </ChatBubble>
           ))}

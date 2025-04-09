@@ -80,12 +80,6 @@ const ChatroomsPage = async ({
             Create Chatroom
           </button>
         </form>
-        <Link
-          href="/chatrooms/invite"
-          className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
-        >
-          Invite Users
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

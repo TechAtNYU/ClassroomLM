@@ -1,116 +1,114 @@
 "use client";
 import { useState } from "react";
 import {
+  ChatBubble,
+  ChatBubbleAvatar,
+  ChatBubbleMessage,
+} from "@shared/components/ui/chat/chat-bubble";
+import { ChatMessageList } from "@shared/components/ui/chat/chat-message-list";
+import { ChatInput } from "@shared/components/ui/chat/chat-input";
+import { Button } from "@/shared/components/ui/button";
+
+import {
   ChatClientWithSession,
   RagFlowMessage,
   RagFlowMessages,
   sendMessage,
 } from "@shared/lib/ragflow/chat/chat-client";
 import { toast } from "@shared/hooks/use-toast";
+import LogoComponent from "@/shared/components/Logo";
+import { SendIcon } from "lucide-react";
 
-function MessageBox(props: {
+interface MessageBoxProps {
   chatClient: ChatClientWithSession;
   messageHistory: RagFlowMessages | null;
-}) {
+}
+
+export default function MessageBox({
+  chatClient,
+  messageHistory,
+}: MessageBoxProps) {
   const [value, setValue] = useState("");
-
-  const [messages, setMessage] = useState<RagFlowMessages>(
-    props.messageHistory ? props.messageHistory : []
+  const [messages, setMessages] = useState<RagFlowMessages>(
+    messageHistory || []
   );
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function handle() {
-    const ownMessage = { role: "user", content: value } as RagFlowMessage;
+  async function handleSend() {
+    if (!value.trim()) return;
 
-    setMessage((oldArray) => [...oldArray, ownMessage]);
-
+    const userMessage: RagFlowMessage = { role: "user", content: value };
+    setMessages((prev) => [...prev, userMessage]);
     setValue("");
+    setIsLoading(true);
+    const response = await sendMessage(chatClient, value);
+    setIsLoading(false);
 
-    const messageResponse = await sendMessage(props.chatClient, value);
-
-    if (!messageResponse.ragflowCallSuccess) {
+    if (!response.ragflowCallSuccess) {
       toast({
         title: "Error sending message",
-        description: `Please try refreshing the page`,
+        description: "Please try refreshing the page",
         duration: 10000,
         variant: "destructive",
       });
       return;
     }
 
-    const messageData = {
+    const assistantMessage: RagFlowMessage = {
       role: "assistant",
-      content: messageResponse.response,
-    } as RagFlowMessage;
-
-    setMessage((oldArray) => [...oldArray, messageData]);
-    // console.log("response thingy2", messages);
+      content: response.response,
+    };
+    setMessages((prev) => [...prev, assistantMessage]);
   }
 
   return (
-    <div className="min-h-screen w-1/2 flex-col justify-self-center p-4 text-gray-800 dark:text-white">
-      <h1 className="mb-4 text-2xl font-bold">Chat:</h1>
-
-      <div className="flex-col rounded-t-lg bg-gray-100 p-3">
-        {messages.map((aMessage, idx) => (
-          <div
-            key={idx}
-            className={`my-2 max-w-md rounded-lg p-3 shadow-md ${
-              aMessage.role != "assistant"
-                ? "justify-self-end bg-green-200 hover:bg-green-300"
-                : "justify-self-start bg-blue-200 hover:bg-blue-300"
-            }`}
-          >
-            <p className="font-medium text-gray-800">{aMessage.content}</p>
-          </div>
-        ))}
+    <div className="flex h-[600px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
+      <LogoComponent
+        className={"size-24 place-self-center stroke-black stroke-[10px]"}
+      />
+      {/* doesn't seem like 400 px does much */}
+      <div className="h-[400px] flex-1 overflow-auto">
+        <ChatMessageList smooth>
+          {messages.map((msg, index) => (
+            <ChatBubble
+              key={index}
+              variant={msg.role === "assistant" ? "received" : "sent"}
+            >
+              {msg.role === "assistant" ? (
+                <ChatBubbleAvatar fallback="AI" />
+              ) : (
+                <ChatBubbleAvatar fallback="Me" />
+              )}
+              <ChatBubbleMessage
+                variant={msg.role === "assistant" ? "received" : "sent"}
+                className="p-2"
+              >
+                {msg.content}
+              </ChatBubbleMessage>
+            </ChatBubble>
+          ))}
+          {isLoading && (
+            <ChatBubble variant="received">
+              <ChatBubbleAvatar fallback="AI" />
+              <ChatBubbleMessage isLoading variant="received" />
+            </ChatBubble>
+          )}
+        </ChatMessageList>
       </div>
-      {/* <div className="justify-self-end"> */}
-      <div className="flex items-center rounded-b-lg bg-gray-200 px-4 py-2 dark:bg-gray-700">
-        <textarea
-          id="chat"
-          rows={1}
-          className="mx-2 block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          placeholder="Your message..."
+      <div className="relative mt-4">
+        <ChatInput
           value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
-        ></textarea>
-        <button
-          onClick={handle}
-          className="inline-flex cursor-pointer justify-center rounded-full p-2 text-blue-600 hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
-        >
-          <svg
-            className="h-5 w-5 rotate-90 rtl:-rotate-90"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 18 20"
-          >
-            <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-          </svg>
-          <span className="sr-only">Send message</span>
-        </button>
-
-        {/* <input
-          type="text"
-          placeholder="Type your message here..."
-          className="w-100 rounded-md border border-gray-300 p-2 dark:bg-gray-700 dark:text-white"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Type your message..."
         />
-
-        <button
-          className="ml-4 mt-2 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          onClick={handle}
+        <Button
+          onClick={handleSend}
+          size="default"
+          className="absolute right-2 top-1/2 -translate-y-1/2"
         >
-          Send
-      </button> */}
+          Send <SendIcon />
+        </Button>
       </div>
     </div>
   );
 }
-
-export default MessageBox;

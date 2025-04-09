@@ -246,7 +246,7 @@ const MessageArea = ({
           return (
             <ChatBubble key={message.id} variant={variant}>
               <ChatBubbleAvatar src={message.avatar_url!} fallback="AI" />
-              <ChatBubbleMessage>
+              <ChatBubbleMessage className="prose">
                 <ReactMarkdown>{cleanMessage(message.content)}</ReactMarkdown>
               </ChatBubbleMessage>
             </ChatBubble>

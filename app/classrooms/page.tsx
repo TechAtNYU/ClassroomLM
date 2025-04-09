@@ -26,7 +26,7 @@ import {
 } from "./clientUtils";
 
 import { useSearchParams } from "next/navigation";
-import { Edit, LogOut, MessageSquareMore, Share, Share2, Users } from "lucide-react";
+import { Edit, LogOut, MessageSquareMore, UserPlus, Users } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
 import { toast } from "sonner";
@@ -37,7 +37,9 @@ import {
   TabsContent,
 } from "@/shared/components/ui/tabs";
 import { Separator } from "@/shared/components/ui/separator";
-import { Badge, badgeVariants } from "@/shared/components/ui/badge";
+import InviteInfoDialog from "./_components/invite-dialog";
+import JoinDialog from "./_components/join-dialog";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 
 export default function ClassroomPage() {
   const userContext = useContext(UserContext);
@@ -82,37 +84,36 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     }
   }, [searchParams]);
 
-  const joinedClassSuccess = searchParams.get("join_success");
-  if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
-    const joinClassInfo = userAndClassData.classroomsData.find(
-      (x) => x.id === Number(joinedClassSuccess)
-    );
-    if (joinClassInfo) {
-    }
-  }
-
   useEffect(() => {
     const joinedClassSuccess = searchParams.get("join_success");
+    console.log(joinedClassSuccess);
     if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
       const joinClassInfo = userAndClassData.classroomsData.find(
         (x) => x.id === Number(joinedClassSuccess)
       );
+      if (!joinClassInfo) {
+        refreshClassrooms();
+        return;
+      }
       if (joinClassInfo) {
         // Join class doesn't need to refresh classroom data since we know its fresh
         // since it's coming from a redirect from a reoute
         // router.replace("/classroom", { scroll: false });
         // https://nextjs.org/blog/next-14-1#windowhistorypushstate-and-windowhistoryreplacestate
-        // const params = new URLSearchParams(searchParams.toString());
-        // params.set('sort', sortOrder);
-        toast.success(
-          <div>
-            Successfully joined classroom
-            <span className="font-bold"> {joinClassInfo.name}</span>!
-          </div>,
-          { duration: 10000 }
-        );
+
         if (typeof window !== "undefined") {
+          console.log("replacing and ", window.history.state, [
+            ...searchParams.entries(),
+          ]);
           window.history.replaceState(null, "", "/classrooms");
+
+          toast.success(
+            <div>
+              Successfully joined classroom
+              <span className="font-bold"> {joinClassInfo.name}</span>!
+            </div>,
+            { duration: 10000 }
+          );
         }
       }
     }
@@ -129,6 +130,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     //     refreshClassrooms
     //   );
     // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, userAndClassData.classroomsData]);
 
   //   const archiveClassSuccess = searchParams.get("archiveClassSuccess");
@@ -292,8 +294,10 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <CardHeader>
           <CardTitle animated className="flex justify-between">
             {classroom.name}
-            <Badge variant="default"><Share2/>{" "}Invite</Badge>
-
+            <InviteInfoDialog
+              classroomName={classroom.name ?? "Classroom"}
+              code={classroom.join_code ?? ""}
+            />
           </CardTitle>
           <CardDescription animated>
             <div className="flex flex-row gap-3">
@@ -387,11 +391,6 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
 
   return (
     <div className="p-4">
-      <SaveClassroomDialog
-        optimisticUpdateCallback={addOptimistic}
-        actionText="create"
-      />
-
       {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
       {/* ADMIN CLASSES */}
@@ -406,26 +405,42 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         defaultValue="enrolled"
         // className="w-[75vw] bg-"
       >
-        <TabsList className="grid w-full max-w-[20vw] grid-cols-2 rounded-full bg-inherit">
-          <TabsTrigger
-            className="flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
-            value="enrolled"
-            data-active={currentTab === "enrolled"}
-          >
-            Enrolled
-          </TabsTrigger>
-          <TabsTrigger
-            className="flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
-            value="admin"
-            data-active={currentTab === "admin"}
-          >
-            Admin
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between">
+          <TabsList className="grid w-[20vw] grid-cols-2 rounded-full bg-inherit">
+            <TabsTrigger
+              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+              value="enrolled"
+              data-active={currentTab === "enrolled"}
+            >
+              Enrolled
+            </TabsTrigger>
+            <TabsTrigger
+              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+              value="admin"
+              data-active={currentTab === "admin"}
+            >
+              Admin
+            </TabsTrigger>
+          </TabsList>
+          <div className="flex gap-3">
+            <JoinDialog />
+            <SaveClassroomDialog
+              optimisticUpdateCallback={addOptimistic}
+              actionText="create"
+              dialogTrigger={
+                <DialogTrigger asChild className="">
+                  <Button variant="outline" className="flex gap-2">
+                    <UserPlus /> Create Classroom
+                  </Button>
+                </DialogTrigger>
+              }
+            />
+          </div>
+        </div>
         <Separator className="my-4 mb-10" />
         <TabsContent value="admin">
           <div>
-            <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
               {adminClasses.map((classroom) => (
                 <ClassroomCard
                   key={classroom.id}
@@ -440,7 +455,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
           {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}
           {/* NON-ADMIN CLASSES */}
           <div>
-            <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
               {memberClasses.map((classroom) => (
                 <ClassroomCard
                   key={classroom.id}

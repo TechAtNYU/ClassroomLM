@@ -119,11 +119,10 @@ export default function UploadComponent({
       if (inputFile.current) {
         inputFile.current.value = "";
       }
-      if (toastResolve ) {
+      if (toastResolve) {
         (toastResolve as unknown as (value: unknown) => void)(null);
       }
-    }
-    else if(toastError){
+    } else if (toastError) {
       (toastError as unknown as (value: unknown) => void)(null);
     }
   }

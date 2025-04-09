@@ -17,14 +17,10 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SaveClassroomDialog({
-  // isDialogOpen,
-  // setIsDialogOpen,
   optimisticUpdateCallback,
   actionText,
   dialogTrigger,
 }: {
-  // isDialogOpen: boolean;
-  // setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
   optimisticUpdateCallback: (name: string) => Promise<unknown>;
   actionText: string;
   dialogTrigger?: ReactNode;

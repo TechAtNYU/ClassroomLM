@@ -29,7 +29,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(
         "flex flex-col space-y-1.5 p-6".concat(
           animated
-            ? "transition duration-200 group-hover/animated-card:translate-x-2"
+            ? " transition duration-200 group-hover/animated-card:translate-x-2"
             : ""
         ),
         className
@@ -47,7 +47,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(
         "text-2xl font-semibold leading-none tracking-tight".concat(
           animated
-            ? "transition duration-200 group-hover/animated-card:translate-x-2"
+            ? " transition duration-200 group-hover/animated-card:translate-x-2"
             : ""
         ),
         className
@@ -65,7 +65,7 @@ const CardDescription = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(
         "text-sm text-muted-foreground".concat(
           animated
-            ? "transition duration-200 group-hover/animated-card:translate-x-2"
+            ? " transition duration-200 group-hover/animated-card:translate-x-2"
             : ""
         ),
         className
@@ -83,7 +83,7 @@ const CardContent = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(
         "p-6 pt-0".concat(
           animated
-            ? "transition duration-200 group-hover/animated-card:translate-x-2"
+            ? " transition duration-200 group-hover/animated-card:translate-x-2"
             : ""
         ),
         className
@@ -101,7 +101,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(
         "flex items-center p-6 pt-0".concat(
           animated
-            ? "transition duration-200 group-hover/animated-card:translate-x-2"
+            ? " transition duration-200 group-hover/animated-card:translate-x-2"
             : ""
         ),
         className

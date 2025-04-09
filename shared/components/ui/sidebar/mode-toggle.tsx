@@ -15,7 +15,6 @@ import { TooltipUtil } from "@/app/classrooms/clientUtils";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
-  console.log(theme);
   return (
     // styled after sonner docs
     <div className="flex w-fit flex-row gap-2 rounded-xl border-2 border-sidebar-accent px-3 py-2 text-sidebar-accent">

@@ -26,7 +26,7 @@ import {
 } from "./clientUtils";
 
 import { useSearchParams } from "next/navigation";
-import { Edit, LogOut, MessageSquareMore, Users } from "lucide-react";
+import { Edit, LogOut, MessageSquareMore, Share, Share2, Users } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
 import { toast } from "sonner";
@@ -37,6 +37,7 @@ import {
   TabsContent,
 } from "@/shared/components/ui/tabs";
 import { Separator } from "@/shared/components/ui/separator";
+import { Badge, badgeVariants } from "@/shared/components/ui/badge";
 
 export default function ClassroomPage() {
   const userContext = useContext(UserContext);
@@ -287,9 +288,13 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     isAdmin: boolean;
   }) {
     return (
-      <Card className="w-1/5 min-w-[300px]" animated>
+      <Card className="w-auto min-w-fit" animated>
         <CardHeader>
-          <CardTitle animated>{classroom.name}</CardTitle>
+          <CardTitle animated className="flex justify-between">
+            {classroom.name}
+            <Badge variant="default"><Share2/>{" "}Invite</Badge>
+
+          </CardTitle>
           <CardDescription animated>
             <div className="flex flex-row gap-3">
               Join Code:{" "}
@@ -302,67 +307,63 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <CardContent>
           <div className="mt-5 aspect-video rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500" />
         </CardContent>
-        <CardFooter animated>
-          <TooltipUtil
-            trigger={
-              <Button
-                type="button"
-                variant={"ghost"}
-                size={"iconLg"}
-                asChild
-                // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-              >
-                <Link href={`/classrooms/${classroom.id}/chat`} passHref>
-                  <MessageSquareMore className="scale-[200%]" />{" "}
-                </Link>
-              </Button>
-            }
-            content={"Chat!"}
-          />
-
-          {isAdmin && (
+        <CardFooter animated className="m-0 justify-between pb-1 align-bottom">
+          <div className="">
             <TooltipUtil
               trigger={
-                <Button
-                  type="button"
-                  variant={"ghost"}
-                  size={"iconLg"}
-                  asChild
-                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                >
-                  <Link href={`/classrooms/${classroom.id}/manage`} passHref>
-                    <Edit className="scale-[200%]" />
+                <Button type="button" variant={"ghost"} size={"iconLg"} asChild>
+                  <Link href={`/classrooms/${classroom.id}/chat`} passHref>
+                    <MessageSquareMore className="scale-[200%]" />
                   </Link>
                 </Button>
               }
-              content={"Manage Classroom"}
+              content={"Chat!"}
             />
-          )}
 
-          {classroom.Classroom_Members &&
-            classroom.Classroom_Members.length > 0 && (
-              <MemberList
-                classroom={classroom}
-                enableDeletion={false}
-                triggerButton={
-                  <TooltipUtil
-                    trigger={
-                      <Button
-                        type="button"
-                        variant={"ghost"}
-                        size={"iconLg"}
-                        // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                      >
-                        <Users className="scale-[200%]" />
-                      </Button>
-                    }
-                    content={"View Members"}
-                    useSheetTrigger
-                  />
+            {isAdmin && (
+              <TooltipUtil
+                trigger={
+                  <Button
+                    type="button"
+                    variant={"ghost"}
+                    size={"iconLg"}
+                    asChild
+                    // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  >
+                    <Link href={`/classrooms/${classroom.id}/manage`} passHref>
+                      <Edit className="scale-[200%]" />
+                    </Link>
+                  </Button>
                 }
-                userId={userId}
+                content={"Manage Classroom"}
               />
             )}
+
+            {classroom.Classroom_Members &&
+              classroom.Classroom_Members.length > 0 && (
+                <MemberList
+                  classroom={classroom}
+                  enableDeletion={false}
+                  triggerButton={
+                    <TooltipUtil
+                      trigger={
+                        <Button
+                          type="button"
+                          variant={"ghost"}
+                          size={"iconLg"}
+                          // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                        >
+                          <Users className="scale-[200%]" />
+                        </Button>
+                      }
+                      content={"View Members"}
+                      useSheetTrigger
+                    />
+                  }
+                  userId={userId}
+                />
+              )}
+          </div>
           {!isAdmin && (
             <TooltipUtil
               trigger={
@@ -371,7 +372,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                   variant={"destructiveGhost"}
                   size={"iconLg"}
                   onClick={() => leaveOptimistic(classroom.id)}
-                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                  className="ml-auto"
                 >
                   <LogOut className="scale-[200%]" />
                 </Button>
@@ -385,10 +386,8 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
   }
 
   return (
-    <div className="">
+    <div className="p-4">
       <SaveClassroomDialog
-        // isDialogOpen={isDialogOpen}
-        // setIsDialogOpen={setIsDialogOpen}
         optimisticUpdateCallback={addOptimistic}
         actionText="create"
       />
@@ -396,7 +395,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
       {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
       {/* ADMIN CLASSES */}
-      <h1 className="mb-10 text-5xl font-medium">Classrooms</h1>
+      <h1 className="mb-10 text-5xl font-medium tracking-tight">Classrooms</h1>
 
       <Tabs
         value={currentTab}
@@ -426,7 +425,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <Separator className="my-4 mb-10" />
         <TabsContent value="admin">
           <div>
-            <div className="flex flex-wrap gap-4">
+            <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {adminClasses.map((classroom) => (
                 <ClassroomCard
                   key={classroom.id}
@@ -441,7 +440,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
           {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}
           {/* NON-ADMIN CLASSES */}
           <div>
-            <div className="flex flex-wrap justify-start gap-4">
+            <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {memberClasses.map((classroom) => (
                 <ClassroomCard
                   key={classroom.id}

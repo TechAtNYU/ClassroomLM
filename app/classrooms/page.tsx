@@ -76,7 +76,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     const tab = searchParams.get("tab");
     if (tab && (tab == "enrolled" || tab == "admin")) {
       setCurrentTab(tab);
-    }else{
+    } else {
       setCurrentTab("enrolled");
     }
   }, [searchParams]);
@@ -297,11 +297,10 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 <Skeleton className="h-5 w-5/12 self-center" />
               )}
             </div>
-            
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="aspect-video rounded-xl mt-5 bg-gradient-to-r from-sky-500 to-indigo-500" />
+          <div className="mt-5 aspect-video rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500" />
         </CardContent>
         <CardFooter animated>
           <TooltipUtil
@@ -386,24 +385,25 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
   }
 
   return (
-    <div 
-        className=""
-    >
+    <div className="">
       <SaveClassroomDialog
         // isDialogOpen={isDialogOpen}
         // setIsDialogOpen={setIsDialogOpen}
         optimisticUpdateCallback={addOptimistic}
         actionText="create"
       />
-      
+
       {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
       {/* ADMIN CLASSES */}
-      <h1 className="text-5xl font-medium mb-10">Classrooms</h1>
+      <h1 className="mb-10 text-5xl font-medium">Classrooms</h1>
 
       <Tabs
         value={currentTab}
-        onValueChange={(value) => {window.history.replaceState(null, "", `/classrooms?tab=${value}`); setCurrentTab(value)}}
+        onValueChange={(value) => {
+          window.history.replaceState(null, "", `/classrooms?tab=${value}`);
+          setCurrentTab(value);
+        }}
         defaultValue="enrolled"
         // className="w-[75vw] bg-"
       >
@@ -436,7 +436,6 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               ))}
             </div>
           </div>
-          
         </TabsContent>
         <TabsContent value="enrolled">
           {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}

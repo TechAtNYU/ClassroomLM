@@ -43,7 +43,7 @@ import { Skeleton } from "../skeleton";
 import { useContext } from "react";
 import { UserContext } from "@shared/lib/userContext/userContext";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
-import LogoComponent from "@shared/components/Logo";
+import Logo from "@shared/components/Logo";
 import Link from "next/link";
 
 // Menu items.
@@ -162,9 +162,9 @@ export function AppSidebar() {
   let classroomInfo: ClassroomWithMembers | undefined,
     isAdminOfActiveClass: boolean = false;
   if (activePageHierarchy?.classroomLanding) {
-    if (activePageHierarchy.classroomLanding.admin){
-      items.adminManage.isActive = true
-    }else{
+    if (activePageHierarchy.classroomLanding.admin) {
+      items.adminManage.isActive = true;
+    } else {
       items.enrolled.isActive = true;
     }
   } else if (activePageHierarchy?.activeClassroom) {
@@ -194,10 +194,10 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
                   {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
-                  <LogoComponent className="fill-sidebar-primary-foreground" />
+                  <Logo className="fill-sidebar-primary-foreground" />
                   {/* </div> */}
                 </div>
                 <div className="grid flex-1 text-left text-lg leading-tight">

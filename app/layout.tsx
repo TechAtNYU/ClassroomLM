@@ -69,7 +69,7 @@ export default async function RootLayout({
                     },
                   }}
                 />
-                <SidebarInset className="md:peer-data-[variant=inset]:mt-10 md:peer-data-[variant=inset]:mr-7">
+                <SidebarInset className="md:peer-data-[variant=inset]:mr-7 md:peer-data-[variant=inset]:mt-10">
                   <main>
                     <header className="flex h-16 shrink-0 items-center gap-2">
                       <div className="flex items-center gap-2 px-4">

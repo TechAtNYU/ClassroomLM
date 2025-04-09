@@ -39,9 +39,12 @@ export default function SaveClassroomDialog({
     // startTransition(async () => {
     const result = await optimisticUpdateCallback(newClassName);
     if (!result) {
-      toast.error(`Uh oh! Something went wrong when attempting to ${actionText.toLocaleLowerCase()} the classroom.`, {
-        description: `Please refresh and try again`,
-      });
+      toast.error(
+        `Uh oh! Something went wrong when attempting to ${actionText.toLocaleLowerCase()} the classroom.`,
+        {
+          description: `Please refresh and try again`,
+        }
+      );
       return;
     }
     toast.success(`${capitalize(actionText)}d classroom successfully!`);

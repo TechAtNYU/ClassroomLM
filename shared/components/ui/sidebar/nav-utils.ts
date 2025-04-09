@@ -22,7 +22,10 @@ type PageStructure =
   | undefined;
 
 // TODO: once structure is finalized, fix this
-export function getPageAspectsByPath(pathname: string, searchParams: ReadonlyURLSearchParams): PageStructure {
+export function getPageAspectsByPath(
+  pathname: string,
+  searchParams: ReadonlyURLSearchParams
+): PageStructure {
   if (pathname == "/") {
     return undefined;
   }
@@ -30,8 +33,8 @@ export function getPageAspectsByPath(pathname: string, searchParams: ReadonlyURL
   const split = pathname.split("/");
 
   if (pathname.includes("classroom") && split.length == 2) {
-    const tab = searchParams.get("tab")
-    if (tab && tab === "admin" ){
+    const tab = searchParams.get("tab");
+    if (tab && tab === "admin") {
       return { classroomLanding: { admin: true } };
     }
     return { classroomLanding: { enrolled: true } };

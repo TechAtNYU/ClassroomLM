@@ -9,14 +9,14 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
     try {
       await inviteMemberToClassroom(email, classroomId);
       setEmail("");
-      toast.success("Added Member Successfully",{
+      toast.success("Added Member Successfully", {
         description: `${email} was added to the class.`,
       });
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {
         toast.error(
-         "The user is already part of the classroom.",
+          "The user is already part of the classroom."
           // description: { email } + "was added to the class.",
         );
         // console.error(error.message);

@@ -15,30 +15,45 @@ import { TooltipUtil } from "@/app/classrooms/clientUtils";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
-  console.log(theme)
+  console.log(theme);
   return (
     // styled after sonner docs
     <div className="flex w-fit flex-row gap-2 rounded-xl border-2 border-sidebar-accent px-3 py-2 text-sidebar-accent">
       <TooltipUtil
-      trigger={<Sun
-        onClick={() => setTheme("light")}
-        data-active={theme === "light"}
-        className="text-sidebar-accent fill-side-bar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
-      />} content={"Light mode"} delayDuration={0}/>
+        trigger={
+          <Sun
+            onClick={() => setTheme("light")}
+            data-active={theme === "light"}
+            className="fill-side-bar-accent text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
+          />
+        }
+        content={"Light mode"}
+        delayDuration={0}
+      />
       {/* //className="h-[1.2rem] w-[1.2rem]" /> */}
       <TooltipUtil
-      trigger={<Moon
-        onClick={() => setTheme("dark")}
-        data-active={theme === "dark"}
-        className="text-sidebar-accent fill-side-bar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
-        />} content={"Dark"} delayDuration={0}/>
+        trigger={
+          <Moon
+            onClick={() => setTheme("dark")}
+            data-active={theme === "dark"}
+            className="fill-side-bar-accent text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
+          />
+        }
+        content={"Dark"}
+        delayDuration={0}
+      />
       {/* className="h-[1.2rem] w-[1.2rem]" /> */}
       <TooltipUtil
-      trigger={<Laptop
-        onClick={() => setTheme("system")}
-        data-active={theme === "system"}
-        className="text-sidebar-accent fill-side-bar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
-        />} content={"System"} delayDuration={0}/>
+        trigger={
+          <Laptop
+            onClick={() => setTheme("system")}
+            data-active={theme === "system"}
+            className="fill-side-bar-accent text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
+          />
+        }
+        content={"System"}
+        delayDuration={0}
+      />
     </div>
   );
   // return (

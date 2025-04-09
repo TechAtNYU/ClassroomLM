@@ -80,7 +80,7 @@ export default function ClassroomManagementButtons({
     startTransition(async () => {
       await deleteClassroom(classroomData.id);
     });
-    toast.success( "Successfully deleted classroom");
+    toast.success("Successfully deleted classroom");
     // const confirmation = window.confirm(
     //   "Are you sure? This action can't be undone."
     // );
@@ -105,7 +105,7 @@ export default function ClassroomManagementButtons({
     //   refreshClassrooms
     // );
     setArchiveStatusClassroom(classroomData.id, true);
-    toast.success( "Successfully archived classroom");
+    toast.success("Successfully archived classroom");
     router.push(`/classrooms`);
     // router.push(`/classroom?archive_success=${classroomData.id.toString()}`);
     refreshClassrooms();

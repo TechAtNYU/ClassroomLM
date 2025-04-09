@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@shared/components/ui/toaster";
 
 import {
   SidebarInset,
@@ -14,6 +13,7 @@ import UserContextProvider from "@shared/lib/userContext/userContext";
 import { getUserAndClassroomData } from "@shared/lib/userContext/contextFetcher";
 import { cn } from "@shared/lib/utils";
 import { Separator } from "@shared/components/ui/separator";
+import { Toaster } from "@/shared/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +39,7 @@ export default async function RootLayout({
   // TODO: change this?
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
         className={cn(
           `font-sans antialiased`,
@@ -51,13 +51,28 @@ export default async function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          // disableTransitionOnChange
+          disableTransitionOnChange //TODO: do we want this
         >
           {userData ? (
             <SidebarProvider>
               <UserContextProvider userAndClassDataInitial={userData}>
                 <AppSidebar />
-                <SidebarInset className="md:peer-data-[variant=inset]:mt-5">
+                <Toaster
+                  // richColors
+                  duration={40000}
+                  expand
+                  // richColors
+                  closeButton
+                  toastOptions={{
+                    classNames: {
+                      closeButton: "!absolute !left-[99%] !top-[2px]", //!bg-background !border-black !text-foreground",
+                    },
+                  }}
+                />
+                <SidebarInset
+                  // className="md:peer-data-[variant=inset]:mr-7 md:peer-data-[variant=inset]:mt-10 md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:border-accent  md:peer-data-[variant=inset]:border"
+                  className="md:peer-data-[variant=inset]:mr-7 md:peer-data-[variant=inset]:mt-10 md:peer-data-[variant=inset]:shadow-md"
+                >
                   <main>
                     <header className="flex h-16 shrink-0 items-center gap-2">
                       <div className="flex items-center gap-2 px-4">
@@ -70,10 +85,8 @@ export default async function RootLayout({
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                       {children}
-                      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
                     </div>
                   </main>
-                  <Toaster />
                 </SidebarInset>
               </UserContextProvider>
             </SidebarProvider>

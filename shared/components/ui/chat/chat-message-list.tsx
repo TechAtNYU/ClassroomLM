@@ -24,9 +24,9 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
     });
 
     return (
-      <div className="relative w-full h-full">
+      <div className="relative h-full w-full">
         <ScrollArea
-          className={`flex flex-col w-full h-full p-4 overflow-y-auto ${className}`}
+          className={`flex h-full w-full flex-col overflow-y-auto p-4 ${className}`}
           ref={scrollRef}
           onWheel={disableAutoScroll}
           onTouchMove={disableAutoScroll}
@@ -43,7 +43,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
             }}
             size="icon"
             variant="outline"
-            className="absolute bottom-2 left-1/2 transform -translate-x-1/2 inline-flex rounded-full shadow-md"
+            className="absolute bottom-2 left-1/2 inline-flex -translate-x-1/2 transform rounded-full shadow-md"
             aria-label="Scroll to bottom"
           >
             <ArrowDown className="h-4 w-4" />

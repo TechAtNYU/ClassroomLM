@@ -1,6 +1,10 @@
 "use client";
 import { useState } from "react";
-import {ChatBubble,ChatBubbleAvatar,ChatBubbleMessage} from "@shared/components/ui/chat/chat-bubble";
+import {
+  ChatBubble,
+  ChatBubbleAvatar,
+  ChatBubbleMessage,
+} from "@shared/components/ui/chat/chat-bubble";
 import { ChatMessageList } from "@shared/components/ui/chat/chat-message-list";
 import { ChatInput } from "@shared/components/ui/chat/chat-input";
 import { Button } from "@/shared/components/ui/button";
@@ -20,10 +24,15 @@ interface MessageBoxProps {
   messageHistory: RagFlowMessages | null;
 }
 
-export default function MessageBox({ chatClient, messageHistory }: MessageBoxProps) {
+export default function MessageBox({
+  chatClient,
+  messageHistory,
+}: MessageBoxProps) {
   const [value, setValue] = useState("");
-  const [messages, setMessages] = useState<RagFlowMessages>(messageHistory || []);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [messages, setMessages] = useState<RagFlowMessages>(
+    messageHistory || []
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSend() {
     if (!value.trim()) return;
@@ -53,10 +62,12 @@ export default function MessageBox({ chatClient, messageHistory }: MessageBoxPro
   }
 
   return (
-    <div className="w-11/12 place-self-center h-[600px] flex flex-col p-4 text-gray-800 dark:text-white border rounded shadow">
-      <LogoComponent className={"place-self-center size-24 stroke-black stroke-[10px]"}/>
+    <div className="flex h-[600px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
+      <LogoComponent
+        className={"size-24 place-self-center stroke-black stroke-[10px]"}
+      />
       {/* doesn't seem like 400 px does much */}
-      <div className="flex-1 h-[400px] overflow-auto">
+      <div className="h-[400px] flex-1 overflow-auto">
         <ChatMessageList smooth>
           {messages.map((msg, index) => (
             <ChatBubble
@@ -68,7 +79,10 @@ export default function MessageBox({ chatClient, messageHistory }: MessageBoxPro
               ) : (
                 <ChatBubbleAvatar fallback="Me" />
               )}
-              <ChatBubbleMessage variant={msg.role === "assistant" ? "received" : "sent"} className="p-2">
+              <ChatBubbleMessage
+                variant={msg.role === "assistant" ? "received" : "sent"}
+                className="p-2"
+              >
                 {msg.content}
               </ChatBubbleMessage>
             </ChatBubble>
@@ -90,10 +104,9 @@ export default function MessageBox({ chatClient, messageHistory }: MessageBoxPro
         <Button
           onClick={handleSend}
           size="default"
-          
           className="absolute right-2 top-1/2 -translate-y-1/2"
         >
-          Send <SendIcon/>
+          Send <SendIcon />
         </Button>
       </div>
     </div>

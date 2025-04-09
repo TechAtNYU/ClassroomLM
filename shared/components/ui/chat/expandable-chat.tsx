@@ -58,18 +58,18 @@ const ExpandableChat: React.FC<ExpandableChatProps> = ({
       <div
         ref={chatRef}
         className={cn(
-          "flex flex-col bg-background border sm:rounded-lg shadow-md overflow-hidden transition-all duration-250 ease-out sm:absolute sm:w-[90vw] sm:h-[80vh] fixed inset-0 w-full h-full sm:inset-auto",
+          "duration-250 fixed inset-0 flex h-full w-full flex-col overflow-hidden border bg-background shadow-md transition-all ease-out sm:absolute sm:inset-auto sm:h-[80vh] sm:w-[90vw] sm:rounded-lg",
           chatConfig.chatPositions[position],
           chatConfig.dimensions[size],
           isOpen ? chatConfig.states.open : chatConfig.states.closed,
-          className,
+          className
         )}
       >
         {children}
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-2 sm:hidden"
+          className="absolute right-2 top-2 sm:hidden"
           onClick={toggleChat}
         >
           <X className="h-4 w-4" />
@@ -91,7 +91,7 @@ const ExpandableChatHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   ...props
 }) => (
   <div
-    className={cn("flex items-center justify-between p-4 border-b", className)}
+    className={cn("flex items-center justify-between border-b p-4", className)}
     {...props}
   />
 );
@@ -130,8 +130,8 @@ const ExpandableChatToggle: React.FC<ExpandableChatToggleProps> = ({
     variant="default"
     onClick={toggleChat}
     className={cn(
-      "w-14 h-14 rounded-full shadow-md flex items-center justify-center hover:shadow-lg hover:shadow-black/30 transition-all duration-300",
-      className,
+      "flex h-14 w-14 items-center justify-center rounded-full shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-black/30",
+      className
     )}
     {...props}
   >

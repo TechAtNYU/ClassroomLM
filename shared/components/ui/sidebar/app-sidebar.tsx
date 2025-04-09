@@ -188,7 +188,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary p-0.5 text-sidebar-primary-foreground">
                   {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
                   {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
                   <Logo className="fill-sidebar-primary-foreground" />

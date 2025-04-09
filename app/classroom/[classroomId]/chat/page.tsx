@@ -164,7 +164,7 @@ export default async function ChatPage({
         {classroomInfo.name}
       </h2>
       <h1 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
-        <SpeechIcon className="self-center mb-8" /> Personal Assistant
+        <SpeechIcon className="mb-8 self-center" /> Personal Assistant
       </h1>
 
       <MessageBox

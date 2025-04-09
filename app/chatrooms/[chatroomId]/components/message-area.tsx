@@ -6,11 +6,11 @@ import { Skeleton } from "@shared/components/ui/skeleton";
 import { toast } from "@shared/hooks/use-toast";
 import { createClient } from "@shared/utils/supabase/client";
 import { Database, Tables } from "@shared/utils/supabase/database.types";
-// import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { askLLM } from "../../actions";
 import { createBrowserClient } from "@supabase/ssr";
+import config from "../../config";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -55,6 +55,7 @@ const MessageArea = ({
   );
   const [messageBoxValue, setMessageBoxValue] = useState("");
 
+  // add database changes to messages state
   useEffect(() => {
     const supabase = createBrowserClient<Database>(
       supabaseClientUrl,
@@ -77,10 +78,10 @@ const MessageArea = ({
         if (messageRaw.member_id === null) {
           const llmMessage: Message = {
             ...messageRaw,
-            user_id: "llm",
-            full_name: "AI Assistant",
+            user_id: config.llmId,
+            full_name: config.llmName,
             // TODO: We might need an avatar for assitant
-            avatar_url: "",
+            avatar_url: config.llmAvatar,
           };
           setMessages((prevMessages) => [...prevMessages, llmMessage]);
           return;
@@ -169,11 +170,12 @@ const MessageArea = ({
     const isAskCommand = content.startsWith("/ask ");
     if (isAskCommand) {
       content = content.substring(5).trim();
-      if (!content) {
-        console.log("/ask requires content after it!");
-        setMessageBoxValue("");
-        return null;
-      }
+    }
+
+    if (!content) {
+      console.log("Message should not be empty");
+      setMessageBoxValue("");
+      return null;
     }
 
     // Insert the message
@@ -185,6 +187,7 @@ const MessageArea = ({
         is_ask: isAskCommand,
       },
     ]);
+
     if (messageError) {
       toast({
         variant: "destructive",
@@ -214,8 +217,6 @@ const MessageArea = ({
       setChatClient(askResult.client);
     }
     setMessageBoxValue("");
-    //  // TODO: need to chagne this revalidate path
-    //  revalidatePath(`/chatrooms/${chatroomId}`);
   };
 
   return (
@@ -245,7 +246,7 @@ const MessageArea = ({
           </p>
         ) : (
           messages.map((message, index) => {
-            const isLLM = message.user_id === "llm";
+            const isLLM = message.user_id === config.llmId;
 
             return (
               <div

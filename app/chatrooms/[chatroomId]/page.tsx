@@ -65,7 +65,7 @@ const ChatroomPage = async ({
   );
 
   // If user is not in this chatroom redirect to /error
-  // TODO: We might need to think about where we should bring the user to
+  // TODO: We might need to create an chatroom unauthroized page
   if (!currentMember) {
     redirect("/error");
   }
@@ -124,7 +124,7 @@ const ChatroomPage = async ({
             <LeaveChatroomButton chatroomId={chatroomId} />
           )}
           <Link
-            href="/chatrooms"
+            href={`/classroom/${chatroom.classroom_id}/chatrooms`}
             className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
           >
             Back to Chatrooms

@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { askLLM } from "../../actions";
 import { createBrowserClient } from "@supabase/ssr";
+import config from "../../config";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -55,6 +56,7 @@ const MessageArea = ({
   );
   const [messageBoxValue, setMessageBoxValue] = useState("");
 
+  // add database changes to messages state
   useEffect(() => {
     const supabase = createBrowserClient<Database>(
       supabaseClientUrl,
@@ -77,10 +79,10 @@ const MessageArea = ({
         if (messageRaw.member_id === null) {
           const llmMessage: Message = {
             ...messageRaw,
-            user_id: "llm",
-            full_name: "AI Assistant",
+            user_id: config.llmId,
+            full_name: config.llmName,
             // TODO: We might need an avatar for assitant
-            avatar_url: "",
+            avatar_url: config.llmAvatar,
           };
           setMessages((prevMessages) => [...prevMessages, llmMessage]);
           return;
@@ -169,11 +171,12 @@ const MessageArea = ({
     const isAskCommand = content.startsWith("/ask ");
     if (isAskCommand) {
       content = content.substring(5).trim();
-      if (!content) {
-        console.log("/ask requires content after it!");
-        setMessageBoxValue("");
-        return null;
-      }
+    }
+
+    if (!content) {
+      console.log("Message should not be empty");
+      setMessageBoxValue("");
+      return null;
     }
 
     // Insert the message

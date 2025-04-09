@@ -10,9 +10,9 @@ import {
   uploadFile,
 } from "@shared/lib/ragflow/dataset-client";
 import { Input } from "@shared/components/ui/input";
-import { toast } from "@shared/hooks/use-toast";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { ScrollArea } from "@shared/components/ui/scroll-area";
+import { toast } from "sonner";
 
 type UploadedFile = {
   id: string;
@@ -78,6 +78,13 @@ export default function UploadComponent({
 
     setLoading(true);
 
+    let toastResolve = undefined;
+    let toastError = undefined;
+    const toastPromise = new Promise((res, rej) => {
+      toastResolve = res;
+      toastError = rej;
+    });
+
     const formData = new FormData();
     formData.append("file", file);
 
@@ -86,11 +93,16 @@ export default function UploadComponent({
     }
     const response = await uploadFile(datasetClient, formData);
 
-    toast({
-      title: "Upload started!",
-      description: `Document ${file.name} has uploaded and began parsing`,
-      duration: 10000,
+    toast.promise(toastPromise, {
+      loading: `Document ${file.name} has uploaded and began parsing`,
+      success: () => ({
+        message: `${file.name} successfully uploaded!`,
+      }),
+      error: () => ({
+        message: `Error while uploading ${file.name}`,
+      }),
     });
+
     setLoading(false);
 
     // if (!response || typeof response !== "object") {
@@ -107,10 +119,13 @@ export default function UploadComponent({
       if (inputFile.current) {
         inputFile.current.value = "";
       }
+      if (toastResolve ) {
+        (toastResolve as unknown as (value: unknown) => void)(null);
+      }
     }
-    // } else {
-    //   setErrorMessage(response.message || "Failed to upload file.");
-    // }
+    else if(toastError){
+      (toastError as unknown as (value: unknown) => void)(null);
+    }
   }
 
   return (

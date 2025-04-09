@@ -2,6 +2,7 @@ import * as React from "react";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import { useAutoScroll } from "@shared/components/ui/chat/hooks/useAutoScroll";
+import { ScrollArea } from "../scroll-area";
 
 interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
   smooth?: boolean;
@@ -24,15 +25,16 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
 
     return (
       <div className="relative w-full h-full">
-        <div
+        <ScrollArea
           className={`flex flex-col w-full h-full p-4 overflow-y-auto ${className}`}
           ref={scrollRef}
           onWheel={disableAutoScroll}
           onTouchMove={disableAutoScroll}
           {...props}
+          dir="ltr"
         >
           <div className="flex flex-col gap-6">{children}</div>
-        </div>
+        </ScrollArea>
 
         {!isAtBottom && (
           <Button

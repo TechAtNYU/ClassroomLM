@@ -12,6 +12,8 @@ import {
   sendMessage,
 } from "@shared/lib/ragflow/chat/chat-client";
 import { toast } from "@shared/hooks/use-toast";
+import LogoComponent from "@/shared/components/Logo";
+import { SendIcon } from "lucide-react";
 
 interface MessageBoxProps {
   chatClient: ChatClientWithSession;
@@ -51,10 +53,11 @@ export default function MessageBox({ chatClient, messageHistory }: MessageBoxPro
   }
 
   return (
-    <div className="w-1/2 h-[600px] flex flex-col p-4 text-gray-800 dark:text-white border rounded shadow">
-      <h1 className="mb-4 text-2xl font-bold text-center">Chat</h1>
+    <div className="w-11/12 place-self-center h-[600px] flex flex-col p-4 text-gray-800 dark:text-white border rounded shadow">
+      <LogoComponent className={"place-self-center size-24 stroke-black stroke-[10px]"}/>
+      {/* doesn't seem like 400 px does much */}
       <div className="flex-1 h-[400px] overflow-auto">
-        <ChatMessageList>
+        <ChatMessageList smooth>
           {messages.map((msg, index) => (
             <ChatBubble
               key={index}
@@ -65,7 +68,7 @@ export default function MessageBox({ chatClient, messageHistory }: MessageBoxPro
               ) : (
                 <ChatBubbleAvatar fallback="Me" />
               )}
-              <ChatBubbleMessage variant={msg.role === "assistant" ? "received" : "sent"}>
+              <ChatBubbleMessage variant={msg.role === "assistant" ? "received" : "sent"} className="p-2">
                 {msg.content}
               </ChatBubbleMessage>
             </ChatBubble>
@@ -86,11 +89,11 @@ export default function MessageBox({ chatClient, messageHistory }: MessageBoxPro
         />
         <Button
           onClick={handleSend}
-          size="icon"
+          size="default"
           
           className="absolute right-2 top-1/2 -translate-y-1/2"
         >
-          Send
+          Send <SendIcon/>
         </Button>
       </div>
     </div>

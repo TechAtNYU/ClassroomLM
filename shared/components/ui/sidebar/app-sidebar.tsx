@@ -43,7 +43,7 @@ import { Skeleton } from "../skeleton";
 import { useContext } from "react";
 import { UserContext } from "@shared/lib/userContext/userContext";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
-import LogoComponent from "@shared/components/Logo";
+import Logo from "@shared/components/Logo";
 
 // Menu items.
 // const items = [
@@ -191,7 +191,7 @@ export function AppSidebar() {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
                   {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
-                  <LogoComponent className="fill-sidebar-primary-foreground" />
+                  <Logo className="fill-sidebar-primary-foreground" />
                   {/* </div> */}
                 </div>
                 <div className="grid flex-1 text-left text-lg leading-tight">

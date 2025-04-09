@@ -9,7 +9,7 @@ import {
 } from "@shared/lib/ragflow/chat/chat-client";
 import { personalChatConfigTemplate } from "@shared/lib/ragflow/chat/chat-configs";
 import { Button } from "@shared/components/ui/button";
-import { Upload } from "lucide-react";
+import { SpeechIcon, Upload } from "lucide-react";
 
 export default async function ChatPage({
   params,
@@ -30,7 +30,7 @@ export default async function ChatPage({
   const { classroomId } = await params;
   const classroomIdNum = Number(classroomId);
   const user = userAndClassData.userData;
-  const username = user.user_metadata?.full_name ?? "User Name";
+  // const username = user.user_metadata?.full_name ?? "User Name";
 
   const classroomInfo = userAndClassData.classroomsData.find(
     (x) => x.id === classroomIdNum
@@ -150,7 +150,7 @@ export default async function ChatPage({
         <strong>Chat Assistant ID:</strong> {chatAssistantId} <br></br>
         <strong>Chat Session ID:</strong> {chatSessionId}
       </p> */}
-      <p>
+      {/* <p>
         <strong>Welcome to: </strong>
         {classroomInfo.name}, <strong>{username}</strong> <br />
         <strong>Ragflow Dataset ID:</strong> {datasetClient.client.datasetId}{" "}
@@ -159,7 +159,13 @@ export default async function ChatPage({
         <br />
         <strong>Chat Session ID:</strong>{" "}
         {(chatClient.client as ChatClientWithSession).sessionId}
-      </p>
+      </p> */}
+      <h2 className="text-3xl font-bold tracking-tight">
+        {classroomInfo.name}
+      </h2>
+      <h1 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+        <SpeechIcon className="self-center mb-8" /> Personal Assistant
+      </h1>
 
       <MessageBox
         chatClient={chatClient.client as ChatClientWithSession}

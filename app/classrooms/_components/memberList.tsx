@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@shared/components/ui/sheet";
-import { columns } from "./_components/columns";
+import { columns } from "./columns";
 import { DataTable } from "@shared/components/ui/data-table";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 import { Trash2, Users } from "lucide-react";
@@ -21,7 +21,7 @@ import {
 import { Button } from "@shared/components/ui/button";
 import { Tables } from "@shared/utils/supabase/database.types";
 import { Row } from "@tanstack/react-table";
-import { removeMember } from "./actions";
+import { removeMember } from "../actions";
 
 /**
  *

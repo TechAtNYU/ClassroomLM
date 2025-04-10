@@ -37,13 +37,14 @@ import {
   DropdownMenuItem,
 } from "@shared/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { getPageAspectsByPath } from "./nav-utils";
 import { Skeleton } from "../skeleton";
 import { useContext } from "react";
 import { UserContext } from "@shared/lib/userContext/userContext";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 import Logo from "@shared/components/Logo";
+import Link from "next/link";
 
 // Menu items.
 // const items = [
@@ -103,13 +104,13 @@ export function AppSidebar() {
   const items = {
     enrolled: {
       title: "Enrolled",
-      url: "/classroom",
+      url: "/classrooms",
       icon: BookText,
       isActive: false,
     },
     adminManage: {
       title: "Manage courses",
-      url: "/classroom",
+      url: "/classrooms?tab=admin",
       icon: UserRoundCog,
       isActive: false,
     },
@@ -140,7 +141,8 @@ export function AppSidebar() {
   };
 
   const pathname = usePathname();
-  const activePageHierarchy = getPageAspectsByPath(pathname);
+  const searchParams = useSearchParams();
+  const activePageHierarchy = getPageAspectsByPath(pathname, searchParams);
 
   const userContext = useContext(UserContext);
   if (!userContext) {
@@ -160,7 +162,11 @@ export function AppSidebar() {
   let classroomInfo: ClassroomWithMembers | undefined,
     isAdminOfActiveClass: boolean = false;
   if (activePageHierarchy?.classroomLanding) {
-    items.enrolled.isActive = true;
+    if (activePageHierarchy.classroomLanding.admin) {
+      items.adminManage.isActive = true;
+    } else {
+      items.enrolled.isActive = true;
+    }
   } else if (activePageHierarchy?.activeClassroom) {
     classroomInfo = userContext.userAndClassData.classroomsData.find(
       (x) => x.id === activePageHierarchy?.activeClassroom.id
@@ -187,8 +193,8 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary p-0.5 text-sidebar-primary-foreground">
+              <Link href="/">
+                <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
                   {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
                   <Logo className="fill-sidebar-primary-foreground" />
@@ -197,71 +203,28 @@ export function AppSidebar() {
                 <div className="grid flex-1 text-left text-lg leading-tight">
                   <span className="truncate font-semibold">ClassroomLM</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/**  <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <Collapsible
-                  defaultOpen
-                  className="group/collapsible"
-                  key={item.title}
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton isActive
-                        // asChild
-                        // style={{
-                        //   pointerEvents: item.url != "#" ? "auto" : "none",
-                        // }}
-                      >
-                         <a href={item.url == "/" ? "#" : item.url}> 
-                          {item.icon != null ? <item.icon /> : <span></span>}
-                          <span>{item.title}</span>
-                         </a> 
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent>
-                      {item.subItems.map((sub) => (
-                        <SidebarMenuSub
-                          key={sub.title}
-                          className="rounded-r-lg hover:bg-[#858fad]"
-                        >
-                          <SidebarMenuSubItem>
-                            <a href={sub.url}>
-                              <span>{sub.title}</span>
-                            </a>
-                          </SidebarMenuSubItem>
-                        </SidebarMenuSub>
-                      ))}
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
         <SidebarGroup>
-          <SidebarGroupLabel>Classes</SidebarGroupLabel>
-          <SidebarMenu>
+          <SidebarGroupLabel className="text-lg">Classes</SidebarGroupLabel>
+          <SidebarMenu className="space-y-1">
             {Object.entries(items).map(([itemKey, item]) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
+                  className="text-lg"
                   tooltip={item.title}
                   isActive={item.isActive}
                   asChild
-                  // size="lg"
+                  size="default"
                 >
-                  <a href={item.url}>
+                  <Link href={item.url}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
                 {activePageHierarchy?.activeClassroom &&
                   classroomInfo &&
@@ -274,6 +237,7 @@ export function AppSidebar() {
                         <SidebarMenuSubButton
                           // size="md"
                           isActive
+                          className="mt-2 text-lg"
                         >
                           {/* {item.icon && <item.icon />} */}
                           <span>{classroomInfo.name}</span>
@@ -300,10 +264,10 @@ export function AppSidebar() {
                     isActive={item.isActive}
                     asChild
                   >
-                    <a href={item.suffixURL}>
+                    <Link href={item.suffixURL}>
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

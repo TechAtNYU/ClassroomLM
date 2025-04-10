@@ -104,6 +104,7 @@ export default function MessageBox({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Type your message..."
+          onEnter={handleSend}
         />
         <Button
           onClick={handleSend}

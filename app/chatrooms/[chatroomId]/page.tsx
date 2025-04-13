@@ -124,7 +124,7 @@ const ChatroomPage = async ({
             <LeaveChatroomButton chatroomId={chatroomId} />
           )}
           <Link
-            href={`/classroom/${chatroom.classroom_id}/chatrooms`}
+            href={`/classrooms/${chatroom.classroom_id}/chatrooms`}
             className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
           >
             Back to Chatrooms

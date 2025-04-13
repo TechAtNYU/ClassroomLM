@@ -1,6 +1,7 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { createServiceClient } from "@shared/utils/supabase/service-server";
 import { getCurrentUserIdServer } from "@shared/lib/supabase/shared";
+import { redirect } from "next/navigation";
 
 export async function GET(
   request: NextRequest,
@@ -21,7 +22,7 @@ export async function GET(
 
   if (classroomError || !classroom) {
     console.error("Classroom not found:", classroomError);
-    return NextResponse.redirect(new URL("/classrooms", request.url));
+    return redirect("/classrooms");
   }
 
   //ensures that the user is authenticated
@@ -30,7 +31,7 @@ export async function GET(
   if (!userId) {
     console.error("User is not authenticated");
     //login page
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirect("/classrooms/login");
   }
 
   //if the person is already in there, should be redirect to just classroom
@@ -43,11 +44,11 @@ export async function GET(
 
   if (memberError) {
     console.error("Error checking membership:", memberError);
-    return NextResponse.redirect(new URL("/classrooms", request.url));
+    return redirect("/classrooms");
   }
 
   if (existingMember) {
-    return NextResponse.redirect(new URL("/classrooms", request.url));
+    return redirect("/classrooms");
   }
 
   const { error: insertError } = await supabase
@@ -59,11 +60,12 @@ export async function GET(
 
   if (insertError) {
     console.error("Error adding member to classroom:", insertError);
-    return NextResponse.redirect(new URL("/classrooms", request.url));
+    return redirect("/classrooms");
   }
   //redirect to classroom
 
-  const success_url = new URL("/classrooms", request.url);
-  success_url.searchParams.append("join_success", classroom.id.toString());
-  return NextResponse.redirect(success_url);
+  const successParams = new URLSearchParams({
+    join_success: classroom.id.toString(),
+  });
+  return redirect(`/classrooms?${successParams.toString()}`);
 }

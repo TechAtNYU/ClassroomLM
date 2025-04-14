@@ -1,9 +1,9 @@
 import { createClient } from "@shared/utils/supabase/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import config from "../config";
+import InviteChatroomButton from "./components/invite-chatroom-dialog";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
 import MessageArea from "./components/message-area";
-import config from "../config";
 
 const ChatroomPage = async ({
   params,
@@ -49,6 +49,8 @@ const ChatroomPage = async ({
     console.error("Error fetching chatroom members:", chatroomMembersError);
     throw new Error("Error fetching chatroom members");
   }
+
+  const classroomId = chatroomMembers[0].Classroom_Members.classroom_id;
 
   // Get current Chatroom Member
   const {
@@ -118,17 +120,19 @@ const ChatroomPage = async ({
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b p-4">
-        <h1 className="text-xl font-bold">{chatroom.name}</h1>
+        <h1 className="text-3xl font-medium tracking-tight">{chatroom.name}</h1>
         <div className="flex gap-2">
           {currentUser !== chatroom.creater_user_id && (
-            <LeaveChatroomButton chatroomId={chatroomId} />
+            <LeaveChatroomButton
+              chatroomId={chatroomId}
+              classroomId={classroomId}
+            />
           )}
-          <Link
-            href={`/classrooms/${chatroom.classroom_id}/chatrooms`}
-            className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
-          >
-            Back to Chatrooms
-          </Link>
+          <InviteChatroomButton
+            chatroomId={chatroomId}
+            classroomId={classroomId}
+            chatroomMembers={chatroomMembers}
+          />
         </div>
       </div>
 

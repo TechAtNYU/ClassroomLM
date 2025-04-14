@@ -155,7 +155,10 @@ export const deleteChatroom = async (
 //   revalidatePath(`/chatrooms/${chatroomId}`);
 // };
 
-export const inviteUserToChatroom = async (formData: FormData) => {
+export const inviteUserToChatroom = async (
+  chatroomId: string,
+  inviteeEmail: string
+) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -164,9 +167,6 @@ export const inviteUserToChatroom = async (formData: FormData) => {
   if (!user) {
     throw new Error("No authenticated user found");
   }
-
-  const chatroomId = formData.get("chatroom_id") as string;
-  const inviteeEmail = formData.get("email") as string;
 
   if (!chatroomId || !inviteeEmail) {
     throw new Error("Chatroom ID and invitee email are required");

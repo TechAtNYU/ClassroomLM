@@ -1,7 +1,4 @@
-import {
-  createDatasetClient,
-  downloadDocument,
-} from "@/shared/lib/ragflow/dataset-client";
+import { downloadDocument } from "@/shared/lib/ragflow/dataset-client";
 import { notFound } from "next/navigation";
 
 export default async function PreviewPage({
@@ -11,23 +8,13 @@ export default async function PreviewPage({
 }) {
   const { documentId, datasetId } = await searchParams;
 
-  // Create a temporary client to access the dataset
-  const datasetClientResult = await createDatasetClient(
-    {
-      classroomId: "0", // We don't actually need a real classroom ID for preview
-      classroomName: "preview",
-    },
-    datasetId
-  );
+  const { ragflowCallSuccess, content, mimeType, fileName } =
+    await downloadDocument(datasetId, documentId);
 
-  if (!datasetClientResult) {
+  if (!ragflowCallSuccess) {
     notFound();
   }
 
-  const { content, mimeType, fileName } = await downloadDocument(
-    datasetClientResult.client,
-    documentId
-  );
   console.log(`Rendering file: ${fileName}, with MIME type: ${mimeType}`);
 
   if (mimeType === "application/octet-stream") {

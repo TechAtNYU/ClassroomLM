@@ -411,7 +411,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
       {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
       {/* ADMIN CLASSES */}
-      <h1 className="mb-10 text-5xl font-medium tracking-tight">Classrooms</h1>
+      <h1 className="mb-10 text-3xl font-medium tracking-tight">Classrooms</h1>
 
       <Tabs
         value={currentTab}

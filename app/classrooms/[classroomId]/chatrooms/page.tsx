@@ -1,6 +1,16 @@
+import { Button } from "@/shared/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
 import { Separator } from "@/shared/components/ui/separator";
 import { createClient } from "@shared/utils/supabase/server";
+import { DoorClosed } from "lucide-react";
 import Link from "next/link";
+import { TooltipUtil } from "../../clientUtils";
 import { CreateChatroomDialog } from "./_components/create-chatroom-dialog";
 
 const ChatroomsPage = async ({
@@ -25,22 +35,25 @@ const ChatroomsPage = async ({
     .from("Chatroom_Members")
     .select(
       `
-    *,
-    Chatrooms(
-      id,
-      name,
-      classroom_id,
-      creater_user_id,
-      Classrooms(
-        name,
-        chatroom_assistant_id
-      )
-    ),
-    Classroom_Members!inner(
-      user_id,
-      classroom_id
-    )
-  `
+        *,
+        Chatrooms(
+          id,
+          name,
+          classroom_id,
+          creater_user_id,
+          Classrooms(
+            name,
+            chatroom_assistant_id
+          ),
+          Users (
+            full_name
+          )
+        ),
+        Classroom_Members!inner(
+          user_id,
+          classroom_id
+        )
+      `
     )
     .eq("Classroom_Members.user_id", currentUser)
     .eq("Classroom_Members.classroom_id", parseInt(classroomId, 10))
@@ -63,20 +76,44 @@ const ChatroomsPage = async ({
 
       <Separator />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {chatrooms.length > 0 ? (
           chatrooms.map((chatroom) => (
-            <div key={chatroom.id} className="rounded-lg border p-4 shadow-sm">
-              <h2 className="mb-2 text-xl font-semibold">{chatroom.name}</h2>
-              <div className="mt-4 flex gap-2">
-                <Link
-                  href={`/chatrooms/${chatroom.id}`}
-                  className="inline-block rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-                >
-                  Enter Chatroom
-                </Link>
-              </div>
-            </div>
+            <Card key={chatroom.id} className="w-auto min-w-fit" animated>
+              <CardHeader className="pb-0">
+                <CardTitle animated className="flex justify-between">
+                  {chatroom.name}
+                </CardTitle>
+                <CardDescription animated>
+                  <div className="flex flex-row gap-3">
+                    Owner: {chatroom.Users.full_name}
+                  </div>
+                </CardDescription>
+              </CardHeader>
+              <CardFooter
+                animated
+                className="m-0 justify-between pb-5 pt-2 align-bottom"
+              >
+                <TooltipUtil
+                  trigger={
+                    <Button
+                      type="button"
+                      variant={"ghost"}
+                      size={"iconLg"}
+                      asChild
+                    >
+                      <Link href={`/chatrooms/${chatroom.id}`} passHref>
+                        <DoorClosed className="scale-[200%]" />
+                      </Link>
+                    </Button>
+                  }
+                  content={"Enter"}
+                />
+                {/* {chatroomMembers && chatroomMembers.length > 0 && ( */}
+                {/**/}
+                {/* )} */}
+              </CardFooter>
+            </Card>
           ))
         ) : (
           <div className="col-span-full py-8 text-center">

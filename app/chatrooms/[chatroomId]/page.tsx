@@ -1,6 +1,7 @@
 import { createClient } from "@shared/utils/supabase/server";
 import { redirect } from "next/navigation";
 import config from "../config";
+import DeleteChatroomButton from "./components/delete-chatroom-button";
 import InviteChatroomButton from "./components/invite-chatroom-dialog";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
 import MessageArea from "./components/message-area";
@@ -39,6 +40,9 @@ const ChatroomPage = async ({
           full_name,
           avatar_url
         )
+      ),
+      Chatrooms (
+        ragflow_session_id
       )
     `
     )
@@ -51,6 +55,7 @@ const ChatroomPage = async ({
   }
 
   const classroomId = chatroomMembers[0].Classroom_Members.classroom_id;
+  const assistantId = chatroomMembers[0].Chatrooms.ragflow_session_id;
 
   // Get current Chatroom Member
   const {
@@ -122,10 +127,16 @@ const ChatroomPage = async ({
       <div className="flex items-center justify-between border-b p-4">
         <h1 className="text-3xl font-medium tracking-tight">{chatroom.name}</h1>
         <div className="flex gap-2">
-          {currentUser !== chatroom.creater_user_id && (
+          {currentUser !== chatroom.creater_user_id ? (
             <LeaveChatroomButton
               chatroomId={chatroomId}
               classroomId={classroomId}
+            />
+          ) : (
+            <DeleteChatroomButton
+              chatroomId={chatroomId}
+              classroomId={classroomId}
+              assistantId={assistantId}
             />
           )}
           <InviteChatroomButton

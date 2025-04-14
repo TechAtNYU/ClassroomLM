@@ -251,12 +251,12 @@ const MessageArea = ({
               <ChatBubbleAvatar src={message.avatar_url!} fallback="AI" />
               <div className="flex flex-col">
                 <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  {message.full_name || "Unknown"} • {formattedTime}
                   {message.is_ask && (
                     <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                       Ask LLM
                     </span>
                   )}
-                  {message.full_name || "Unknown"} • {formattedTime}
                 </div>
                 <ChatBubbleMessage className="prose">
                   <ReactMarkdown>{cleanMessage(message.content)}</ReactMarkdown>

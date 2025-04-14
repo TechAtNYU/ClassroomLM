@@ -23,7 +23,7 @@ export const createChatroom = async (formData: FormData) => {
     return; // {supabaseCallSuccess: false}
   }
 
-  const name = (formData.get("name") as string) || "New Chatroom";
+  const name = (formData.get("chatroom-name") as string) || "New Chatroom";
   const classroom_id = parseInt(formData.get("classroom_id") as string);
 
   // Create a new chatroom
@@ -77,7 +77,6 @@ export const createChatroom = async (formData: FormData) => {
 
 export const deleteChatroom = async (
   chatroomId: string,
-  classroomId: number,
   chatroomAssistantId: string | null
 ) => {
   const supabase = await createClient();

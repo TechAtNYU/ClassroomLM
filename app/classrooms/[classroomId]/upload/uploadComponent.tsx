@@ -30,6 +30,8 @@ type UploadedFile = {
   status: string;
 };
 
+const ACTION_MAX_SIZE_BYTES = 10 * 1_000_000; // this is set in next.config.ts
+
 export default function UploadComponent({
   classroomId,
   classroomName,
@@ -75,6 +77,14 @@ export default function UploadComponent({
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      if (e.target.files[0].size > ACTION_MAX_SIZE_BYTES) {
+        toast.error("File size too big!");
+        e.preventDefault();
+        if (inputFile.current) {
+          inputFile.current.value = "";
+        }
+        return;
+      }
       setFile(e.target.files[0]);
     }
   };

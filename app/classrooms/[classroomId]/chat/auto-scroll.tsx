@@ -2,24 +2,19 @@
 
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { useEffect, useRef } from "react";
+import { RagFlowMessage } from "@shared/lib/ragflow/chat/chat-client";
 
 interface AutoScrollProps {
   children: React.ReactNode;
-  isMessageSent: boolean;
+  messages: RagFlowMessage[];
 }
 
-export default function AutoScroll({
-  children,
-  isMessageSent,
-}: AutoScrollProps) {
+export default function AutoScroll({ children, messages }: AutoScrollProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isMessageSent) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [isMessageSent]);
-
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);

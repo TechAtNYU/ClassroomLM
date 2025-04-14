@@ -26,7 +26,14 @@ import {
 } from "./clientUtils";
 
 import { useSearchParams } from "next/navigation";
-import { Edit, LogOut, MessageSquareMore, UserPlus, Users } from "lucide-react";
+import {
+  Edit,
+  LogOut,
+  MessageSquareMore,
+  UserPlus,
+  Users,
+  FileText,
+} from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
 import { toast } from "sonner";
@@ -367,6 +374,17 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                   userId={userId}
                 />
               )}
+
+            <TooltipUtil
+              trigger={
+                <Button type="button" variant={"ghost"} size={"iconLg"} asChild>
+                  <Link href={`/classrooms/${classroom.id}/augment`} passHref>
+                    <FileText className="scale-[200%]" />
+                  </Link>
+                </Button>
+              }
+              content={"Augment Notes"}
+            />
           </div>
           {!isAdmin && (
             <TooltipUtil

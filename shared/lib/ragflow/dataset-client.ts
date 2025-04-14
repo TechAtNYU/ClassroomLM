@@ -444,6 +444,60 @@ export async function deleteDataset(
   return { ragflowCallSuccess: true };
 }
 
+/**
+ * Downloads a document from a specified dataset
+ * @param client Previously created client with `createDatasetClient()`
+ * @param documentId The ID of the document to download
+ * @returns The text content of the document. Verify credibility with ragflowCallSuccess
+ */
+export async function downloadDocument(
+  client: DatasetClient,
+  documentId: string
+): Promise<
+  DatasetReadOnlyOperationResult & {
+    ragflowCallSuccess: boolean;
+    content: ArrayBufferLike;
+    mimeType: string;
+    fileName: string;
+  }
+> {
+  const response = await fetch(
+    `${getDatasetUrl()}/${client.datasetId}/documents/${documentId}`,
+    {
+      method: "GET",
+      headers: getHeader(),
+    }
+  );
+
+  if (!response.ok) {
+    console.error(
+      "Download document, Ragflow fetch error:",
+      await response.text()
+    );
+    return {
+      ragflowCallSuccess: false,
+      content: new ArrayBuffer(0),
+      mimeType: "application/octet-stream",
+      fileName: "",
+    };
+  }
+
+  const contentDisposition = response.headers.get("Content-Disposition");
+  const fileName =
+    contentDisposition?.split("filename=")[1]?.replace(/"/g, "") || "";
+  console.log("Download document, extracted filename:", fileName);
+  const mimeType = await getMimeTypeFromFileName(fileName);
+  console.log("Download document, MIME type:", mimeType);
+  const content = await response.arrayBuffer();
+
+  return {
+    ragflowCallSuccess: true,
+    content,
+    mimeType,
+    fileName,
+  };
+}
+
 function stripTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
 }
@@ -458,3 +512,47 @@ const getHeader = () => {
     Authorization: `Bearer ${process.env.RAGFLOW_API_KEY!}`, // definite assertion (!) since verified in "constructor"
   };
 };
+
+// Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
+//
+// Markdown files aren't in the source above since there was no official MIME type until March 2016:
+// https://stackoverflow.com/questions/10701983/what-is-the-mime-type-for-markdown
+export async function getMimeTypeFromFileName(
+  fileName: string
+): Promise<string> {
+  const extension = fileName.split(".").at(-1)?.toLowerCase();
+  switch (extension) {
+    case "pdf":
+      return "application/pdf";
+    case "doc":
+      return "application/msword";
+    case "docx":
+      return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    case "txt":
+      return "text/plain";
+    case "md":
+      return "text/markdown; charset=utf-8";
+    case "csv":
+      return "text/csv";
+    case "xlsx":
+      return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    case "xls":
+      return "application/vnd.ms-excel";
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "png":
+      return "image/png";
+    case "tif":
+    case "tiff":
+      return "image/tiff";
+    case "gif":
+      return "image/gif";
+    case "ppt":
+      return "application/vnd.ms-powerpoint";
+    case "pptx":
+      return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    default:
+      return "application/octet-stream";
+  }
+}

@@ -46,7 +46,7 @@ export default function UploadComponent({
   const inputFile = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    async function fetchFiles() {
+    const fetchFiles = async () => {
       let clientToUse = datasetClient;
       if (!clientToUse) {
         const result = await createDatasetClient({
@@ -66,20 +66,19 @@ export default function UploadComponent({
         return;
       }
       setUploadedFiles(retrieveResult.files);
-    }
+    };
 
     fetchFiles();
     const interval = setInterval(fetchFiles, 5000);
     return () => clearInterval(interval);
   }, [classroomId, classroomName, datasetClient]);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) setFile(selectedFile);
   };
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) return;
 
@@ -128,7 +127,7 @@ export default function UploadComponent({
     } else if (toastError) {
       (toastError as unknown as (value: unknown) => void)(null);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">

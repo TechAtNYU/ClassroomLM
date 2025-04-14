@@ -1,8 +1,7 @@
-import { notFound } from "next/navigation";
 import { createClient } from "@shared/utils/supabase/server";
+import { notFound } from "next/navigation";
 
-import UploadComponent from "./uploadComponent";
-import { isUserAdminForClassroom } from "./actions";
+import AugmentComponent from "./AugmentNotes";
 
 export default async function UploadPage({
   params,
@@ -10,12 +9,7 @@ export default async function UploadPage({
   params: Promise<{ classroomId: string }>;
 }) {
   const { classroomId } = await params;
-  const isAdmin = await isUserAdminForClassroom(Number(classroomId));
-  if (!isAdmin) {
-    notFound();
-  }
 
-  // #TODO: move this out to general supabase place
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("Classrooms")
@@ -31,7 +25,7 @@ export default async function UploadPage({
   return (
     <>
       <h1>Classroom: {data.name}</h1>
-      <UploadComponent classroomId={classroomId} classroomName={data.name} />
+      <AugmentComponent classroomId={classroomId} />
     </>
   );
 }

@@ -131,7 +131,7 @@ export function InviteChatroomButton({
 
   return (
     <>
-      <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
+      <Button size="sm" onClick={() => setOpen(true)}>
         <Plus />
         Invite
       </Button>

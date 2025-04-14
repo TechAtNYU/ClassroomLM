@@ -33,9 +33,10 @@ export default function LeaveChatroomButton({
 
   return (
     <Button
+      size={"sm"}
       onClick={handleLeave}
       disabled={isLeaving}
-      variant={"destructiveGhost"}
+      variant={"destructive"}
     >
       <DoorOpen />
       {isLeaving ? "Leaving..." : "Leave"}

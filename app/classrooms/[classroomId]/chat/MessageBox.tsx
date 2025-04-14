@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import Logo from "@/shared/components/Logo";
 import { SendIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import AutoScroll from "./auto-scroll";
 
 interface MessageBoxProps {
   chatClient: ChatClientWithSession;
@@ -34,9 +35,9 @@ export default function MessageBox({
     messageHistory || []
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isMessageSent, setIsMessageSent] = useState(false); // New state for tracking message sent
 
   function cleanMessage(content: string): string {
-    // Remove any reference patterns like ##number$$
     return content.replace(/##\d+\$\$/g, "").trim();
   }
 
@@ -47,6 +48,7 @@ export default function MessageBox({
     setMessages((prev) => [...prev, userMessage]);
     setValue("");
     setIsLoading(true);
+    setIsMessageSent(true);
     const response = await sendMessage(chatClient, value);
     setIsLoading(false);
 
@@ -63,6 +65,8 @@ export default function MessageBox({
       content: response.response,
     };
     setMessages((prev) => [...prev, assistantMessage]);
+
+    setIsMessageSent(false);
   }
 
   return (
@@ -70,8 +74,8 @@ export default function MessageBox({
       <Logo
         className={"size-24 place-self-center stroke-black stroke-[10px]"}
       />
-      {/* doesn't seem like 400 px does much */}
-      <div className="h-[400px] flex-1 overflow-auto">
+
+      <AutoScroll isMessageSent={isMessageSent}>
         <ChatMessageList smooth>
           {messages.map((msg, index) => (
             <ChatBubble
@@ -98,7 +102,8 @@ export default function MessageBox({
             </ChatBubble>
           )}
         </ChatMessageList>
-      </div>
+      </AutoScroll>
+
       <div className="relative mt-4">
         <ChatInput
           value={value}

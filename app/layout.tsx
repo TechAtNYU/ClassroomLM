@@ -60,7 +60,7 @@ export default async function RootLayout({
                 <Toaster
                   // richColors
                   duration={40000}
-                  expand
+                  // expand
                   // richColors
                   closeButton
                   toastOptions={{

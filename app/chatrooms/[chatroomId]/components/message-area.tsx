@@ -239,12 +239,24 @@ const MessageArea = ({
               ? "sent"
               : "received";
 
+          // Format the timestamp
+          const messageTime = new Date(message.created_at);
+          const formattedTime = messageTime.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
           return (
             <ChatBubble key={message.id} variant={variant}>
               <ChatBubbleAvatar src={message.avatar_url!} fallback="AI" />
-              <ChatBubbleMessage className="prose">
-                <ReactMarkdown>{cleanMessage(message.content)}</ReactMarkdown>
-              </ChatBubbleMessage>
+              <div className="flex flex-col">
+                <div className="mb-1 text-xs font-medium text-muted-foreground">
+                  {message.full_name || "Unknown"} • {formattedTime}
+                </div>
+                <ChatBubbleMessage className="prose">
+                  <ReactMarkdown>{cleanMessage(message.content)}</ReactMarkdown>
+                </ChatBubbleMessage>
+              </div>
             </ChatBubble>
           );
         })}

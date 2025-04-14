@@ -8,7 +8,6 @@ import {
 import { ChatMessageList } from "@shared/components/ui/chat/chat-message-list";
 import { ChatInput } from "@shared/components/ui/chat/chat-input";
 import { Button } from "@/shared/components/ui/button";
-
 import {
   ChatClientWithSession,
   RagFlowMessage,
@@ -35,7 +34,6 @@ export default function MessageBox({
     messageHistory || []
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [isMessageSent, setIsMessageSent] = useState(false); // New state for tracking message sent
 
   function cleanMessage(content: string): string {
     return content.replace(/##\d+\$\$/g, "").trim();
@@ -48,7 +46,6 @@ export default function MessageBox({
     setMessages((prev) => [...prev, userMessage]);
     setValue("");
     setIsLoading(true);
-    setIsMessageSent(true);
     const response = await sendMessage(chatClient, value);
     setIsLoading(false);
 
@@ -65,8 +62,6 @@ export default function MessageBox({
       content: response.response,
     };
     setMessages((prev) => [...prev, assistantMessage]);
-
-    setIsMessageSent(false);
   }
 
   return (
@@ -75,7 +70,7 @@ export default function MessageBox({
         className={"size-24 place-self-center stroke-black stroke-[10px]"}
       />
 
-      <AutoScroll isMessageSent={isMessageSent}>
+      <AutoScroll messages={messages}>
         <ChatMessageList smooth>
           {messages.map((msg, index) => (
             <ChatBubble

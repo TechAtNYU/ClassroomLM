@@ -48,7 +48,7 @@ export default function UploadComponent({
   const inputFile = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    async function fetchFiles() {
+    const fetchFiles = async () => {
       let clientToUse = datasetClient;
       if (!clientToUse) {
         const result = await createDatasetClient({
@@ -68,7 +68,7 @@ export default function UploadComponent({
         return;
       }
       setUploadedFiles(retrieveResult.files);
-    }
+    };
 
     fetchFiles();
     const interval = setInterval(fetchFiles, 5000);
@@ -76,20 +76,22 @@ export default function UploadComponent({
   }, [classroomId, classroomName, datasetClient]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      if (e.target.files[0].size > ACTION_MAX_SIZE_BYTES) {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.size > ACTION_MAX_SIZE_BYTES) {
         toast.error("File size too big!");
         e.preventDefault();
         if (inputFile.current) {
           inputFile.current.value = "";
         }
         return;
+      } else {
+        setFile(selectedFile);
       }
-      setFile(e.target.files[0]);
     }
   };
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file) return;
 
@@ -138,7 +140,7 @@ export default function UploadComponent({
     } else if (toastError) {
       (toastError as unknown as (value: unknown) => void)(null);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">

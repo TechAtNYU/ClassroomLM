@@ -67,7 +67,7 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}) {
     setScrollState(() => ({
       isAtBottom: atBottom,
       // Re-enable auto-scroll if at the bottom
-      autoScrollEnabled: true//atBottom ? true : prev.autoScrollEnabled,
+      autoScrollEnabled: true, //atBottom ? true : prev.autoScrollEnabled,
     }));
   }, [checkIsAtBottom]);
 
@@ -120,7 +120,7 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}) {
       userHasScrolled.current = true;
       setScrollState((prev) => ({
         ...prev,
-        autoScrollEnabled: true//false,
+        autoScrollEnabled: true, //false,
       }));
     }
   }, [checkIsAtBottom]);

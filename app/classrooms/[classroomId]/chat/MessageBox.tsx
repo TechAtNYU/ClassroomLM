@@ -65,17 +65,17 @@ export default function MessageBox({
   }
 
   return (
-    <div className="flex h-[600px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
+    <div className="flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
       <Logo
-        className={"size-24 place-self-center stroke-black stroke-[10px]"}
+        className={"size-[4vmin] place-self-center stroke-black stroke-[10px]"}
       />
-
-      <AutoScroll messages={messages}>
+      <div className="flex-1 overflow-auto">
         <ChatMessageList smooth>
           {messages.map((msg, index) => (
             <ChatBubble
               key={index}
               variant={msg.role === "assistant" ? "received" : "sent"}
+              className="max-w-[80%]"
             >
               {msg.role === "assistant" ? (
                 <ChatBubbleAvatar fallback="AI" />
@@ -97,20 +97,16 @@ export default function MessageBox({
             </ChatBubble>
           )}
         </ChatMessageList>
-      </AutoScroll>
-
-      <div className="relative mt-4">
+      </div>
+      <div className="flex w-full items-center justify-between gap-2 rounded-lg border bg-background p-1">
         <ChatInput
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Type your message..."
           onEnter={handleSend}
+          className="focus-visible:ringof min-h-10 resize-none border-0 bg-background shadow-none focus-visible:ring-0"
         />
-        <Button
-          onClick={handleSend}
-          size="default"
-          className="absolute right-2 top-1/2 -translate-y-1/2"
-        >
+        <Button onClick={handleSend} size="sm" className="ml-auto mr-3">
           Send <SendIcon />
         </Button>
       </div>

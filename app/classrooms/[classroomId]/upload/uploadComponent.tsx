@@ -205,7 +205,8 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
                   target="_blank"
                   className="font-medium hover:underline"
                 >
-                  {file.name}<SquareArrowOutUpRight className="inline scale-75"/>
+                  {file.name}
+                  <SquareArrowOutUpRight className="inline scale-75" />
                 </Link>
                 <p className="text-sm text-muted-foreground">
                   {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}

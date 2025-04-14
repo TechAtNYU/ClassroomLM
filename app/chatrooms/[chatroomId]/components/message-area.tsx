@@ -212,7 +212,7 @@ const MessageArea = ({
       const askResult = await askLLM(classroomInfo, chatroomId, chatClient);
       if (!askResult.clientCreationSuccess) {
         if (!askResult.failedBecauseEmptyDataset) {
-          // TODO: ask result has more detailed error differntiations if we want to tell the user
+          // TODO: ask result has more detailed error differentiations if we want to tell the user
           toast.error("Error sending communicating with LLM", {
             description: "Please refresh and try again",
           });

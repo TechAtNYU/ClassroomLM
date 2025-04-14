@@ -15,10 +15,7 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
     } catch (error: unknown) {
       //type unknown for typescript lint
       if (error instanceof Error) {
-        toast.error(
-          "The user is already part of the classroom."
-          // description: { email } + "was added to the class.",
-        );
+        toast.error("The user is already part of the classroom.");
         // console.error(error.message);
       } else {
         console.error("Error Occured");

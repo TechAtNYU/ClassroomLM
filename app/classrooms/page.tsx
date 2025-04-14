@@ -26,7 +26,14 @@ import {
 } from "./clientUtils";
 
 import { useSearchParams } from "next/navigation";
-import { Edit, LogOut, MessageSquareMore, UserPlus, Users } from "lucide-react";
+import {
+  Edit,
+  LogOut,
+  MessageSquareMore,
+  MessagesSquareIcon,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
 import { toast } from "sonner";
@@ -322,6 +329,16 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 </Button>
               }
               content={"Chat!"}
+            />
+            <TooltipUtil
+              trigger={
+                <Button type="button" variant={"ghost"} size={"iconLg"} asChild>
+                  <Link href={`/classrooms/${classroom.id}/chatrooms`} passHref>
+                    <MessagesSquareIcon className="scale-[200%]" />
+                  </Link>
+                </Button>
+              }
+              content={"Chatrooms"}
             />
 
             {isAdmin && (

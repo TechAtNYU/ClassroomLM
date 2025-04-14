@@ -277,9 +277,9 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="flex-col items-end">
-          <ModeToggle />
-        </div>
+        {/* <div className="flex-col items-end"> */}
+        <ModeToggle />
+        {/* </div> */}
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

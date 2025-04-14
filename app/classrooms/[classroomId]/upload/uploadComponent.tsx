@@ -20,6 +20,7 @@ import {
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { ScrollArea } from "@shared/components/ui/scroll-area";
 import { toast } from "sonner";
+import { SquareArrowOutUpRight } from "lucide-react";
 
 type UploadedFile = {
   id: string;
@@ -204,7 +205,7 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
                   target="_blank"
                   className="font-medium hover:underline"
                 >
-                  {file.name}
+                  {file.name}<SquareArrowOutUpRight className="inline scale-75"/>
                 </Link>
                 <p className="text-sm text-muted-foreground">
                   {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}

@@ -290,9 +290,9 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     isAdmin: boolean;
   }) {
     return (
-      <Card className="w-auto min-w-fit" animated>
-        <CardHeader>
-          <CardTitle animated className="flex justify-between">
+      <Card className="w-auto min-w-fit flex-col flex" animated>
+        <CardHeader className="flex-grow flex flex-col">
+          <CardTitle animated className="flex justify-between flex-grow">
             {classroom.name}
             <InviteInfoDialog
               classroomName={classroom.name ?? "Classroom"}
@@ -301,8 +301,8 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
           </CardTitle>
           <CardDescription animated>
             <div className="flex flex-row gap-3">
-              Join Code:{" "}
-              {classroom.join_code || (
+              Created:{" "}
+              {new Date(classroom.created_at).toLocaleDateString("en-US",{month:"long",day:"numeric", year:"numeric"}) || (
                 <Skeleton className="h-5 w-5/12 self-center" />
               )}
             </div>
@@ -405,24 +405,24 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         defaultValue="enrolled"
         // className="w-[75vw] bg-"
       >
-        <div className="flex justify-between">
-          <TabsList className="grid w-[20vw] grid-cols-2 rounded-full bg-inherit">
+        <div className="flex flex-row justify-between max-[650px]:flex-col gap-10">
+          <TabsList className="flex flex-row items-center bg-inherit justify-start max-[340px]:flex-col max-w-full w-full">
             <TabsTrigger
-              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-7 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
               value="enrolled"
               data-active={currentTab === "enrolled"}
             >
               Enrolled
             </TabsTrigger>
             <TabsTrigger
-              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-7 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
               value="admin"
               data-active={currentTab === "admin"}
             >
               Admin
             </TabsTrigger>
           </TabsList>
-          <div className="flex gap-3">
+          <div className="flex gap-3 max-[650px]:flex-col">
             <JoinDialog />
             <SaveClassroomDialog
               optimisticUpdateCallback={addOptimistic}

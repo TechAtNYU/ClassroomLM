@@ -124,8 +124,9 @@ export function InviteChatroomButton({
       setSelectedUsers([]);
       toast.success("Successfully invited user(s) to chatroom");
     } catch (error) {
-      console.error("Error inviting users:", error);
-      toast.error("Error inviting user(s)");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   };
 

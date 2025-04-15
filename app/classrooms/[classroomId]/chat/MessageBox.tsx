@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import Logo from "@/shared/components/Logo";
 import { SendIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import AutoScroll from "./auto-scroll";
 
 interface MessageBoxProps {
   chatClient: ChatClientWithSession;
@@ -36,7 +35,7 @@ export default function MessageBox({
   const [isLoading, setIsLoading] = useState(false);
 
   function cleanMessage(content: string): string {
-    return content.replace(/##\d+\$\$/g, "").trim();
+    return content.replace(/\s##\d+\$\$/g, "").trim();
   }
 
   async function handleSend() {
@@ -65,12 +64,14 @@ export default function MessageBox({
   }
 
   return (
-    <div className="flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
+    <div className="flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
       <Logo
-        className={"size-[4vmin] place-self-center stroke-black stroke-[10px]"}
+        className={
+          "size-[6vmin] h-fit min-w-10 place-self-center stroke-black stroke-[10px]"
+        }
       />
       <div className="flex-1 overflow-auto">
-        <ChatMessageList smooth>
+        <ChatMessageList smooth className="max-[500px]:px-0">
           {messages.map((msg, index) => (
             <ChatBubble
               key={index}

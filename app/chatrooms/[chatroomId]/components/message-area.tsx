@@ -305,7 +305,7 @@ const MessageArea = ({
                     )}
                   </div>
                   <ChatBubbleMessage
-                    className="prose w-fit p-2 font-medium marker:text-inherit !whitespace-normal"
+                    className="prose w-fit !whitespace-normal p-2 font-medium marker:text-inherit"
                     variant={variant}
                   >
                     <ReactMarkdown>
@@ -355,7 +355,7 @@ function isDifferentDay(date1: Date, date2: Date) {
 
 function AIFullNameFormatted(name: string) {
   return (
-    <span className="inline-flex items-center text-xs font-medium text-purple-500  dark:text-purple-200">
+    <span className="inline-flex items-center text-xs font-medium text-purple-500 dark:text-purple-200">
       {name}
     </span>
   );

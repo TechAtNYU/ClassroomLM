@@ -106,7 +106,6 @@ export default async function ChatPage({
     return <h1>Server error! </h1>; //TODO fixthis
   }
 
-  
   return (
     // <div className="p-4 max-[500px]:px-0">
     <div>

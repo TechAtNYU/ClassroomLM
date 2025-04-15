@@ -706,14 +706,14 @@ export async function sendMessage(
     return {
       ragflowCallSuccess: false,
       response: null,
-      responseTimeSeconds: null
+      responseTimeSeconds: null,
     };
   }
 
   return {
     ragflowCallSuccess: true,
     response: chatJsonData.data.answer,
-    responseTimeSeconds: chatJsonData.data.created_at
+    responseTimeSeconds: chatJsonData.data.created_at,
   };
 }
 

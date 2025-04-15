@@ -60,7 +60,7 @@ export default function MessageBox({
     const assistantMessage: RagFlowMessage = {
       role: "assistant",
       content: response.response,
-      created_at: response.responseTimeSeconds
+      created_at: response.responseTimeSeconds,
     };
     setMessages((prev) => [...prev, assistantMessage]);
   }
@@ -86,13 +86,16 @@ export default function MessageBox({
                 <ChatBubbleAvatar fallback="Me" />
               )}
               <div className="flex flex-col">
-                <span className="mx-2">{msg?.created_at && getTimeDate(msg.created_at) && getTimeDate(msg.created_at)}</span>
-              
-                
+                <span className="mx-2">
+                  {msg?.created_at &&
+                    getTimeDate(msg.created_at) &&
+                    getTimeDate(msg.created_at)}
+                </span>
+
                 <ChatBubbleMessage
                   variant={msg.role === "assistant" ? "received" : "sent"}
-                  className="prose w-fit p-2 font-medium marker:text-inherit !whitespace-normal"
-                  >
+                  className="prose w-fit !whitespace-normal p-2 font-medium marker:text-inherit"
+                >
                   <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
                 </ChatBubbleMessage>
               </div>

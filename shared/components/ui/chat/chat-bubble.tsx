@@ -84,9 +84,12 @@ const ChatBubbleAvatar: React.FC<ChatBubbleAvatarProps> = ({
 
 const AIAvatar = () => {
   return (
-    <ChatBubbleAvatar fallback="AI" svg={<GraduationCap className="translate-x-1"/>}/>
+    <ChatBubbleAvatar
+      fallback="AI"
+      svg={<GraduationCap className="translate-x-1" />}
+    />
   );
-}
+};
 
 // ChatBubbleMessage
 const chatBubbleMessageVariants = cva("p-4", {
@@ -216,5 +219,5 @@ export {
   chatBubbleMessageVariants,
   ChatBubbleAction,
   ChatBubbleActionWrapper,
-  AIAvatar
+  AIAvatar,
 };

@@ -86,68 +86,71 @@ export default {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
       typography: {
-        DEFAULT: { // this is for prose class
-          css: { // from here https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#adding-custom-color-themes
-            '--tw-prose-body': 'inherit',
-            '--tw-prose-headings': 'inherit',
-            '--tw-prose-lead': 'inherit',
-            '--tw-prose-links': 'inherit',
-            '--tw-prose-bold': 'inherit',
-            '--tw-prose-counters': 'inherit',
-            '--tw-prose-bullets': 'inherit',
-            '--tw-prose-hr': 'inherit',
-            '--tw-prose-quotes': 'inherit',
-            '--tw-prose-quote-borders': 'inherit',
-            '--tw-prose-captions': 'inherit',
-            '--tw-prose-code': 'inherit',
-            '--tw-prose-pre-code': 'inherit',
-            '--tw-prose-pre-bg': 'inherit',
-            '--tw-prose-th-borders': 'inherit',
-            '--tw-prose-td-borders': 'inherit',
-            '--tw-prose-invert-body': 'inherit',
-            '--tw-prose-invert-headings': 'inherit',
-            '--tw-prose-invert-lead': 'inherit',
-            '--tw-prose-invert-links': 'inherit',
-            '--tw-prose-invert-bold': 'inherit',
-            '--tw-prose-invert-counters': 'inherit',
-            '--tw-prose-invert-bullets': 'inherit',
-            '--tw-prose-invert-hr': 'inherit',
-            '--tw-prose-invert-quotes': 'inherit',
-            '--tw-prose-invert-quote-borders': 'inherit',
-            '--tw-prose-invert-captions': 'inherit',
-            '--tw-prose-invert-code': 'inherit',
-            '--tw-prose-invert-pre-code': 'inherit',
-            '--tw-prose-invert-pre-bg': 'inherit',
-            '--tw-prose-invert-th-borders': 'inherit',
-            '--tw-prose-invert-td-borders': 'inherit',
-            h1:{
+        DEFAULT: {
+          // this is for prose class
+          css: {
+            // from here https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#adding-custom-color-themes
+            "--tw-prose-body": "inherit",
+            "--tw-prose-headings": "inherit",
+            "--tw-prose-lead": "inherit",
+            "--tw-prose-links": "inherit",
+            "--tw-prose-bold": "inherit",
+            "--tw-prose-counters": "inherit",
+            "--tw-prose-bullets": "inherit",
+            "--tw-prose-hr": "inherit",
+            "--tw-prose-quotes": "inherit",
+            "--tw-prose-quote-borders": "inherit",
+            "--tw-prose-captions": "inherit",
+            "--tw-prose-code": "inherit",
+            "--tw-prose-pre-code": "inherit",
+            "--tw-prose-pre-bg": "inherit",
+            "--tw-prose-th-borders": "inherit",
+            "--tw-prose-td-borders": "inherit",
+            "--tw-prose-invert-body": "inherit",
+            "--tw-prose-invert-headings": "inherit",
+            "--tw-prose-invert-lead": "inherit",
+            "--tw-prose-invert-links": "inherit",
+            "--tw-prose-invert-bold": "inherit",
+            "--tw-prose-invert-counters": "inherit",
+            "--tw-prose-invert-bullets": "inherit",
+            "--tw-prose-invert-hr": "inherit",
+            "--tw-prose-invert-quotes": "inherit",
+            "--tw-prose-invert-quote-borders": "inherit",
+            "--tw-prose-invert-captions": "inherit",
+            "--tw-prose-invert-code": "inherit",
+            "--tw-prose-invert-pre-code": "inherit",
+            "--tw-prose-invert-pre-bg": "inherit",
+            "--tw-prose-invert-th-borders": "inherit",
+            "--tw-prose-invert-td-borders": "inherit",
+            h1: {
               // marginTop:'1.5em',
               // marginBottom:'0.75em'
             },
-            h2:{
-              marginTop:'1.25em',
-              marginBottom:'0.75em'
+            h2: {
+              marginTop: "1.25em",
+              marginBottom: "0.75em",
             },
             p: {
-              marginTop: '0.75em', // key can be in camelCase...
-              marginBottom: '0.75em', // key can be in camelCase...
+              marginTop: "0.75em", // key can be in camelCase...
+              marginBottom: "0.75em", // key can be in camelCase...
             },
-            ul:{
-              marginTop: '0.05em'
+            ul: {
+              marginTop: "0.05em",
             },
-            'code::before': { // https://github.com/orgs/remarkjs/discussions/674#discussioncomment-5387785
-              content: '&nbsp',
+            "code::before": {
+              // https://github.com/orgs/remarkjs/discussions/674#discussioncomment-5387785
+              content: "&nbsp",
             },
-            'code::after': {
-              content: '&nbsp',
+            "code::after": {
+              content: "&nbsp",
             },
-            hr:{
-              marginTop:'1.5em',
-              marginBottom:'1.5em'
-            }
+            hr: {
+              marginTop: "1.5em",
+              marginBottom: "1.5em",
+            },
           },
         },
-      }
+      },
     },
   },
   plugins: [tailwindcssAnimate, tailwindTypography],

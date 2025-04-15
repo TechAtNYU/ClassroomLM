@@ -23,7 +23,7 @@ export const createChatroom = async (formData: FormData) => {
     return; // {supabaseCallSuccess: false}
   }
 
-  const name = (formData.get("name") as string) || "New Chatroom";
+  const name = (formData.get("chatroom-name") as string) || "New Chatroom";
   const classroom_id = parseInt(formData.get("classroom_id") as string);
 
   // Create a new chatroom
@@ -77,7 +77,6 @@ export const createChatroom = async (formData: FormData) => {
 
 export const deleteChatroom = async (
   chatroomId: string,
-  classroomId: number,
   chatroomAssistantId: string | null
 ) => {
   const supabase = await createClient();
@@ -155,7 +154,10 @@ export const deleteChatroom = async (
 //   revalidatePath(`/chatrooms/${chatroomId}`);
 // };
 
-export const inviteUserToChatroom = async (formData: FormData) => {
+export const inviteUserToChatroom = async (
+  chatroomId: string,
+  inviteeEmail: string
+) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -164,9 +166,6 @@ export const inviteUserToChatroom = async (formData: FormData) => {
   if (!user) {
     throw new Error("No authenticated user found");
   }
-
-  const chatroomId = formData.get("chatroom_id") as string;
-  const inviteeEmail = formData.get("email") as string;
 
   if (!chatroomId || !inviteeEmail) {
     throw new Error("Chatroom ID and invitee email are required");

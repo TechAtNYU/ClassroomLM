@@ -1,8 +1,11 @@
 import { createClient } from "@shared/utils/supabase/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import config from "../config";
+import DeleteChatroomButton from "./components/delete-chatroom-button";
+import InviteChatroomButton from "./components/invite-chatroom-dialog";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
 import MessageArea from "./components/message-area";
+import { Users } from "lucide-react";
 
 const ChatroomPage = async ({
   params,
@@ -38,6 +41,9 @@ const ChatroomPage = async ({
           full_name,
           avatar_url
         )
+      ),
+      Chatrooms (
+        ragflow_session_id
       )
     `
     )
@@ -48,6 +54,9 @@ const ChatroomPage = async ({
     console.error("Error fetching chatroom members:", chatroomMembersError);
     throw new Error("Error fetching chatroom members");
   }
+
+  const classroomId = chatroomMembers[0].Classroom_Members.classroom_id;
+  const assistantId = chatroomMembers[0].Chatrooms.ragflow_session_id;
 
   // Get current Chatroom Member
   const {
@@ -63,9 +72,10 @@ const ChatroomPage = async ({
     (member) => member.Classroom_Members.user_id === currentUser
   );
 
-  // If user is not in this chatroom redirect to /chatrooms
+  // If user is not in this chatroom redirect to /error
+  // TODO: We might need to create an chatroom unauthroized page
   if (!currentMember) {
-    redirect("/chatrooms");
+    redirect("/error");
   }
 
   // Get messages
@@ -95,17 +105,19 @@ const ChatroomPage = async ({
     throw new Error("Error fetching messages");
   }
 
+  // serialize llm messages
   const messages = messageRaw
     ? messageRaw.map((message) => {
         const { Chatroom_Members, ...newMessage } = message;
         return {
-          // HACK: llm response has member_id set to null and there is special user_id and full_name reserved for LLM
-          user_id: Chatroom_Members?.Classroom_Members.Users.id ?? "llm",
+          // HACK: llm response has member_id set to null and special user_id and full_name reserved for LLM
+          user_id: Chatroom_Members?.Classroom_Members.Users.id ?? config.llmId,
           full_name:
             Chatroom_Members?.Classroom_Members.Users.full_name ??
-            "AI Assistant",
+            config.llmName,
           avatar_url:
-            Chatroom_Members?.Classroom_Members.Users.avatar_url ?? "",
+            Chatroom_Members?.Classroom_Members.Users.avatar_url ??
+            config.llmAvatar,
           ...newMessage,
         };
       })
@@ -114,17 +126,30 @@ const ChatroomPage = async ({
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b p-4">
-        <h1 className="text-xl font-bold">{chatroom.name}</h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{chatroom.name}</h1>
+          <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+            <Users className="self-center" /> Collaborative Chatroom
+          </h2>
+        </div>
         <div className="flex gap-2">
-          {currentUser !== chatroom.creater_user_id && (
-            <LeaveChatroomButton chatroomId={chatroomId} />
+          {currentUser !== chatroom.creater_user_id ? (
+            <LeaveChatroomButton
+              chatroomId={chatroomId}
+              classroomId={classroomId}
+            />
+          ) : (
+            <DeleteChatroomButton
+              chatroomId={chatroomId}
+              classroomId={classroomId}
+              assistantId={assistantId}
+            />
           )}
-          <Link
-            href="/chatrooms"
-            className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
-          >
-            Back to Chatrooms
-          </Link>
+          <InviteChatroomButton
+            chatroomId={chatroomId}
+            classroomId={classroomId}
+            chatroomMembers={chatroomMembers}
+          />
         </div>
       </div>
 

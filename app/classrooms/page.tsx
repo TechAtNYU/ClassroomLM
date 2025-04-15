@@ -30,6 +30,7 @@ import {
   Edit,
   LogOut,
   MessageSquareMore,
+  MessagesSquareIcon,
   UserPlus,
   Users,
   FileText,
@@ -330,6 +331,16 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               }
               content={"Chat!"}
             />
+            <TooltipUtil
+              trigger={
+                <Button type="button" variant={"ghost"} size={"iconLg"} asChild>
+                  <Link href={`/classrooms/${classroom.id}/chatrooms`} passHref>
+                    <MessagesSquareIcon className="scale-[200%]" />
+                  </Link>
+                </Button>
+              }
+              content={"Chatrooms"}
+            />
 
             {isAdmin && (
               <TooltipUtil
@@ -412,7 +423,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
       {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
       <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
       {/* ADMIN CLASSES */}
-      <h1 className="mb-10 text-5xl font-medium tracking-tight">Classrooms</h1>
+      <h1 className="mb-10 text-3xl font-medium tracking-tight">Classrooms</h1>
 
       <Tabs
         value={currentTab}

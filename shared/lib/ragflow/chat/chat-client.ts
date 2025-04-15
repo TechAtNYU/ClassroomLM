@@ -59,6 +59,7 @@ export type ChatClientWithSession = ChatBaseClient & {
 export type RagFlowMessage = {
   content: string;
   role: "assistant" | "user";
+  created_at?: number;
 };
 
 export type RagFlowMessages = RagFlowMessage[];
@@ -670,10 +671,12 @@ export async function sendMessage(
   | (ChatReadOnlyOperationResult & {
       ragflowCallSuccess: true;
       response: string;
+      responseTimeSeconds: number;
     })
   | {
       ragflowCallSuccess: false;
       response: null;
+      responseTimeSeconds: null;
     }
 > {
   const params = {
@@ -703,12 +706,14 @@ export async function sendMessage(
     return {
       ragflowCallSuccess: false,
       response: null,
+      responseTimeSeconds: null,
     };
   }
 
   return {
     ragflowCallSuccess: true,
     response: chatJsonData.data.answer,
+    responseTimeSeconds: chatJsonData.data.created_at,
   };
 }
 

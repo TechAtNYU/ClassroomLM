@@ -1,8 +1,8 @@
 import * as React from "react";
-import { ArrowDown } from "lucide-react";
-import { Button } from "@shared/components/ui/button";
-import { useAutoScroll } from "@shared/components/ui/chat/hooks/useAutoScroll";
 import { ScrollArea } from "../scroll-area";
+import { useAutoScroll } from "./hooks/useAutoScroll";
+import { Button } from "../button";
+import { ArrowDown } from "lucide-react";
 
 interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
   smooth?: boolean;

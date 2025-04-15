@@ -8,6 +8,7 @@ import {
 } from "@shared/components/ui/avatar";
 import MessageLoading from "./message-loading";
 import { Button, ButtonProps } from "../button";
+import { GraduationCap } from "lucide-react";
 
 // ChatBubble
 const chatBubbleVariant = cva(
@@ -62,18 +63,30 @@ interface ChatBubbleAvatarProps {
   src?: string;
   fallback?: string;
   className?: string;
+  svg?: React.ReactNode;
 }
 
 const ChatBubbleAvatar: React.FC<ChatBubbleAvatarProps> = ({
   src,
   fallback,
   className,
+  svg,
 }) => (
   <Avatar className={className}>
-    <AvatarImage src={src} alt="Avatar" />
-    <AvatarFallback>{fallback}</AvatarFallback>
+    {svg ?? (
+      <>
+        <AvatarImage src={src} alt="Avatar" />
+        <AvatarFallback>{fallback}</AvatarFallback>
+      </>
+    )}
   </Avatar>
 );
+
+const AIAvatar = () => {
+  return (
+    <ChatBubbleAvatar fallback="AI" svg={<GraduationCap className="translate-x-1"/>}/>
+  );
+}
 
 // ChatBubbleMessage
 const chatBubbleMessageVariants = cva("p-4", {
@@ -203,4 +216,5 @@ export {
   chatBubbleMessageVariants,
   ChatBubbleAction,
   ChatBubbleActionWrapper,
+  AIAvatar
 };

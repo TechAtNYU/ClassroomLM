@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import {
+  AIAvatar,
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
@@ -80,7 +81,7 @@ export default function MessageBox({
               className="max-w-[80%]"
             >
               {msg.role === "assistant" ? (
-                <ChatBubbleAvatar fallback="AI" />
+                <AIAvatar />
               ) : (
                 <ChatBubbleAvatar fallback="Me" />
               )}
@@ -99,7 +100,7 @@ export default function MessageBox({
           ))}
           {isLoading && (
             <ChatBubble variant="received">
-              <ChatBubbleAvatar fallback="AI" />
+              <AIAvatar />
               <ChatBubbleMessage isLoading variant="received" />
             </ChatBubble>
           )}

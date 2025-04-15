@@ -14,6 +14,7 @@ import { ChatInput } from "@/shared/components/ui/chat/chat-input";
 import { Button } from "@/shared/components/ui/button";
 import { SendIcon } from "lucide-react";
 import {
+  AIAvatar,
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
@@ -252,14 +253,16 @@ const MessageArea = ({
 
             // Format the timestamp
             const messageTime = new Date(message.created_at);
-            const formattedTime =  messageTime.toLocaleTimeString("en-US", {
+            const formattedTime = messageTime.toLocaleTimeString("en-US", {
               hour: "numeric",
               minute: "numeric",
             });
-            const formattedDay = new Date(message.created_at).toLocaleDateString("en-US", {
-              month:"short",
+            const formattedDay = new Date(
+              message.created_at
+            ).toLocaleDateString("en-US", {
+              month: "short",
               day: "numeric",
-              year:"numeric",
+              year: "numeric",
             });
             const elements = [];
             if (
@@ -267,7 +270,10 @@ const MessageArea = ({
               isDifferentDay(messageTime, previousMessageTime)
             ) {
               elements.push(
-                <div key={messageTime.getMilliseconds()} className="flex justify-center items-center gap-4">
+                <div
+                  key={messageTime.getMilliseconds()}
+                  className="flex items-center justify-center gap-4"
+                >
                   <Separator className="w-[20%]" />
                   <span className="text-muted-foreground">{formattedDay}</span>
                   <Separator className="w-[20%]" />
@@ -282,16 +288,16 @@ const MessageArea = ({
                 className="max-w-[80%]"
               >
                 {!message?.member_id ? (
-                  <ChatBubbleAvatar fallback="AI" />
+                  <AIAvatar />
                 ) : (
-                  <ChatBubbleAvatar
-                    src={message.avatar_url!}
-                    fallback="Me"
-                  />
+                  <ChatBubbleAvatar src={message.avatar_url!} fallback="Me" />
                 )}
                 <div className="flex flex-col">
                   <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                    {message.full_name || "Unknown"} • {formattedTime}
+                    {message?.member_id
+                      ? (message.full_name ?? "Unknown")
+                      : AIFullNameFormatted("AI Assistant")}
+                    • {formattedTime}
                     {message.is_ask && (
                       <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                         Ask LLM
@@ -313,7 +319,7 @@ const MessageArea = ({
           })}
           {isLoading && (
             <ChatBubble variant="received">
-              <ChatBubbleAvatar fallback="AI" />
+              <AIAvatar />
               <ChatBubbleMessage isLoading variant="received" />
             </ChatBubble>
           )}
@@ -323,7 +329,7 @@ const MessageArea = ({
         <ChatInput
           value={messageBoxValue}
           onChange={(e) => setMessageBoxValue(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Type your message or use /ask [message] to pull the LLM into the conversation..."
           onEnter={sendMessageToChatroom}
           className="focus-visible:ringof min-h-10 resize-none border-0 bg-background shadow-none focus-visible:ring-0"
         />
@@ -347,4 +353,11 @@ function isDifferentDay(date1: Date, date2: Date) {
   );
 }
 
+function AIFullNameFormatted(name: string) {
+  return (
+    <span className="inline-flex items-center text-xs font-medium text-purple-500  dark:text-purple-200">
+      {name}
+    </span>
+  );
+}
 export default MessageArea;

@@ -233,7 +233,10 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <CardContent>
           <div className="mt-4 aspect-video rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500" />
         </CardContent>
-        <CardFooter animated className="m-0 pt-1 justify-between pb-1 align-bottom">
+        <CardFooter
+          animated
+          className="m-0 justify-between pb-1 pt-1 align-bottom"
+        >
           <div className="">
             <TooltipUtil
               trigger={

@@ -6,18 +6,17 @@ import { useRouter } from "next/navigation";
 import { Button } from "../button";
 
 export function BackButton() {
-    const router = useRouter();
+  const router = useRouter();
   return (
     <Button
-      className="inline-flex items-center rounded-full border h-fit py-2 px-2 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-        effect={"hoverUnderlineInvert"}
-        variant={"default"}
+      className="inline-flex h-fit items-center rounded-full border px-2 py-2 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      effect={"hoverUnderlineInvert"}
+      variant={"default"}
       onClick={() => {
         router.back();
       }}
     >
-      <ArrowLeft/> Back
+      <ArrowLeft /> Back
     </Button>
- 
   );
 }

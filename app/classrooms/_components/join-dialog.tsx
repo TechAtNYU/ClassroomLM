@@ -50,7 +50,11 @@ export default function JoinDialog({
     >
       {dialogTrigger ?? (
         <DialogTrigger asChild className="">
-          <Button variant="default" effect="hoverUnderlineInvert" className="flex gap-2">
+          <Button
+            variant="default"
+            effect="hoverUnderlineInvert"
+            className="flex gap-2"
+          >
             <UserPlus /> Join
           </Button>
         </DialogTrigger>

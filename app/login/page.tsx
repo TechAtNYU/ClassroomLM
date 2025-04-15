@@ -1,12 +1,6 @@
 import { signInWithGoogle } from "@/app/login/actions";
 import GoogleSignInButton from "@/shared/components/GoogleSignInButton";
 
-import { logout } from "@/app/login/actions";
-import { Button } from "@/shared/components/ui/button";
-import { ArrowRightCircle } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-
 export default async function LoginPage() {
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-[linear-gradient(0deg,_#FFF4D9,_#FFEFD2_52%,_#67C5FF)] text-center dark:bg-[linear-gradient(0deg,_#443461,_#130F5A_38%,_#1F1F1F)]">
@@ -32,9 +26,9 @@ export default async function LoginPage() {
               Start your journey today
             </Link>
           </Button> */}
-            <form action={signInWithGoogle}>
-              <GoogleSignInButton className="shadow-[0px_0px_45px_1px_#6083FF]" />
-            </form>
+          <form action={signInWithGoogle}>
+            <GoogleSignInButton className="shadow-[0px_0px_45px_1px_#6083FF]" />
+          </form>
         </div>
       </div>
     </div>

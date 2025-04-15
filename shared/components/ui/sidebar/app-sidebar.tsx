@@ -286,7 +286,9 @@ export function AppSidebar() {
                     isActive={item.isActive}
                     asChild
                   >
-                    <Link href={`/classrooms/${classroomInfo.id}/${item.suffixURL}`}>
+                    <Link
+                      href={`/classrooms/${classroomInfo.id}/${item.suffixURL}`}
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>
@@ -320,7 +322,6 @@ export function AppSidebar() {
                   <form action={logout}>
                     <Button variant={"ghost"}>Sign out</Button>
                   </form>
-                  
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

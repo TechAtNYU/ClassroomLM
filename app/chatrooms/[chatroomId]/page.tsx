@@ -5,6 +5,7 @@ import DeleteChatroomButton from "./components/delete-chatroom-button";
 import InviteChatroomButton from "./components/invite-chatroom-dialog";
 import LeaveChatroomButton from "./components/leave-chatroom-button";
 import MessageArea from "./components/message-area";
+import { Users } from "lucide-react";
 
 const ChatroomPage = async ({
   params,
@@ -125,7 +126,14 @@ const ChatroomPage = async ({
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b p-4">
-        <h1 className="text-3xl font-medium tracking-tight">{chatroom.name}</h1>
+        <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {chatroom.name}
+        </h1>
+        <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+          <Users className="self-center" /> Collaborative Chatroom
+        </h2>
+        </div>
         <div className="flex gap-2">
           {currentUser !== chatroom.creater_user_id ? (
             <LeaveChatroomButton

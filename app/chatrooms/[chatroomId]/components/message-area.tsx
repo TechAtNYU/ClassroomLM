@@ -20,6 +20,8 @@ import {
 } from "@/shared/components/ui/chat/chat-bubble";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import Logo from "@/shared/components/Logo";
+import { Separator } from "@/shared/components/ui/separator";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -63,6 +65,7 @@ const MessageArea = ({
     null
   );
   const [messageBoxValue, setMessageBoxValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // add database changes to messages state
   useEffect(() => {
@@ -206,7 +209,7 @@ const MessageArea = ({
     }
 
     setMessageBoxValue("");
-
+    setIsLoading(true);
     // Handle user "/ask" command
     if (isAskCommand) {
       const askResult = await askLLM(classroomInfo, chatroomId, chatClient);
@@ -223,54 +226,105 @@ const MessageArea = ({
       }
       setChatClient(askResult.client);
     }
+    setIsLoading(false);
   };
 
   function cleanMessage(content: string): string {
     // Remove any reference patterns like ##number$$
-    return content.replace(/##\d+\$\$/g, "").trim();
+    return content.replace(/\s##\d+\$\$/g, "").trim();
   }
-
+  let previousMessageTime: Date | undefined = undefined;
   return (
-    <div className="mt-10 flex w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
-      <ChatMessageList>
-        {messages.map((message) => {
-          const variant =
-            message.user_id === userAndClassData.userData.id
-              ? "sent"
-              : "received";
+    <div className="mt-10 flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
+      <Logo
+        className={
+          "size-[6vmin] h-fit min-w-10 place-self-center fill-foreground stroke-foreground stroke-[10px]"
+        }
+      />
+      {/* <div className="mt-10 flex w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white"> */}
+      <div className="flex-1 overflow-auto">
+        <ChatMessageList smooth className="max-[500px]:px-0">
+          {messages.flatMap((message) => {
+            const variant =
+              message.user_id === userAndClassData.userData.id
+                ? "sent"
+                : "received";
 
-          // Format the timestamp
-          const messageTime = new Date(message.created_at);
-          const formattedTime = messageTime.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          return (
-            <ChatBubble key={message.id} variant={variant}>
-              <ChatBubbleAvatar src={message.avatar_url!} fallback="AI" />
-              <div className="flex flex-col">
-                <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  {message.full_name || "Unknown"} • {formattedTime}
-                  {message.is_ask && (
-                    <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                      Ask LLM
-                    </span>
-                  )}
+            // Format the timestamp
+            const messageTime = new Date(message.created_at);
+            const formattedTime =  messageTime.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+            });
+            const formattedDay = new Date(message.created_at).toLocaleDateString("en-US", {
+              month:"short",
+              day: "numeric",
+              year:"numeric",
+            });
+            const elements = [];
+            if (
+              !previousMessageTime ||
+              isDifferentDay(messageTime, previousMessageTime)
+            ) {
+              elements.push(
+                <div key={messageTime.getMilliseconds()} className="flex justify-center items-center gap-4">
+                  <Separator className="w-[20%]" />
+                  <span className="text-muted-foreground">{formattedDay}</span>
+                  <Separator className="w-[20%]" />
                 </div>
-                <ChatBubbleMessage className="prose">
-                  <ReactMarkdown>{cleanMessage(message.content)}</ReactMarkdown>
-                </ChatBubbleMessage>
-              </div>
+              );
+            }
+            previousMessageTime = messageTime;
+            elements.push(
+              <ChatBubble
+                key={message.id}
+                variant={variant}
+                className="max-w-[80%]"
+              >
+                {!message?.member_id ? (
+                  <ChatBubbleAvatar fallback="AI" />
+                ) : (
+                  <ChatBubbleAvatar
+                    src={message.avatar_url!}
+                    fallback="Me"
+                  />
+                )}
+                <div className="flex flex-col">
+                  <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    {message.full_name || "Unknown"} • {formattedTime}
+                    {message.is_ask && (
+                      <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                        Ask LLM
+                      </span>
+                    )}
+                  </div>
+                  <ChatBubbleMessage
+                    className="prose w-fit p-2 font-medium marker:text-inherit"
+                    variant={variant}
+                  >
+                    <ReactMarkdown>
+                      {cleanMessage(message.content)}
+                    </ReactMarkdown>
+                  </ChatBubbleMessage>
+                </div>
+              </ChatBubble>
+            );
+            return elements;
+          })}
+          {isLoading && (
+            <ChatBubble variant="received">
+              <ChatBubbleAvatar fallback="AI" />
+              <ChatBubbleMessage isLoading variant="received" />
             </ChatBubble>
-          );
-        })}
-      </ChatMessageList>
+          )}
+        </ChatMessageList>
+      </div>
       <div className="relative mt-4 flex items-center justify-between gap-2 rounded-lg border bg-background p-1">
         <ChatInput
           value={messageBoxValue}
           onChange={(e) => setMessageBoxValue(e.target.value)}
           placeholder="Type your message..."
+          onEnter={sendMessageToChatroom}
           className="focus-visible:ringof min-h-10 resize-none border-0 bg-background shadow-none focus-visible:ring-0"
         />
         <Button
@@ -284,5 +338,13 @@ const MessageArea = ({
     </div>
   );
 };
+
+function isDifferentDay(date1: Date, date2: Date) {
+  return !(
+    date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  );
+}
 
 export default MessageArea;

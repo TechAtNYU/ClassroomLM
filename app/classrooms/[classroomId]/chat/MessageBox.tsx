@@ -59,15 +59,16 @@ export default function MessageBox({
     const assistantMessage: RagFlowMessage = {
       role: "assistant",
       content: response.response,
+      created_at: response.responseTimeSeconds
     };
     setMessages((prev) => [...prev, assistantMessage]);
   }
-
+  console.log(messages);
   return (
-    <div className="flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
+    <div className="mt-3 flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
       <Logo
         className={
-          "size-[6vmin] h-fit min-w-10 place-self-center stroke-black stroke-[10px]"
+          "size-[6vmin] h-fit min-w-10 place-self-center fill-foreground stroke-foreground stroke-[10px]"
         }
       />
       <div className="flex-1 overflow-auto">
@@ -83,12 +84,17 @@ export default function MessageBox({
               ) : (
                 <ChatBubbleAvatar fallback="Me" />
               )}
-              <ChatBubbleMessage
-                variant={msg.role === "assistant" ? "received" : "sent"}
-                className="prose p-2 font-medium marker:text-inherit"
-              >
-                <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
-              </ChatBubbleMessage>
+              <div className="flex flex-col">
+                <span className="mx-2">{msg?.created_at && getTimeDate(msg.created_at) && getTimeDate(msg.created_at)}</span>
+              
+                
+                <ChatBubbleMessage
+                  variant={msg.role === "assistant" ? "received" : "sent"}
+                  className="prose p-2 font-medium marker:text-inherit"
+                >
+                  <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
+                </ChatBubbleMessage>
+              </div>
             </ChatBubble>
           ))}
           {isLoading && (
@@ -113,4 +119,13 @@ export default function MessageBox({
       </div>
     </div>
   );
+}
+
+function getTimeDate(created_at_seconds: number) {
+  return new Date(created_at_seconds * 1000).toLocaleTimeString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
 }

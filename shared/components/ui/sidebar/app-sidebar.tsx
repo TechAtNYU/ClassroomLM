@@ -11,6 +11,8 @@ import {
   UserRoundCog,
   SpeechIcon,
   UploadIcon,
+  Users,
+  Edit,
 } from "lucide-react";
 
 // import Image from "next/image";
@@ -45,6 +47,8 @@ import { UserContext } from "@shared/lib/userContext/userContext";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 import Logo from "@shared/components/Logo";
 import Link from "next/link";
+import { logout } from "@/app/login/actions";
+import { Button } from "../button";
 
 // Menu items.
 // const items = [
@@ -119,8 +123,14 @@ export function AppSidebar() {
   const enrolledClassItems = {
     chat: {
       title: "Personal Assistant",
-      suffixURL: "/chat",
+      suffixURL: "chat",
       icon: SpeechIcon,
+      isActive: false,
+    },
+    chatRooms: {
+      title: "Collaborative Chatrooms",
+      suffixURL: "chatrooms",
+      icon: Users,
       isActive: false,
     },
   };
@@ -128,8 +138,20 @@ export function AppSidebar() {
   const adminManageClassItems = {
     chat: {
       title: "Personal Assistant",
-      suffixURL: "/chat",
+      suffixURL: "chat",
       icon: SpeechIcon,
+      isActive: false,
+    },
+    chatRooms: {
+      title: "Collaborative Chatrooms",
+      suffixURL: "chatrooms",
+      icon: Users,
+      isActive: false,
+    },
+    manage: {
+      title: "Manage Dashboard",
+      suffixURL: "manage",
+      icon: Edit,
       isActive: false,
     },
     upload: {
@@ -264,7 +286,7 @@ export function AppSidebar() {
                     isActive={item.isActive}
                     asChild
                   >
-                    <Link href={item.suffixURL}>
+                    <Link href={`/classrooms/${classroomInfo.id}/${item.suffixURL}`}>
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>
@@ -295,7 +317,10 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <span>Sign out</span>
+                  <form action={logout}>
+                    <Button variant={"ghost"}>Sign out</Button>
+                  </form>
+                  
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

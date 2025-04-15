@@ -65,7 +65,7 @@ export async function GET(
   //redirect to classroom
 
   const successParams = new URLSearchParams({
-    join_success: classroom.id.toString(),
+    joinSuccess: classroom.id.toString(),
   });
   return redirect(`/classrooms?${successParams.toString()}`);
 }

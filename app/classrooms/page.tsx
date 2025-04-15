@@ -34,7 +34,6 @@ import {
   UserPlus,
   Users,
   FileText,
-  SquareArrowOutUpRight,
 } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
@@ -55,7 +54,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/shared/components/ui/accordion";
-import { cva } from "class-variance-authority";
 import { cn } from "@/shared/lib/utils";
 
 export default function ClassroomPage() {
@@ -102,7 +100,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
   }, [searchParams]);
 
   useEffect(() => {
-    const joinedClassSuccess = searchParams.get("join_success");
+    const joinedClassSuccess = searchParams.get("joinSuccess");
     console.log(joinedClassSuccess);
     if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
       const joinClassInfo = userAndClassData.classroomsData.find(
@@ -413,7 +411,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
             <TabsTrigger
               className={cn(
                 "flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-7 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground",
-                "relative !no-underline after:absolute after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100"
+                "relative !no-underline after:absolute after:bottom-1 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100"
               )}
               value="enrolled"
               data-active={currentTab === "enrolled"}
@@ -423,7 +421,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
             <TabsTrigger
               className={cn(
                 "flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-7 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground",
-                "relative !no-underline after:absolute after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100"
+                "relative !no-underline after:absolute after:bottom-1 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100"
               )}
               value="admin"
               data-active={currentTab === "admin"}
@@ -453,7 +451,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <Separator className="my-4 mb-10" />
         <TabsContent value="admin">
           <div>
-            <div className="grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
+            <div className="grid auto-rows-min gap-4 min-[940px]:grid-cols-2 min-[1270px]:grid-cols-3 min-[1665px]:grid-cols-4">
               {adminClasses
                 .filter((x) => !x.archived)
                 .map((classroom) => (
@@ -472,7 +470,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         </TabsContent>
         <TabsContent value="enrolled">
           <div>
-            <div className="grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
+            <div className="grid auto-rows-min gap-4 min-[940px]:grid-cols-2 min-[1270px]:grid-cols-3 min-[1665px]:grid-cols-4">
               {memberClasses
                 .filter((x) => !x.archived)
                 .map((classroom) => (

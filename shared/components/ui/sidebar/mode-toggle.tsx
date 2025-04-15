@@ -17,7 +17,7 @@ export function ModeToggle() {
   const { theme, setTheme } = useTheme();
   return (
     // styled after sonner docs
-    <div className="// flex w-[--radix-popper-anchor-width] max-w-fit flex-row items-center gap-2 overflow-hidden rounded-xl border-2 border-sidebar-accent px-3 py-2 text-sidebar-accent group-data-[state=collapsed]:w-[] group-data-[state=collapsed]:flex-col-reverse">
+    <div className="flex w-[--radix-popper-anchor-width] max-w-fit flex-row items-center gap-2 overflow-hidden rounded-xl border-2 border-sidebar-accent px-3 py-2 text-sidebar-accent group-data-[state=collapsed]:w-[] group-data-[state=collapsed]:flex-col-reverse">
       <TooltipUtil
         trigger={
           <Sun

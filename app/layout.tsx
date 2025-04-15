@@ -14,6 +14,7 @@ import { getUserAndClassroomData } from "@shared/lib/userContext/contextFetcher"
 import { cn } from "@shared/lib/utils";
 import { Separator } from "@shared/components/ui/separator";
 import { Toaster } from "@/shared/components/ui/sonner";
+import { BackButton } from "@/shared/components/ui/sidebar/back-button";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -75,12 +76,14 @@ export default async function RootLayout({
                 >
                   <main>
                     <header className="flex h-16 shrink-0 items-center gap-2">
-                      <div className="flex items-center gap-2 px-4">
-                        <SidebarTrigger className="-ml-1" />
+                      <div className="flex items-center gap-1 px-4">
+                      <SidebarTrigger className="-ml-1" />
                         <Separator
                           orientation="vertical"
                           className="mr-2 h-4"
                         />
+                        <BackButton />
+
                       </div>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

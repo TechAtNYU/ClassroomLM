@@ -38,6 +38,10 @@ const buttonVariants = cva(
           "relative !no-underline after:absolute after:bg-primary after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-left after:scale-x-100 hover:after:origin-bottom-right hover:after:scale-x-0 after:transition-transform after:ease-in-out after:duration-300",
         hoverUnderline:
           "relative !no-underline after:absolute after:bg-primary after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:ease-in-out after:duration-300",
+        hoverUnderlineInvert:
+          "relative !no-underline after:absolute after:bg-secondary after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:ease-in-out after:duration-300",
+        hoverUnderlineWhiteExpand:
+          "group gap-0 relative !no-underline after:absolute after:bg-white after:bottom-2 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 hover:after:origin-bottom-left hover:after:scale-x-100 after:transition-transform after:ease-in-out after:duration-300",
         gradientSlideShow:
           "bg-[size:400%] bg-[linear-gradient(-45deg,var(--gradient-lime),var(--gradient-ocean),var(--gradient-wine),var(--gradient-rust))] animate-gradient-flow",
       },
@@ -100,7 +104,9 @@ const Button = React.forwardRef<
       >
         {Icon &&
           iconPlacement === "left" &&
-          (effect === "expandIcon" || effect === "shineHoverExpand" ? (
+          (effect === "expandIcon" ||
+          effect === "shineHoverExpand" ||
+          effect === "hoverUnderlineWhiteExpand" ? (
             <div className="group-hover:translate-x-100 w-0 translate-x-[0%] pr-0 opacity-0 transition-all duration-200 group-hover:w-5 group-hover:pr-2 group-hover:opacity-100">
               <Icon />
             </div>
@@ -110,7 +116,9 @@ const Button = React.forwardRef<
         <Slottable>{props.children}</Slottable>
         {Icon &&
           iconPlacement === "right" &&
-          (effect === "expandIcon" || effect === "shineHoverExpand" ? (
+          (effect === "expandIcon" ||
+          effect === "shineHoverExpand" ||
+          effect === "hoverUnderlineWhiteExpand" ? (
             <div className="w-0 translate-x-[100%] pl-0 opacity-0 transition-all duration-200 group-hover:w-5 group-hover:translate-x-0 group-hover:pl-2 group-hover:opacity-100">
               <Icon />
             </div>

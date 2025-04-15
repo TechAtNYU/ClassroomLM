@@ -50,7 +50,11 @@ export default function JoinDialog({
     >
       {dialogTrigger ?? (
         <DialogTrigger asChild className="">
-          <Button variant="default" className="flex gap-2">
+          <Button
+            variant="default"
+            effect="hoverUnderlineInvert"
+            className="flex gap-2"
+          >
             <UserPlus /> Join
           </Button>
         </DialogTrigger>
@@ -64,7 +68,7 @@ export default function JoinDialog({
         <InputOTP
           maxLength={8}
           pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-          value={joinValue}
+          value={joinValue.toUpperCase()}
           onChange={(value) => setJoinValue(value)}
         >
           <InputOTPGroup>

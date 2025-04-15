@@ -78,18 +78,50 @@ export default {
       },
       keyframes: {
         "caret-blink": {
-          "0%,70%,100%": { opacity: "1" },
-          "20%,50%": { opacity: "0" },
+          "0%,70%,100%": {
+            opacity: "1",
+          },
+          "20%,50%": {
+            opacity: "0",
+          },
         },
         shine: {
-          "0%": { backgroundPosition: "200% 0" },
-          "25%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "-200% 0" },
+          "0%": {
+            backgroundPosition: "200% 0",
+          },
+          "25%": {
+            backgroundPosition: "-200% 0",
+          },
+          "100%": {
+            backgroundPosition: "-200% 0",
+          },
         },
         gradientFlow: {
-          "0%": { "background-position": "0% 50%" },
-          "50%": { "background-position": "100% 50%" },
-          "100%": { "background-position": "0% 50%" },
+          "0%": {
+            "background-position": "0% 50%",
+          },
+          "50%": {
+            "background-position": "100% 50%",
+          },
+          "100%": {
+            "background-position": "0% 50%",
+          },
+        },
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {
@@ -97,12 +129,12 @@ export default {
         shine: "shine 3s ease-out infinite",
         "gradient-flow":
           "gradientFlow 10s ease 0s infinite normal none running",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
       typography: {
         DEFAULT: {
-          // this is for prose class
           css: {
-            // from here https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#adding-custom-color-themes
             "--tw-prose-body": "inherit",
             "--tw-prose-headings": "inherit",
             "--tw-prose-lead": "inherit",
@@ -135,23 +167,19 @@ export default {
             "--tw-prose-invert-pre-bg": "inherit",
             "--tw-prose-invert-th-borders": "inherit",
             "--tw-prose-invert-td-borders": "inherit",
-            h1: {
-              // marginTop:'1.5em',
-              // marginBottom:'0.75em'
-            },
+            h1: {},
             h2: {
               marginTop: "1.25em",
               marginBottom: "0.75em",
             },
             p: {
-              marginTop: "0.75em", // key can be in camelCase...
-              marginBottom: "0.75em", // key can be in camelCase...
+              marginTop: "0.75em",
+              marginBottom: "0.75em",
             },
             ul: {
               marginTop: "0.05em",
             },
             "code::before": {
-              // https://github.com/orgs/remarkjs/discussions/674#discussioncomment-5387785
               content: "&nbsp",
             },
             "code::after": {

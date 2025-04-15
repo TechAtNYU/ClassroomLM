@@ -17,13 +17,13 @@ export function ModeToggle() {
   const { theme, setTheme } = useTheme();
   return (
     // styled after sonner docs
-    <div className="flex w-fit flex-row gap-2 rounded-xl border-2 border-sidebar-accent px-3 py-2 text-sidebar-accent">
+    <div className="flex w-[--radix-popper-anchor-width] max-w-fit flex-row items-center gap-2 overflow-hidden rounded-xl border-2 border-sidebar-accent px-3 py-2 text-sidebar-accent group-data-[state=collapsed]:w-[] group-data-[state=collapsed]:flex-col-reverse">
       <TooltipUtil
         trigger={
           <Sun
             onClick={() => setTheme("light")}
             data-active={theme === "light"}
-            className="fill-side-bar-accent text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
+            className="fill-side-bar-accent size-fit text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
           />
         }
         content={"Light mode"}
@@ -35,7 +35,7 @@ export function ModeToggle() {
           <Moon
             onClick={() => setTheme("dark")}
             data-active={theme === "dark"}
-            className="fill-side-bar-accent text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
+            className="fill-side-bar-accent size-fit text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
           />
         }
         content={"Dark"}
@@ -47,7 +47,7 @@ export function ModeToggle() {
           <Laptop
             onClick={() => setTheme("system")}
             data-active={theme === "system"}
-            className="fill-side-bar-accent text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
+            className="fill-side-bar-accent size-fit text-sidebar-accent hover:fill-foreground hover:text-foreground data-[active=true]:fill-foreground data-[active=true]:text-foreground"
           />
         }
         content={"System"}

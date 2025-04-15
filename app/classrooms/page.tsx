@@ -48,6 +48,13 @@ import { Separator } from "@/shared/components/ui/separator";
 import InviteInfoDialog from "./_components/invite-dialog";
 import JoinDialog from "./_components/join-dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/shared/components/ui/accordion";
+import { cn } from "@/shared/lib/utils";
 
 export default function ClassroomPage() {
   const userContext = useContext(UserContext);
@@ -93,7 +100,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
   }, [searchParams]);
 
   useEffect(() => {
-    const joinedClassSuccess = searchParams.get("join_success");
+    const joinedClassSuccess = searchParams.get("joinSuccess");
     console.log(joinedClassSuccess);
     if (joinedClassSuccess && !isNaN(Number(joinedClassSuccess))) {
       const joinClassInfo = userAndClassData.classroomsData.find(
@@ -163,101 +170,6 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
 
   // }, [searchParams]);
 
-  // function mapToListItemArchived(
-  //   classroomList: ClassroomWithMembers[],
-  //   isAdmin: boolean
-  // ) {
-  //   return classroomList.map((classroom) => {
-  //     return (
-  //       <div key={classroom.id}>
-  //         {classroom.archived && (
-  //           <>
-  //             <Card className="w-[450px]" animated>
-  //               <CardHeader>
-  //                 <CardTitle>{classroom.name}</CardTitle>
-  //                 {/* <CardDescription>
-  //                       Join Code: {classroom.join_code || "N/A"}
-  //                     </CardDescription> */}
-  //               </CardHeader>
-  //               <CardContent>
-  //                 {classroom.Classroom_Members &&
-  //                   classroom.Classroom_Members.length > 0 && (
-  //                     <MemberList
-  //                       classroom={classroom}
-  //                       enableDeletion={false}
-  //                       triggerButton={
-  //                         <TooltipProvider>
-  //                           <Tooltip delayDuration={300}>
-  //                             <SheetTrigger asChild>
-  //                               <TooltipTrigger asChild>
-  //                                 <Button
-  //                                   type="button"
-  //                                   variant={"ghost"}
-  //                                   size={"iconLg"}
-  //                                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-  //                                 >
-  //                                   <Users className="scale-[200%]" />
-  //                                 </Button>
-  //                               </TooltipTrigger>
-  //                             </SheetTrigger>
-  //                             <TooltipContent>View Members</TooltipContent>
-  //                           </Tooltip>
-  //                         </TooltipProvider>
-  //                       }
-  //                     />
-  //                   )}
-  //                 <Button
-  //                   type="button"
-  //                   variant={"ghost"}
-  //                   size={"iconLg"}
-  //                   onClick={() =>
-  //                     optimisticUpdateAndFetchClassroomData(
-  //                       classroom.id,
-  //                       isAdmin
-  //                         ? async () => deleteClassroom(classroom.id)
-  //                         : async () => leaveClassroom(classroom.id, userId),
-  //                       "remove",
-  //                       setUserAndClassData,
-  //                       refreshClassrooms
-  //                     )
-  //                   }
-  //                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-  //                 >
-  //                   <Trash2 className="scale-[200%]" />
-  //                   {isAdmin ? "Delete Classroom" : "Remove Classroom"}
-  //                 </Button>
-
-  //                 {isAdmin && (
-  //                   <Button
-  //                     type="button"
-  //                     variant={"ghost"}
-  //                     size={"iconLg"}
-  //                     // className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-  //                     onClick={() =>
-  //                       optimisticUpdateAndFetchClassroomData(
-  //                         classroom.id,
-  //                         async () =>
-  //                           setArchiveStatusClassroom(classroom.id, false),
-  //                         { archived: false },
-  //                         setUserAndClassData,
-  //                         refreshClassrooms
-  //                       )
-  //                     }
-  //                   >
-  //                     Unarchive
-  //                   </Button>
-  //                 )}
-  //               </CardContent>{" "}
-  //             </Card>
-
-  //             <hr className="my-5 h-px border-0 bg-gray-800 dark:bg-white" />
-  //           </>
-  //         )}
-  //       </div>
-  //     );
-  //   });
-  // }
-
   const adminClasses = userAndClassData?.classroomsData
     .filter((classroom) => classroom.admin_user_id == userId)
     .sort((x, y) =>
@@ -298,28 +210,33 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     isAdmin: boolean;
   }) {
     return (
-      <Card className="w-auto min-w-fit" animated>
-        <CardHeader>
-          <CardTitle animated className="flex justify-between">
+      <Card className="flex w-auto min-w-fit flex-col" animated>
+        <CardHeader className="flex flex-grow flex-col">
+          <CardTitle animated className="flex flex-grow justify-between">
             {classroom.name}
             <InviteInfoDialog
               classroomName={classroom.name ?? "Classroom"}
-              code={classroom.join_code ?? ""}
+              code={classroom.join_code?.toLocaleUpperCase() ?? ""}
             />
           </CardTitle>
           <CardDescription animated>
             <div className="flex flex-row gap-3">
-              Join Code:{" "}
-              {classroom.join_code || (
-                <Skeleton className="h-5 w-5/12 self-center" />
-              )}
+              Created:{" "}
+              {new Date(classroom.created_at).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              }) || <Skeleton className="h-5 w-5/12 self-center" />}
             </div>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mt-5 aspect-video rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500" />
+          <div className="mt-4 aspect-video rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500" />
         </CardContent>
-        <CardFooter animated className="m-0 justify-between pb-1 align-bottom">
+        <CardFooter
+          animated
+          className="m-0 justify-between pb-1 pt-1 align-bottom"
+        >
           <div className="">
             <TooltipUtil
               trigger={
@@ -341,25 +258,6 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               }
               content={"Chatrooms"}
             />
-
-            {isAdmin && (
-              <TooltipUtil
-                trigger={
-                  <Button
-                    type="button"
-                    variant={"ghost"}
-                    size={"iconLg"}
-                    asChild
-                    // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                  >
-                    <Link href={`/classrooms/${classroom.id}/manage`} passHref>
-                      <Edit className="scale-[200%]" />
-                    </Link>
-                  </Button>
-                }
-                content={"Manage Classroom"}
-              />
-            )}
 
             {classroom.Classroom_Members &&
               classroom.Classroom_Members.length > 0 && (
@@ -397,7 +295,24 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               content={"Augment Notes"}
             />
           </div>
-          {!isAdmin && (
+          {isAdmin ? (
+            <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <Link href={`/classrooms/${classroom.id}/manage`} passHref>
+                    <Edit className="scale-[200%]" />
+                  </Link>
+                </Button>
+              }
+              content={"Manage Classroom"}
+            />
+          ) : (
             <TooltipUtil
               trigger={
                 <Button
@@ -418,6 +333,66 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
     );
   }
 
+  function ArchivedSections({
+    archClassrooms,
+    isAdmin,
+  }: {
+    archClassrooms: ClassroomWithMembers[];
+    isAdmin: boolean;
+  }) {
+    console.log(archClassrooms);
+    if (!archClassrooms || archClassrooms.length <= 0) {
+      return;
+    }
+    return (
+      <Accordion type="single" collapsible className="mt-10">
+        <AccordionItem value="item-1">
+          <AccordionTrigger
+            className="justify-start gap-3 hover:no-underline"
+            chevronClassName="scale-[2]"
+          >
+            <h1 className="text-2xl font-medium tracking-tight">
+              Archived Classrooms
+            </h1>
+          </AccordionTrigger>
+          <AccordionContent>
+            <ul className="my-2 space-y-2">
+              {archClassrooms.map((cm) => (
+                <li
+                  key={cm.name}
+                  className="flex w-full justify-between rounded-md border p-3 text-xl"
+                >
+                  <div>
+                    {cm.name}
+                    <p className="text-sm text-muted-foreground">
+                      Created:{" "}
+                      {new Date(cm.created_at).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  {isAdmin && (
+                    <Button
+                      effect="expandIcon"
+                      icon={Edit}
+                      iconPlacement="right"
+                    >
+                      <Link href={`/classrooms/${cm.id}/manage`} passHref>
+                        Manage
+                      </Link>
+                    </Button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
+
   return (
     <div className="p-4">
       {/* <h1 className={"mb-5 text-center text-3xl underline"}>My Classrooms</h1>
@@ -434,31 +409,41 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         defaultValue="enrolled"
         // className="w-[75vw] bg-"
       >
-        <div className="flex justify-between">
-          <TabsList className="grid w-[20vw] grid-cols-2 rounded-full bg-inherit">
+        <div className="flex flex-row justify-between gap-10 max-[650px]:flex-col">
+          <TabsList className="flex w-full max-w-full flex-row items-center justify-start bg-inherit max-[340px]:flex-col">
             <TabsTrigger
-              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+              className={cn(
+                "flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-7 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground",
+                "relative !no-underline after:absolute after:bottom-1 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100"
+              )}
               value="enrolled"
               data-active={currentTab === "enrolled"}
             >
               Enrolled
             </TabsTrigger>
             <TabsTrigger
-              className="flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground"
+              className={cn(
+                "flex h-9 min-w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full px-7 text-center text-2xl font-medium text-muted-foreground transition-colors hover:text-foreground data-[active=true]:!bg-muted data-[active=true]:text-foreground",
+                "relative !no-underline after:absolute after:bottom-1 after:h-[1px] after:w-2/3 after:origin-bottom-right after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100"
+              )}
               value="admin"
               data-active={currentTab === "admin"}
             >
               Admin
             </TabsTrigger>
           </TabsList>
-          <div className="flex gap-3">
+          <div className="flex gap-3 max-[650px]:flex-col">
             <JoinDialog />
             <SaveClassroomDialog
               optimisticUpdateCallback={addOptimistic}
               actionText="create"
               dialogTrigger={
                 <DialogTrigger asChild className="">
-                  <Button variant="outline" className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex gap-2"
+                    effect={"hoverUnderline"}
+                  >
                     <UserPlus /> Create Classroom
                   </Button>
                 </DialogTrigger>
@@ -469,43 +454,42 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
         <Separator className="my-4 mb-10" />
         <TabsContent value="admin">
           <div>
-            <div className="grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
-              {adminClasses.map((classroom) => (
-                <ClassroomCard
-                  key={classroom.id}
-                  classroom={classroom}
-                  isAdmin={true}
-                />
-              ))}
+            <div className="grid auto-rows-min gap-4 min-[940px]:grid-cols-2 min-[1270px]:grid-cols-3 min-[1665px]:grid-cols-4">
+              {adminClasses
+                .filter((x) => !x.archived)
+                .map((classroom) => (
+                  <ClassroomCard
+                    key={classroom.id}
+                    classroom={classroom}
+                    isAdmin={true}
+                  />
+                ))}
             </div>
           </div>
+          <ArchivedSections
+            archClassrooms={adminClasses.filter((x) => x.archived)}
+            isAdmin
+          />
         </TabsContent>
         <TabsContent value="enrolled">
-          {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}
-          {/* NON-ADMIN CLASSES */}
           <div>
-            <div className="grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
-              {memberClasses.map((classroom) => (
-                <ClassroomCard
-                  key={classroom.id}
-                  classroom={classroom}
-                  isAdmin={false}
-                />
-              ))}
+            <div className="grid auto-rows-min gap-4 min-[940px]:grid-cols-2 min-[1270px]:grid-cols-3 min-[1665px]:grid-cols-4">
+              {memberClasses
+                .filter((x) => !x.archived)
+                .map((classroom) => (
+                  <ClassroomCard
+                    key={classroom.id}
+                    classroom={classroom}
+                    isAdmin={false}
+                  />
+                ))}
             </div>
           </div>
+          <ArchivedSections
+            archClassrooms={memberClasses.filter((x) => x.archived)}
+            isAdmin={false}
+          />
         </TabsContent>
-        {/* <hr className="my-5 h-5 border-0 bg-gray-800 dark:bg-white" />
-        <h1 className={"mb-5 text-center text-3xl underline"}>
-          Archived Classrooms
-        </h1> */}
-        {/* <h2 className={"text-center text-2xl"}>Admin Classrooms</h2> */}
-        {/* {mapToListItemArchived(adminClasses, true)} */}
-
-        {/* <hr className="my-5 h-1 border-0 bg-gray-800 dark:bg-white" /> */}
-        {/* <h2 className={"text-center text-2xl"}>Member Classrooms</h2> */}
-        {/* NON-ADMIN CLASSES */}
-        {/* {mapToListItemArchived(memberClasses, false)} */}
       </Tabs>
     </div>
   );

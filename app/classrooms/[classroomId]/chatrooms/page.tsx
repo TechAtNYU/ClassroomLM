@@ -8,9 +8,8 @@ import {
 } from "@/shared/components/ui/card";
 import { Separator } from "@/shared/components/ui/separator";
 import { createClient } from "@shared/utils/supabase/server";
-import { DoorClosed } from "lucide-react";
+import { ArrowRightIcon, DoorOpen } from "lucide-react";
 import Link from "next/link";
-import { TooltipUtil } from "../../clientUtils";
 import { CreateChatroomDialog } from "./_components/create-chatroom-dialog";
 
 const ChatroomsPage = async ({
@@ -69,18 +68,18 @@ const ChatroomsPage = async ({
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-medium tracking-tight">Chatrooms</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Chatrooms</h1>
 
         <CreateChatroomDialog classroomId={classroomId} />
       </div>
 
       <Separator />
 
-      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid auto-rows-min gap-4 min-[880px]:grid-cols-2 min-[1125px]:grid-cols-3 min-[1665px]:grid-cols-5">
         {chatrooms.length > 0 ? (
           chatrooms.map((chatroom) => (
             <Card key={chatroom.id} className="w-auto min-w-fit" animated>
-              <CardHeader className="pb-0">
+              <CardHeader>
                 <CardTitle animated className="flex justify-between">
                   {chatroom.name}
                 </CardTitle>
@@ -90,11 +89,12 @@ const ChatroomsPage = async ({
                   </div>
                 </CardDescription>
               </CardHeader>
+
               <CardFooter
                 animated
                 className="m-0 justify-between pb-5 pt-2 align-bottom"
               >
-                <TooltipUtil
+                {/* <TooltipUtil
                   trigger={
                     <Button
                       type="button"
@@ -108,7 +108,21 @@ const ChatroomsPage = async ({
                     </Button>
                   }
                   content={"Enter"}
-                />
+                /> */}
+                <Button
+                  effect="shineHover"
+                  icon={ArrowRightIcon}
+                  iconPlacement="right"
+                  className="w-full"
+                  asChild
+                >
+                  <Link href={`/chatrooms/${chatroom.id}`} passHref>
+                    <div className="flex gap-3">
+                      <DoorOpen className="scale-[200%]" />
+                      Enter
+                    </div>
+                  </Link>
+                </Button>
                 {/* {chatroomMembers && chatroomMembers.length > 0 && ( */}
                 {/**/}
                 {/* )} */}

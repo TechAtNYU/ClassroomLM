@@ -305,7 +305,7 @@ const MessageArea = ({
                     )}
                   </div>
                   <ChatBubbleMessage
-                    className="prose w-fit p-2 font-medium marker:text-inherit"
+                    className="prose w-fit p-2 font-medium marker:text-inherit !whitespace-normal"
                     variant={variant}
                   >
                     <ReactMarkdown>

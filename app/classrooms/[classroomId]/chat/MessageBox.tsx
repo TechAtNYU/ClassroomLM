@@ -91,8 +91,8 @@ export default function MessageBox({
                 
                 <ChatBubbleMessage
                   variant={msg.role === "assistant" ? "received" : "sent"}
-                  className="prose p-2 font-medium marker:text-inherit"
-                >
+                  className="prose w-fit p-2 font-medium marker:text-inherit !whitespace-normal"
+                  >
                   <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
                 </ChatBubbleMessage>
               </div>

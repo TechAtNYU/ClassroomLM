@@ -64,7 +64,7 @@ export default function JoinDialog({
         <InputOTP
           maxLength={8}
           pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-          value={joinValue}
+          value={joinValue.toUpperCase()}
           onChange={(value) => setJoinValue(value)}
         >
           <InputOTPGroup>

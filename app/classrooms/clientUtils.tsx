@@ -58,7 +58,7 @@ export const optimisticUpdateAndFetchClassroomData = async <
 export function TooltipUtil({
   content,
   trigger,
-  delayDuration = 300,
+  delayDuration = 0,
   useSheetTrigger = false,
 }: {
   content: ReactNode;

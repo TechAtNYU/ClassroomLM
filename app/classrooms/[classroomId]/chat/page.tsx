@@ -139,7 +139,7 @@ export default async function ChatPage({
 
   // // console.log("chatAssistant", chatAssistant);
   return (
-    <div className="p-4">
+    <div className="p-4 max-[500px]:px-0">
       {/* <p>
         <strong>Classroom ID: </strong>
         {classroomId}

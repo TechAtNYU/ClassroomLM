@@ -11,7 +11,7 @@ import {
   deleteClassroom,
   setArchiveStatusClassroom,
 } from "../../actions";
-import { optimisticUpdateAndFetchClassroomData, TooltipUtil } from "../../clientUtils";
+import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
 import {
   ClassroomWithMembers,
   getUserAndClassroomData,
@@ -139,17 +139,17 @@ export default function ClassroomManagementButtons({
               content={"Upload Materials"}
             /> */}
 
-<Button
-  variant="outline"
-  className="flex items-center gap-2 w-fit px-4 py-2"
-  asChild
->
-  <Link href="upload" passHref className="flex items-center gap-2">
-    <Upload /> Upload
-  </Link>
-</Button>
+      <Button
+        variant="outline"
+        className="flex w-fit items-center gap-2 px-4 py-2"
+        asChild
+      >
+        <Link href="upload" passHref className="flex items-center gap-2">
+          <Upload /> Upload
+        </Link>
+      </Button>
 
-{/* <TooltipUtil
+      {/* <TooltipUtil
               trigger={
                 <Button
                   type="button"
@@ -183,14 +183,14 @@ export default function ClassroomManagementButtons({
               content={"Archive Classroom"}
             /> */}
 
-<Button
-                    variant="outline"
-                    className="flex gap-2"
-                    // effect={"hoverUnderline"}
-                    onClick={() => archiveClassroomCallback()}
-                  >
-                    <Archive /> Archive 
-                  </Button>
+      <Button
+        variant="outline"
+        className="flex gap-2"
+        // effect={"hoverUnderline"}
+        onClick={() => archiveClassroomCallback()}
+      >
+        <Archive /> Archive
+      </Button>
       {/* <button
         type="button"
         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
@@ -225,14 +225,14 @@ export default function ClassroomManagementButtons({
               }
               content={"Delete Classroom"}
             /> */}
-            <Button
-                    variant="outline"
-                    className="flex gap-2"
-                    // effect={"hoverUnderline"}
-                  >
-                    <Trash2 /> Delete 
-                  </Button>
-            </AlertDialogTrigger>
+          <Button
+            variant="outline"
+            className="flex gap-2"
+            // effect={"hoverUnderline"}
+          >
+            <Trash2 /> Delete
+          </Button>
+        </AlertDialogTrigger>
 
         <AlertDialogContent>
           <AlertDialogHeader>

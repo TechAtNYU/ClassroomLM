@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { inviteMemberToClassroom } from "../../../actions";
 import { toast } from "sonner";
-import { Plus, User } from "lucide-react";
+import { Plus, User, UserPlus } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import { TooltipUtil } from "@/app/classrooms/clientUtils";
 
 export default function InviteMember({ classroomId }: { classroomId: number }) {
   const [email, setEmail] = useState("");
@@ -36,13 +38,28 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
         }
       />
 
-      <button
+      <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  onClick={handleInvite}
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <UserPlus className="scale-[50%]" />
+                </Button>
+              }
+              content={"Invite Member"}
+            />
+      {/* <button
         onClick={handleInvite}
         className="flex w-full items-center justify-center rounded-lg bg-blue-700 px-2.5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
       >
         <Plus />
         <User />
-      </button>
+      </button> */}
     </div>
   );
 }

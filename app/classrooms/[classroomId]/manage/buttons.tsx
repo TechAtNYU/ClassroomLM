@@ -11,7 +11,7 @@ import {
   deleteClassroom,
   setArchiveStatusClassroom,
 } from "../../actions";
-import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
+import { optimisticUpdateAndFetchClassroomData, TooltipUtil } from "../../clientUtils";
 import {
   ClassroomWithMembers,
   getUserAndClassroomData,
@@ -35,8 +35,9 @@ import SaveClassroomDialog from "../../_components/saveClassroomDialog";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import MemberList from "../../_components/memberList";
 import InviteMember from "./_components/inviteMember";
-import { Loader2 } from "lucide-react";
+import { Archive, Loader2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/shared/components/ui/button";
 
 export default function ClassroomManagementButtons({
   userData,
@@ -114,22 +115,53 @@ export default function ClassroomManagementButtons({
   return (
     <div>
       <h1>Managing Classroom - {classroomData.name}</h1>
-      <Link href={`upload`} passHref>
+      {/* <Link href={`upload`} passHref>
         <button
           type="button"
           className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
         >
           Upload Materials
         </button>
-      </Link>
+      </Link> */}
+      <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <Link href={`upload`} passHref><Upload /></Link>
+                  
+                </Button>
+              }
+              content={"Upload Materials"}
+            />
       {/* ARCHIVE BUTTON */}
-      <button
+      <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  onClick={() => archiveClassroomCallback()}
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <Archive className="scale-[50%]"/>
+                  
+                </Button>
+              }
+              content={"Archive Classroom"}
+            />
+      {/* <button
         type="button"
         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
         onClick={() => archiveClassroomCallback()}
       >
         Archive
-      </button>
+      </button> */}
 
       {/* <button
         type="button"
@@ -140,7 +172,22 @@ export default function ClassroomManagementButtons({
       </button> */}
 
       <AlertDialog>
-        <AlertDialogTrigger>Delete</AlertDialogTrigger>
+        <AlertDialogTrigger><TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  onClick={() => archiveClassroomCallback()}
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <Trash2 className="scale-[50%]"/>
+                  
+                </Button>
+              }
+              content={"Delete Classroom"}
+            /></AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -167,7 +214,7 @@ export default function ClassroomManagementButtons({
         optimisticUpdateCallback={handleChangeClassroomName}
         actionText="update"
       />
-      <p>Invite Member:</p>
+      {/* <p>Invite Member:</p> */}
       <InviteMember classroomId={classroomData.id} />
       {classroomData.Classroom_Members &&
       classroomData.Classroom_Members.length > 0 ? (

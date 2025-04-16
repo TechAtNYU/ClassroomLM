@@ -296,7 +296,7 @@ const MessageArea = ({
                   <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                     {message?.member_id
                       ? (message.full_name ?? "Unknown")
-                      : AIFullNameFormatted("AI Assistant")}
+                      : AIFullNameFormatted("AI Assistant")}{" "}
                     • {formattedTime}
                     {message.is_ask && (
                       <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">

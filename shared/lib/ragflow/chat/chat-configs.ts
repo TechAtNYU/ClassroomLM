@@ -100,3 +100,47 @@ You will be given the chat history before your last response (if any), including
     promptType: "simple",
   } as ModelSettings,
 } as const;
+
+export const AugmentConfigTemplate = {
+  assistantPurpose: "augmentNotes",
+  sessionPurpose: "personal",
+  assistantIdStorage: {
+    table: "Classrooms",
+    column: "chat_assistant_id",
+  } as TableStorageInfo,
+  sessionIdStorage: {
+    table: "Classroom_Members",
+    column: "ragflow_session_id",
+  } as TableStorageInfo,
+  modelSettings: {
+    promptSettings: {
+      prompt: `
+      **Knowledge Base:**
+      {knowledge}`,
+
+      // no longer using the prompt here because it made the model respond too conversationally
+      // instead, the prompt is appended to the message
+
+      // Below is a line of text notes taken by a student.
+      // Please augment these notes with you comments and revise them primarily based on accuracy.
+      // Only change the parts you want to revise.
+      // Do not rewrite the notes, simply make small edits for correctness.
+      // Do not make style and diction revisions.
+      // Return the notes exactly as given if they are already correct.
+      empty_response: "",
+      opener: "Hi! How can I help you today?",
+      variables: [{ key: "knowledge", optional: true }],
+      keywords_similarity_weight: 0.75,
+      similarity_threshold: 0.2,
+      top_n: 6,
+      show_quote: true,
+    },
+    llmSettings: {
+      temperature: 0.4,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.6,
+      top_p: 0.3,
+    },
+    promptType: "simple",
+  } as ModelSettings,
+} as const;

@@ -14,7 +14,7 @@ type PageStructure =
                 uploadClassroomPage: boolean;
               };
               personalChatPage: boolean;
-              // TODO: add chatrooms
+              chatroomListPage: boolean;
             }>
           | undefined;
       };

@@ -1,7 +1,5 @@
-import {
-  createDatasetClient,
-  downloadDocument,
-} from "@/shared/lib/ragflow/dataset-client";
+import { downloadDocument } from "@/shared/lib/ragflow/dataset-client";
+import { notFound } from "next/navigation";
 
 export default async function PreviewPage({
   searchParams,
@@ -10,27 +8,17 @@ export default async function PreviewPage({
 }) {
   const { documentId, datasetId } = await searchParams;
 
-  // Create a temporary client to access the dataset
-  const datasetClientResult = await createDatasetClient(
-    {
-      classroomId: "0", // We don't actually need a real classroom ID for preview
-      classroomName: "preview",
-    },
-    datasetId
-  );
+  const { ragflowCallSuccess, content, mimeType, fileName } =
+    await downloadDocument(datasetId, documentId);
 
-  if (!datasetClientResult) {
-    return <>Unable to access document. Please try refreshing.</>;
+  if (!ragflowCallSuccess) {
+    notFound();
   }
 
-  const { content, mimeType, fileName } = await downloadDocument(
-    datasetClientResult.client,
-    documentId
-  );
   console.log(`Rendering file: ${fileName}, with MIME type: ${mimeType}`);
 
   if (mimeType === "application/octet-stream") {
-    // For text content, decode the ArrayBuffer using TextDecoder
+    // We fallback to rendering as text
     const text = new TextDecoder().decode(new Uint8Array(content));
     return (
       <div className="mx-auto h-screen w-4/5">
@@ -40,10 +28,7 @@ export default async function PreviewPage({
   } else {
     // Convert binary content to base64 for embedding non-text file types
     // Allows us to render PDFs, images and other binary formats directly in the browser
-    const binaryString = Array.from(new Uint8Array(content))
-      .map((byte) => String.fromCharCode(byte))
-      .join("");
-    const base64Content = btoa(binaryString);
+    const base64Content = Buffer.from(content).toString("base64");
     return (
       <div className="mx-auto h-screen w-4/5">
         <embed

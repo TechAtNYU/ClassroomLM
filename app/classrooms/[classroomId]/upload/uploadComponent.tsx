@@ -20,6 +20,7 @@ import {
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { ScrollArea } from "@shared/components/ui/scroll-area";
 import { toast } from "sonner";
+import { SquareArrowOutUpRight } from "lucide-react";
 
 type UploadedFile = {
   id: string;
@@ -29,6 +30,8 @@ type UploadedFile = {
   type: string;
   status: string;
 };
+
+const ACTION_MAX_SIZE_BYTES = 10 * 1_000_000; // this is set in next.config.ts
 
 export default function UploadComponent({
   classroomId,
@@ -73,9 +76,20 @@ export default function UploadComponent({
     return () => clearInterval(interval);
   }, [classroomId, classroomName, datasetClient]);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) setFile(selectedFile);
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.size > ACTION_MAX_SIZE_BYTES) {
+        toast.error("File size too big!");
+        e.preventDefault();
+        if (inputFile.current) {
+          inputFile.current.value = "";
+        }
+        return;
+      } else {
+        setFile(selectedFile);
+      }
+    }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -192,6 +206,7 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
                   className="font-medium hover:underline"
                 >
                   {file.name}
+                  <SquareArrowOutUpRight className="inline scale-75" />
                 </Link>
                 <p className="text-sm text-muted-foreground">
                   {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}

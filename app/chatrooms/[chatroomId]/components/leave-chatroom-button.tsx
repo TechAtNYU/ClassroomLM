@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { leaveChatroom } from "../../actions";
+import { leaveChatroom } from "@/app/chatrooms/actions";
+import { Button } from "@/shared/components/ui/button";
+import { DoorOpen } from "lucide-react";
 
 export default function LeaveChatroomButton({
+  classroomId,
   chatroomId,
 }: {
+  classroomId: number;
   chatroomId: string;
 }) {
   const [isLeaving, setIsLeaving] = useState(false);
@@ -17,7 +21,7 @@ export default function LeaveChatroomButton({
       setIsLeaving(true);
       try {
         await leaveChatroom(chatroomId);
-        router.push("/chatrooms");
+        router.push(`/classrooms/${classroomId}/chatrooms`);
       } catch (error) {
         console.error("Error leaving chatroom:", error);
         alert("Failed to leave chatroom. Please try again.");
@@ -28,12 +32,14 @@ export default function LeaveChatroomButton({
   };
 
   return (
-    <button
+    <Button
+      size={"sm"}
       onClick={handleLeave}
       disabled={isLeaving}
-      className="rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:bg-gray-400"
+      variant={"destructive"}
     >
-      {isLeaving ? "Leaving..." : "Leave Chatroom"}
-    </button>
+      <DoorOpen />
+      {isLeaving ? "Leaving..." : "Leave"}
+    </Button>
   );
 }

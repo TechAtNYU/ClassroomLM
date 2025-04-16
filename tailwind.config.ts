@@ -78,12 +78,119 @@ export default {
       },
       keyframes: {
         "caret-blink": {
-          "0%,70%,100%": { opacity: "1" },
-          "20%,50%": { opacity: "0" },
+          "0%,70%,100%": {
+            opacity: "1",
+          },
+          "20%,50%": {
+            opacity: "0",
+          },
+        },
+        shine: {
+          "0%": {
+            backgroundPosition: "200% 0",
+          },
+          "25%": {
+            backgroundPosition: "-200% 0",
+          },
+          "100%": {
+            backgroundPosition: "-200% 0",
+          },
+        },
+        gradientFlow: {
+          "0%": {
+            "background-position": "0% 50%",
+          },
+          "50%": {
+            "background-position": "100% 50%",
+          },
+          "100%": {
+            "background-position": "0% 50%",
+          },
+        },
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
+        shine: "shine 3s ease-out infinite",
+        "gradient-flow":
+          "gradientFlow 10s ease 0s infinite normal none running",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            "--tw-prose-body": "inherit",
+            "--tw-prose-headings": "inherit",
+            "--tw-prose-lead": "inherit",
+            "--tw-prose-links": "inherit",
+            "--tw-prose-bold": "inherit",
+            "--tw-prose-counters": "inherit",
+            "--tw-prose-bullets": "inherit",
+            "--tw-prose-hr": "inherit",
+            "--tw-prose-quotes": "inherit",
+            "--tw-prose-quote-borders": "inherit",
+            "--tw-prose-captions": "inherit",
+            "--tw-prose-code": "inherit",
+            "--tw-prose-pre-code": "inherit",
+            "--tw-prose-pre-bg": "inherit",
+            "--tw-prose-th-borders": "inherit",
+            "--tw-prose-td-borders": "inherit",
+            "--tw-prose-invert-body": "inherit",
+            "--tw-prose-invert-headings": "inherit",
+            "--tw-prose-invert-lead": "inherit",
+            "--tw-prose-invert-links": "inherit",
+            "--tw-prose-invert-bold": "inherit",
+            "--tw-prose-invert-counters": "inherit",
+            "--tw-prose-invert-bullets": "inherit",
+            "--tw-prose-invert-hr": "inherit",
+            "--tw-prose-invert-quotes": "inherit",
+            "--tw-prose-invert-quote-borders": "inherit",
+            "--tw-prose-invert-captions": "inherit",
+            "--tw-prose-invert-code": "inherit",
+            "--tw-prose-invert-pre-code": "inherit",
+            "--tw-prose-invert-pre-bg": "inherit",
+            "--tw-prose-invert-th-borders": "inherit",
+            "--tw-prose-invert-td-borders": "inherit",
+            h1: {},
+            h2: {
+              marginTop: "1.25em",
+              marginBottom: "0.75em",
+            },
+            p: {
+              marginTop: "0.75em",
+              marginBottom: "0.75em",
+            },
+            ul: {
+              marginTop: "0.05em",
+            },
+            "code::before": {
+              content: "&nbsp",
+            },
+            "code::after": {
+              content: "&nbsp",
+            },
+            hr: {
+              marginTop: "1.5em",
+              marginBottom: "1.5em",
+            },
+          },
+        },
       },
     },
   },

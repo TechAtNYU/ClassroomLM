@@ -1,11 +1,41 @@
-import { logout } from "@/app/login/actions";
-import Image from "next/image";
+import { Button } from "@/shared/components/ui/button";
+import { ArrowRightCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">
-        <Image
+    <div className="flex min-h-screen w-full items-center justify-center bg-[linear-gradient(0deg,_#FFF4D9,_#FFEFD2_52%,_#67C5FF)] text-center dark:bg-[linear-gradient(0deg,_#443461,_#130F5A_38%,_#1F1F1F)]">
+      <div className="flex h-[50vh] min-h-fit max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
+        <div className="mb-3 flex flex-col gap-2">
+          <h1 className="mb-3 text-5xl font-bold tracking-tight lg:text-8xl">
+            Learn and grow
+          </h1>
+          <h2 className="text-2xl font-medium tracking-tight lg:text-4xl">
+            with your personalized classroom agent
+          </h2>
+        </div>
+        <div className="flex w-2/5 min-w-[50vw] flex-col items-center gap-10">
+          <h3 className="text-lg italic lg:text-xl">
+            A collaborative space for students and teachers to interact with the
+            future of LLM-enhanced education.
+          </h3>
+          <Button
+            effect="hoverUnderlineWhiteExpand"
+            icon={ArrowRightCircle}
+            iconPlacement="right"
+            className="h-12 w-full min-w-fit max-w-[20vw] bg-[#200092] text-white shadow-[0px_0px_45px_1px_#6083FF] hover:bg-[#200092]/90"
+          >
+            <Link href="classrooms" className="text-lg">
+              Start your journey today
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  {
+    /* <Image
           className="dark:invert"
           src="/next.svg"
           alt="Next.js logo"
@@ -36,12 +66,6 @@ export default function Home() {
             My classrooms
           </a>
           <a
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent bg-foreground px-4 text-sm text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] sm:h-12 sm:px-5 sm:text-base"
-            href="chatrooms"
-          >
-            My chatrooms
-          </a>
-          <a
             className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] sm:h-12 sm:min-w-44 sm:px-5 sm:text-base"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
@@ -57,9 +81,11 @@ export default function Home() {
               Logout
             </button>
           </form>
-        </div>
-      </main>
-      <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
+        </div> */
+  }
+
+  {
+    /* <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -105,7 +131,6 @@ export default function Home() {
           />
           Go to nextjs.org →
         </a>
-      </footer>
-    </div>
-  );
+      </footer> */
+  }
 }

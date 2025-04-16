@@ -446,12 +446,14 @@ export async function deleteDataset(
 
 /**
  * Downloads a document from a specified dataset
- * @param client Previously created client with `createDatasetClient()`
+ * @param datasetId datasetId assumed to be correct, doesn't follow client pattern
+ * since for our use case we're trying to view a document assuming the dataset exists,
+ * not create that dataset if it doesn't
  * @param documentId The ID of the document to download
  * @returns The text content of the document. Verify credibility with ragflowCallSuccess
  */
 export async function downloadDocument(
-  client: DatasetClient,
+  datasetId: string,
   documentId: string
 ): Promise<
   DatasetReadOnlyOperationResult & {
@@ -462,7 +464,7 @@ export async function downloadDocument(
   }
 > {
   const response = await fetch(
-    `${getDatasetUrl()}/${client.datasetId}/documents/${documentId}`,
+    `${getDatasetUrl()}/${datasetId}/documents/${documentId}`,
     {
       method: "GET",
       headers: getHeader(),

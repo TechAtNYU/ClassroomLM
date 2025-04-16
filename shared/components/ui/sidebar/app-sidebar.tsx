@@ -11,6 +11,8 @@ import {
   UserRoundCog,
   SpeechIcon,
   UploadIcon,
+  Users,
+  Edit,
 } from "lucide-react";
 
 // import Image from "next/image";
@@ -45,6 +47,8 @@ import { UserContext } from "@shared/lib/userContext/userContext";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 import Logo from "@shared/components/Logo";
 import Link from "next/link";
+import { logout } from "@/app/login/actions";
+import { Button } from "../button";
 
 // Menu items.
 // const items = [
@@ -119,8 +123,14 @@ export function AppSidebar() {
   const enrolledClassItems = {
     chat: {
       title: "Personal Assistant",
-      suffixURL: "/chat",
+      suffixURL: "chat",
       icon: SpeechIcon,
+      isActive: false,
+    },
+    chatRooms: {
+      title: "Collaborative Chatrooms",
+      suffixURL: "chatrooms",
+      icon: Users,
       isActive: false,
     },
   };
@@ -128,8 +138,20 @@ export function AppSidebar() {
   const adminManageClassItems = {
     chat: {
       title: "Personal Assistant",
-      suffixURL: "/chat",
+      suffixURL: "chat",
       icon: SpeechIcon,
+      isActive: false,
+    },
+    chatRooms: {
+      title: "Collaborative Chatrooms",
+      suffixURL: "chatrooms",
+      icon: Users,
+      isActive: false,
+    },
+    manage: {
+      title: "Manage Dashboard",
+      suffixURL: "manage",
+      icon: Edit,
       isActive: false,
     },
     upload: {
@@ -194,7 +216,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-11 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
                   {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
                   <Logo className="fill-sidebar-primary-foreground" />
@@ -264,7 +286,9 @@ export function AppSidebar() {
                     isActive={item.isActive}
                     asChild
                   >
-                    <Link href={item.suffixURL}>
+                    <Link
+                      href={`/classrooms/${classroomInfo.id}/${item.suffixURL}`}
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </Link>
@@ -277,9 +301,9 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="flex-col items-end">
-          <ModeToggle />
-        </div>
+        {/* <div className="flex-col items-end"> */}
+        <ModeToggle />
+        {/* </div> */}
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -294,9 +318,17 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
+                <form action={logout}>
+                  <DropdownMenuItem>
+                    <Button
+                      variant={"ghost"}
+                      effect={"hoverUnderline"}
+                      className="min-h-full min-w-full justify-start"
+                    >
+                      Sign out
+                    </Button>
+                  </DropdownMenuItem>
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

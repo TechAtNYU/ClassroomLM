@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import {
+  AIAvatar,
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
@@ -8,7 +9,6 @@ import {
 import { ChatMessageList } from "@shared/components/ui/chat/chat-message-list";
 import { ChatInput } from "@shared/components/ui/chat/chat-input";
 import { Button } from "@/shared/components/ui/button";
-
 import {
   ChatClientWithSession,
   RagFlowMessage,
@@ -36,8 +36,7 @@ export default function MessageBox({
   const [isLoading, setIsLoading] = useState(false);
 
   function cleanMessage(content: string): string {
-    // Remove any reference patterns like ##number$$
-    return content.replace(/##\d+\$\$/g, "").trim();
+    return content.replace(/\s##\d+\$\$/g, "").trim();
   }
 
   async function handleSend() {
@@ -61,59 +60,76 @@ export default function MessageBox({
     const assistantMessage: RagFlowMessage = {
       role: "assistant",
       content: response.response,
+      created_at: response.responseTimeSeconds,
     };
     setMessages((prev) => [...prev, assistantMessage]);
   }
-
+  console.log(messages);
   return (
-    <div className="flex h-[600px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white">
+    <div className="mt-3 flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
       <Logo
-        className={"size-24 place-self-center stroke-black stroke-[10px]"}
+        className={
+          "size-[6vmin] h-fit min-w-10 place-self-center fill-foreground stroke-foreground stroke-[10px]"
+        }
       />
-      {/* doesn't seem like 400 px does much */}
-      <div className="h-[400px] flex-1 overflow-auto">
-        <ChatMessageList smooth>
+      <div className="flex-1 overflow-auto">
+        <ChatMessageList smooth className="max-[500px]:px-0">
           {messages.map((msg, index) => (
             <ChatBubble
               key={index}
               variant={msg.role === "assistant" ? "received" : "sent"}
+              className="max-w-[80%]"
             >
               {msg.role === "assistant" ? (
-                <ChatBubbleAvatar fallback="AI" />
+                <AIAvatar />
               ) : (
                 <ChatBubbleAvatar fallback="Me" />
               )}
-              <ChatBubbleMessage
-                variant={msg.role === "assistant" ? "received" : "sent"}
-                className="prose p-2 font-medium marker:text-inherit"
-              >
-                <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
-              </ChatBubbleMessage>
+              <div className="flex flex-col">
+                <span className="mx-2">
+                  {msg?.created_at &&
+                    getTimeDate(msg.created_at) &&
+                    getTimeDate(msg.created_at)}
+                </span>
+
+                <ChatBubbleMessage
+                  variant={msg.role === "assistant" ? "received" : "sent"}
+                  className="prose w-fit !whitespace-normal p-2 font-medium marker:text-inherit"
+                >
+                  <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
+                </ChatBubbleMessage>
+              </div>
             </ChatBubble>
           ))}
           {isLoading && (
             <ChatBubble variant="received">
-              <ChatBubbleAvatar fallback="AI" />
+              <AIAvatar />
               <ChatBubbleMessage isLoading variant="received" />
             </ChatBubble>
           )}
         </ChatMessageList>
       </div>
-      <div className="relative mt-4">
+      <div className="flex w-full items-center justify-between gap-2 rounded-lg border bg-background p-1">
         <ChatInput
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Type your message..."
           onEnter={handleSend}
+          className="focus-visible:ringof min-h-10 resize-none border-0 bg-background shadow-none focus-visible:ring-0"
         />
-        <Button
-          onClick={handleSend}
-          size="default"
-          className="absolute right-2 top-1/2 -translate-y-1/2"
-        >
+        <Button onClick={handleSend} size="sm" className="ml-auto mr-3">
           Send <SendIcon />
         </Button>
       </div>
     </div>
   );
+}
+
+function getTimeDate(created_at_seconds: number) {
+  return new Date(created_at_seconds * 1000).toLocaleTimeString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
 }

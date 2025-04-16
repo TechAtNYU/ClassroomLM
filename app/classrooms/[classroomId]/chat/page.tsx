@@ -105,61 +105,10 @@ export default async function ChatPage({
     }
     return <h1>Server error! </h1>; //TODO fixthis
   }
-  // console.log(chatClient);
 
-  // const chatAssistantId = await getOrCreateAssistant(
-  //   Number(classroomId),
-  //   datasetId
-  // );
-  // if (chatAssistantId.status == "empty") {
-  //   return (
-  //     <>
-  //       <h1>Classroom dataset empty!</h1>
-  //       <Link href="/classroom">
-  //         <button className="mb-2 me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900">
-  //           Back to My Classrooms
-  //         </button>
-  //       </Link>
-  //     </>
-  //   );
-  // }
-  // const chatSessionId = await getOrCreateSession(
-  //   userId,
-  //   chatAssistantId.id,
-  //   classroomIdNum
-  // );
-
-  // const messageHistory = await retrieveMessageHistory(
-  //   chatAssistantId.id,
-  //   userId,
-  //   chatSessionId
-  // );
-
-  // const displayInfo = await getDisplayInfo(classroomIdNum, userId);
-
-  // // console.log("chatAssistant", chatAssistant);
   return (
-    <div className="p-4">
-      {/* <p>
-        <strong>Classroom ID: </strong>
-        {classroomId}
-        <br></br>
-        <strong>User ID: </strong>
-        {userId} <br></br>
-        <strong>Ragflow Dataset ID:</strong> {datasetId} <br></br>
-        <strong>Chat Assistant ID:</strong> {chatAssistantId} <br></br>
-        <strong>Chat Session ID:</strong> {chatSessionId}
-      </p> */}
-      {/* <p>
-        <strong>Welcome to: </strong>
-        {classroomInfo.name}, <strong>{username}</strong> <br />
-        <strong>Ragflow Dataset ID:</strong> {datasetClient.client.datasetId}{" "}
-        <br />
-        <strong>Chat Assistant ID:</strong> {chatClient.client.assistantId}{" "}
-        <br />
-        <strong>Chat Session ID:</strong>{" "}
-        {(chatClient.client as ChatClientWithSession).sessionId}
-      </p> */}
+    // <div className="p-4 max-[500px]:px-0">
+    <div>
       <h2 className="text-3xl font-bold tracking-tight">
         {classroomInfo.name}
       </h2>

@@ -108,7 +108,7 @@ export default async function ChatPage({
 
   return (
     // <div className="p-4 max-[500px]:px-0">
-    <div>
+    <div className="flex h-[80vh] flex-col">
       <h2 className="text-3xl font-bold tracking-tight">
         {classroomInfo.name}
       </h2>

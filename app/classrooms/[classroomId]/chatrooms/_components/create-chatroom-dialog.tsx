@@ -55,20 +55,13 @@ export function CreateChatroomDialog({ classroomId }: { classroomId: string }) {
               <Label htmlFor="chatroom-name" className="text-right">
                 Name
               </Label>
-              <Input
-                id="chatroom-name"
-                name="name"
-                defaultValue="New Chatroom"
-                className="col-span-3"
-                required
-              />
+              <Input name="chatroom-name" className="col-span-3" required />
             </div>
             <input
-              type="text"
+              type="hidden"
               name="classroom_id"
               defaultValue={classroomId}
               readOnly
-              hidden
               required
             />
             <DialogFooter>

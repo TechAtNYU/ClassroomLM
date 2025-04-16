@@ -124,7 +124,7 @@ const ChatroomPage = async ({
     : [];
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-[83vh] flex-col">
       <div className="flex items-center justify-between border-b p-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{chatroom.name}</h1>

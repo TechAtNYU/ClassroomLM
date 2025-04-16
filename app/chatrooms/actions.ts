@@ -1,18 +1,16 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@shared/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import {
-  getRagflowDatasetId,
-  sendMessage,
-} from "../chat/[classroomId]/actions";
-import {
+  ChatClientWithSession,
+  createChatClient,
   deleteSession,
-  findChatAssistant,
-  getOrCreateAssistant,
-  getOrCreateSession,
-  llmToChatroom,
-} from "./helpers";
+  sendMessage,
+} from "@shared/lib/ragflow/chat/chat-client";
+import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
+import { createDatasetClient } from "@shared/lib/ragflow/dataset-client";
+import { chatroomConfigTemplate } from "@shared/lib/ragflow/chat/chat-configs";
 
 export const createChatroom = async (formData: FormData) => {
   const supabase = await createClient();
@@ -21,10 +19,11 @@ export const createChatroom = async (formData: FormData) => {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("No authenticated user found");
+    console.error("Unauthenticated user on chatroom page");
+    return; // {supabaseCallSuccess: false}
   }
 
-  const name = (formData.get("name") as string) || "New Chatroom";
+  const name = (formData.get("chatroom-name") as string) || "New Chatroom";
   const classroom_id = parseInt(formData.get("classroom_id") as string);
 
   // Create a new chatroom
@@ -41,7 +40,8 @@ export const createChatroom = async (formData: FormData) => {
     .single();
 
   if (chatroomError) {
-    throw new Error(`Failed to create chatroom: ${chatroomError.message}`);
+    console.error(`Failed to create chatroom: ${chatroomError.message}`);
+    return; // {supabaseCallSuccess: false}
   }
 
   // Get the user's classroom member ID
@@ -53,7 +53,8 @@ export const createChatroom = async (formData: FormData) => {
     .single();
 
   if (memberError) {
-    throw new Error(`Failed to get member ID: ${memberError.message}`);
+    console.error(`Failed to get member ID: ${memberError.message}`);
+    return; //{supabaseCallSuccess: false}
   }
 
   // Add the user to the chatroom
@@ -67,25 +68,27 @@ export const createChatroom = async (formData: FormData) => {
     ]);
 
   if (chatMemberError) {
-    throw new Error(
-      `Failed to add user to chatroom: ${chatMemberError.message}`
-    );
+    console.error(`Failed to add user to chatroom: ${chatMemberError.message}`);
+    return; //{supabaseCallSuccess: false}
   }
-
   revalidatePath("/chatrooms");
+  return; //{supabaseCallSuccess: true}
 };
 
 export const deleteChatroom = async (
   chatroomId: string,
-  classroomId: number
+  chatroomAssistantId: string | null
 ) => {
   const supabase = await createClient();
 
-  const assistantId = await findChatAssistant(classroomId, chatroomId);
+  // const assistantId = await findChatAssistant(classroomId, chatroomId);
 
-  if (assistantId) {
-    console.log("found session. delete session for chatroom");
-    await deleteSession(chatroomId, assistantId);
+  if (chatroomAssistantId) {
+    // console.log("found session. delete session for chatroom");
+    await deleteSession(chatroomAssistantId, {
+      primaryKeyValuesSessions: [{ key: "id", value: chatroomId }],
+      sessionIdStorage: chatroomConfigTemplate.sessionIdStorage,
+    });
   }
 
   const { error: chatroomError } = await supabase
@@ -94,13 +97,67 @@ export const deleteChatroom = async (
     .eq("id", chatroomId);
 
   if (chatroomError) {
-    throw new Error(`Failed to delete chatroom: ${chatroomError.message}`);
+    console.error(`Failed to delete chatroom: ${chatroomError.message}`);
   }
 
   revalidatePath("/chatrooms");
 };
 
-export const sendMessageToChatroom = async (formData: FormData) => {
+// export const sendMessageToChatroom = async (formData: FormData) => {
+//   const supabase = await createClient();
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser();
+
+//   if (!user) {
+//     throw new Error("No authenticated user found");
+//   }
+
+//   const chatroomId = formData.get("chatroomId") as string;
+//   let content = (formData.get("message") as string).trim();
+//   const chatroomMemberId = parseInt(formData.get("chatroomMemberId") as string);
+
+//   if (!content || !chatroomMemberId || !chatroomId) {
+//     throw new Error(
+//       "Chatroom ID, chatroom member ID, and message content are required"
+//     );
+//   }
+
+//   // Check if the message starts with "/ask" and trim it
+//   const isAskCommand = content.startsWith("/ask ");
+//   if (isAskCommand) {
+//     content = content.substring(5).trim();
+//     if (!content) {
+//       throw new Error("Message content is required after the /ask command");
+//     }
+//   }
+
+//   // Insert the message
+//   const { error: messageError } = await supabase.from("Messages").insert([
+//     {
+//       content,
+//       member_id: chatroomMemberId,
+//       chatroom_id: chatroomId,
+//       is_ask: isAskCommand,
+//     },
+//   ]);
+
+//   if (messageError) {
+//     throw new Error(`Failed to send message: ${messageError.message}`);
+//   }
+
+//   // Handle user "/ask" command
+//   if (isAskCommand) {
+//     askLLM(chatroomId);
+//   }
+
+//   revalidatePath(`/chatrooms/${chatroomId}`);
+// };
+
+export const inviteUserToChatroom = async (
+  chatroomId: string,
+  inviteeEmail: string
+) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -109,60 +166,6 @@ export const sendMessageToChatroom = async (formData: FormData) => {
   if (!user) {
     throw new Error("No authenticated user found");
   }
-
-  const chatroomId = formData.get("chatroomId") as string;
-  let content = (formData.get("message") as string).trim();
-  const chatroomMemberId = parseInt(formData.get("chatroomMemberId") as string);
-
-  if (!content || !chatroomMemberId || !chatroomId) {
-    throw new Error(
-      "Chatroom ID, chatroom member ID, and message content are required"
-    );
-  }
-
-  // Check if the message starts with "/ask" and trim it
-  const isAskCommand = content.startsWith("/ask ");
-  if (isAskCommand) {
-    content = content.substring(5).trim();
-    if (!content) {
-      throw new Error("Message content is required after the /ask command");
-    }
-  }
-
-  // Insert the message
-  const { error: messageError } = await supabase.from("Messages").insert([
-    {
-      content,
-      member_id: chatroomMemberId,
-      chatroom_id: chatroomId,
-      is_ask: isAskCommand,
-    },
-  ]);
-
-  if (messageError) {
-    throw new Error(`Failed to send message: ${messageError.message}`);
-  }
-
-  // Handle user "/ask" command
-  if (isAskCommand) {
-    askLLM(chatroomId);
-  }
-
-  revalidatePath(`/chatrooms/${chatroomId}`);
-};
-
-export const inviteUserToChatroom = async (formData: FormData) => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error("No authenticated user found");
-  }
-
-  const chatroomId = formData.get("chatroom_id") as string;
-  const inviteeEmail = formData.get("email") as string;
 
   if (!chatroomId || !inviteeEmail) {
     throw new Error("Chatroom ID and invitee email are required");
@@ -348,18 +351,29 @@ export const leaveChatroom = async (chatroomId: string) => {
   revalidatePath("/chatrooms");
 };
 
-export const askLLM = async (chatroomId: string) => {
+export const askLLM = async (
+  classroomInfo: ClassroomWithMembers,
+  chatroomId: string,
+  client: ChatClientWithSession | null
+): Promise<{
+  client: ChatClientWithSession | null;
+  supabaseMessageFetch: boolean;
+  datasetClientCreationSuccess: boolean;
+  failedBecauseEmptyDataset: boolean;
+  clientCreationSuccess: boolean;
+  llmMessageSend: boolean;
+}> => {
   const supabase = await createClient();
 
-  const { data: chatroom, error: chatroomError } = await supabase
-    .from("Chatrooms")
-    .select("classroom_id")
-    .eq("id", chatroomId)
-    .single();
+  // const { data: chatroom, error: chatroomError } = await supabase
+  //   .from("Chatrooms")
+  //   .select("classroom_id")
+  //   .eq("id", chatroomId)
+  //   .single();
 
-  if (chatroomError) {
-    throw new Error(`Failed to find chatroom: ${chatroomError.message}`);
-  }
+  // if (chatroomError) {
+  //   throw new Error(`Failed to find chatroom: ${chatroomError.message}`);
+  // }
 
   // get all messages that is new
   const { data: messageRaw, error: messagesError } = await supabase
@@ -383,7 +397,14 @@ export const askLLM = async (chatroomId: string) => {
 
   if (messagesError || !messageRaw) {
     console.error("Error fetching messages:", messagesError);
-    throw new Error("Error fetching messages or messages is null");
+    return {
+      client: null,
+      supabaseMessageFetch: false,
+      datasetClientCreationSuccess: false,
+      failedBecauseEmptyDataset: false,
+      clientCreationSuccess: false,
+      llmMessageSend: false,
+    };
   }
 
   const messages = messageRaw.map((message) => {
@@ -400,42 +421,119 @@ export const askLLM = async (chatroomId: string) => {
 
   // HACK: We might need better prompt engineering at some point to optomize performance
   const prompt = `
-Below is the chat history before your last response (if any) in JSON:
+    Below is the chat history before your last response (if any) in JSON:
 
-${JSON.stringify(messages)}
-  `;
+    ${JSON.stringify(messages)}
+      `;
 
-  const datasetId = await getRagflowDatasetId(chatroom.classroom_id);
+  // If no client already provided, make a new one
+  if (!client) {
+    // First we create the dataset client
+    const datasetClient = await createDatasetClient(
+      {
+        classroomId: classroomInfo.id.toString(),
+        classroomName: classroomInfo.name ?? "Classroom", //TODO: make class name non-nullable in supabase
+      },
+      classroomInfo.ragflow_dataset_id
+    );
 
-  if (!datasetId) {
-    llmToChatroom(chatroomId, "No dataset found!");
-    return;
+    if (!datasetClient) {
+      console.log(
+        "Error rendering chat page, error creating or fetching dataset for classroom."
+      );
+      return {
+        client: null,
+        supabaseMessageFetch: true,
+        datasetClientCreationSuccess: false,
+        failedBecauseEmptyDataset: false,
+        clientCreationSuccess: false,
+        llmMessageSend: false,
+      };
+    }
+    // Then create the chat client using the chatroom specific template
+    const createClientResponse = await createChatClient(
+      {
+        ...chatroomConfigTemplate,
+        associatedClassroomName: classroomInfo.name ?? "Classroom",
+        primaryKeyValuesAssistant: [{ key: "id", value: classroomInfo.id }],
+        primaryKeyValuesSession: [{ key: "id", value: chatroomId }],
+        datasets: [datasetClient.client.datasetId],
+      }
+      // classroomInfo.chat_assistant_id
+    );
+
+    if (!createClientResponse.client) {
+      if (createClientResponse.failBecauseDatasetEmpty) {
+        llmToChatroom(
+          chatroomId,
+          "The dataset is empty right now, please ask your instructor to add materials to this classroom's dataset!"
+        );
+        return {
+          client: null,
+          supabaseMessageFetch: true,
+          datasetClientCreationSuccess: true,
+          failedBecauseEmptyDataset: true,
+          clientCreationSuccess: false,
+          llmMessageSend: false,
+        };
+      }
+      return {
+        client: null,
+        supabaseMessageFetch: true,
+        datasetClientCreationSuccess: true,
+        failedBecauseEmptyDataset: false,
+        clientCreationSuccess: false,
+        llmMessageSend: false,
+      };
+    }
+
+    client = createClientResponse.client as ChatClientWithSession;
   }
 
-  const assistant = await getOrCreateAssistant(
-    chatroomId,
-    datasetId,
-    chatroom.classroom_id
-  );
+  // const datasetId = await getRagflowDatasetId(chatroom.classroom_id);
 
-  if (!assistant.id) {
-    llmToChatroom(chatroomId, "Dataset is empty");
-    return;
+  // if (!datasetId) {
+  //   llmToChatroom(chatroomId, "No dataset found!");
+  //   return;
+  // }
+
+  // const assistant = await getOrCreateAssistant(
+  //   chatroomId,
+  //   datasetId,
+  //   chatroom.classroom_id
+  // );
+
+  // if (!assistant.id) {
+  //   llmToChatroom(chatroomId, "Dataset is empty");
+  //   return;
+  // }
+
+  // const chatSessionId = await getOrCreateSession(
+  //   chatroomId,
+  //   assistant.id,
+  //   chatroom.classroom_id
+  // );
+
+  const messageResponse = await sendMessage(client, prompt);
+
+  if (!messageResponse.ragflowCallSuccess) {
+    return {
+      client: null,
+      supabaseMessageFetch: true,
+      datasetClientCreationSuccess: true,
+      failedBecauseEmptyDataset: false,
+      clientCreationSuccess: false,
+      llmMessageSend: false,
+    };
   }
 
-  const chatSessionId = await getOrCreateSession(
-    chatroomId,
-    assistant.id,
-    chatroom.classroom_id
-  );
+  // const response: string = await sendMessage(
+  //   prompt,
+  //   assistant.id,
+  //   chatSessionId
+  // );
 
-  const response: string = await sendMessage(
-    prompt,
-    assistant.id,
-    chatSessionId
-  );
-
-  llmToChatroom(chatroomId, response);
+  llmToChatroom(chatroomId, messageResponse.response);
 
   // mark all messages as not new message
   const messageIds = messages.map((message) => message.id);
@@ -447,8 +545,36 @@ ${JSON.stringify(messages)}
     .in("id", messageIds);
 
   if (messageMarkError) {
-    throw new Error(
-      `Failed to mark messages as not new: ${messageMarkError.message}`
+    console.error(
+      `Error setting message as not new and sent to the LLM for chatroom ID ${chatroomId}:`,
+      messageMarkError
+    );
+  }
+  return {
+    client: client,
+    supabaseMessageFetch: true,
+    datasetClientCreationSuccess: true,
+    failedBecauseEmptyDataset: false,
+    clientCreationSuccess: true,
+    llmMessageSend: true,
+  };
+};
+
+const llmToChatroom = async (chatroomId: string, message: string) => {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("Messages").insert([
+    {
+      chatroom_id: chatroomId,
+      content: message,
+      is_new: false,
+    },
+  ]);
+
+  if (error) {
+    console.error(
+      `Error while sending message from LLM to chatroom ${chatroomId}:`,
+      error
     );
   }
 };

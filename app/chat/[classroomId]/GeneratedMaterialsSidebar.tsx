@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "@/components/ui/dialog"; // adjust path per your project
+} from "@/shared/components/ui/dialog"; // adjust path per your project
 
 type Session = {
   id: string;

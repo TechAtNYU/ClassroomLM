@@ -53,8 +53,8 @@ export default function AugmentComponent({
       // if txt or md
       if (fileExtension == "txt" || fileExtension == "md") {
         const endText: string = await file.text();
-        endText.replaceAll("\r", "");
-        splitByLines = endText.split("\n");
+        const cleanedText = endText.replaceAll("\r", "");
+        splitByLines = cleanedText.split("\n");
 
         // if pdf
       } else if (fileExtension == "pdf") {

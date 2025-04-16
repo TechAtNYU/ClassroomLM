@@ -216,7 +216,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-11 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
                   {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
                   <Logo className="fill-sidebar-primary-foreground" />
@@ -318,11 +318,17 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
-                  <form action={logout}>
-                    <Button variant={"ghost"}>Sign out</Button>
-                  </form>
-                </DropdownMenuItem>
+                <form action={logout}>
+                  <DropdownMenuItem>
+                    <Button
+                      variant={"ghost"}
+                      effect={"hoverUnderline"}
+                      className="min-h-full min-w-full justify-start"
+                    >
+                      Sign out
+                    </Button>
+                  </DropdownMenuItem>
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

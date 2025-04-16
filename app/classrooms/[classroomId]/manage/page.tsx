@@ -64,7 +64,7 @@ export default function ClassroomManagementPage() {
 
   return (
     <div>
-      <h1>Hello this is classroom {classroomId}</h1>
+      {/* <h1>Classroom {classroomId}</h1> */}
       <ClassroomManagementButtons
         classroomData={classToRender}
         setUserAndClassCallback={setUserAndClassData}

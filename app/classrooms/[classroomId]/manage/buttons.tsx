@@ -113,7 +113,7 @@ export default function ClassroomManagementButtons({
 
   return (
     <div>
-      {"Look at the class info: " + classroomData.name}
+      <h1>Managing Classroom - {classroomData.name}</h1>
       <Link href={`upload`} passHref>
         <button
           type="button"
@@ -167,7 +167,8 @@ export default function ClassroomManagementButtons({
         optimisticUpdateCallback={handleChangeClassroomName}
         actionText="update"
       />
-
+      <p>Invite Member:</p>
+      <InviteMember classroomId={classroomData.id} />
       {classroomData.Classroom_Members &&
       classroomData.Classroom_Members.length > 0 ? (
         <MemberList
@@ -178,8 +179,6 @@ export default function ClassroomManagementButtons({
       ) : (
         <Skeleton></Skeleton>
       )}
-      <p>Invite Member:</p>
-      <InviteMember classroomId={classroomData.id} />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { inviteMemberToClassroom } from "../../../actions";
 import { toast } from "sonner";
+import { Plus, User } from "lucide-react";
 
 export default function InviteMember({ classroomId }: { classroomId: number }) {
   const [email, setEmail] = useState("");
@@ -37,9 +38,10 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
 
       <button
         onClick={handleInvite}
-        className="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
+        className="flex w-full items-center justify-center rounded-lg bg-blue-700 px-2.5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
       >
-        Invite
+        <Plus />
+        <User />
       </button>
     </div>
   );

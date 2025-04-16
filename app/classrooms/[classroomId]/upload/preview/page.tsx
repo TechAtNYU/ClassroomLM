@@ -40,7 +40,10 @@ export default async function PreviewPage({
   } else {
     // Convert binary content to base64 for embedding non-text file types
     // Allows us to render PDFs, images and other binary formats directly in the browser
-    const base64Content = Buffer.from(content).toString("base64");
+    const binaryString = Array.from(new Uint8Array(content))
+      .map((byte) => String.fromCharCode(byte))
+      .join("");
+    const base64Content = btoa(binaryString);
     return (
       <div className="mx-auto h-screen w-4/5">
         <embed

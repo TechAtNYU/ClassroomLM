@@ -123,7 +123,7 @@ export default function ClassroomManagementButtons({
           Upload Materials
         </button>
       </Link> */}
-      <TooltipUtil
+      {/* <TooltipUtil
               trigger={
                 <Button
                   type="button"
@@ -137,9 +137,19 @@ export default function ClassroomManagementButtons({
                 </Button>
               }
               content={"Upload Materials"}
-            />
-      {/* ARCHIVE BUTTON */}
-      <TooltipUtil
+            /> */}
+
+<Button
+  variant="outline"
+  className="flex items-center gap-2 w-fit px-4 py-2"
+  asChild
+>
+  <Link href="upload" passHref className="flex items-center gap-2">
+    <Upload /> Upload
+  </Link>
+</Button>
+
+{/* <TooltipUtil
               trigger={
                 <Button
                   type="button"
@@ -149,12 +159,38 @@ export default function ClassroomManagementButtons({
                   onClick={() => archiveClassroomCallback()}
                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                 >
-                  <Archive className="scale-[50%]"/>
+                  <Link><Archive /></Link>
                   
                 </Button>
               }
               content={"Archive Classroom"}
-            />
+            /> */}
+      {/* ARCHIVE BUTTON */}
+      {/* <TooltipUtil
+              trigger={
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  size={"iconLg"}
+                  asChild
+                  onClick={() => archiveClassroomCallback()}
+                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
+                >
+                  <Archive/>
+                  
+                </Button>
+              }
+              content={"Archive Classroom"}
+            /> */}
+
+<Button
+                    variant="outline"
+                    className="flex gap-2"
+                    // effect={"hoverUnderline"}
+                    onClick={() => archiveClassroomCallback()}
+                  >
+                    <Archive /> Archive 
+                  </Button>
       {/* <button
         type="button"
         className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
@@ -172,22 +208,32 @@ export default function ClassroomManagementButtons({
       </button> */}
 
       <AlertDialog>
-        <AlertDialogTrigger><TooltipUtil
+        <AlertDialogTrigger>
+          {/* <TooltipUtil
               trigger={
                 <Button
                   type="button"
                   variant={"ghost"}
                   size={"iconLg"}
                   asChild
-                  onClick={() => archiveClassroomCallback()}
+                  onClick={() => deleteClassroomFunction()}
                   // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
                 >
-                  <Trash2 className="scale-[50%]"/>
+                  <Trash2 />
                   
                 </Button>
               }
               content={"Delete Classroom"}
-            /></AlertDialogTrigger>
+            /> */}
+            <Button
+                    variant="outline"
+                    className="flex gap-2"
+                    // effect={"hoverUnderline"}
+                  >
+                    <Trash2 /> Delete 
+                  </Button>
+            </AlertDialogTrigger>
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

@@ -8,43 +8,32 @@ function MessageBox(props: {
   messageHistory: RagFlowMessages | null;
 }) {
   const [value, setValue] = useState("");
-
   const [messages, setMessage] = useState<RagFlowMessages>(
     props.messageHistory ? props.messageHistory : []
   );
 
   async function handle() {
     const ownMessage = { role: "user", content: value };
-
     setMessage((oldArray) => [...oldArray, ownMessage]);
-
     setValue("");
-
     const response: string = await sendMessage(
       value,
       props.assistantId,
       props.chatSessionId
     );
-
-    // alert(response);
-    // alert("can we even print anything");
-
     const messageData = { role: "assistant", content: response };
-
     setMessage((oldArray) => [...oldArray, messageData]);
-    // console.log("response thingy2", messages);
   }
 
   return (
     <div className="min-h-screen w-1/2 flex-col justify-self-center p-4 text-gray-800 dark:text-white">
       <h1 className="mb-4 text-2xl font-bold">Chat:</h1>
-
       <div className="flex-col rounded-t-lg bg-gray-100 p-3">
         {messages.map((aMessage, idx) => (
           <div
             key={idx}
             className={`my-2 max-w-md rounded-lg p-3 shadow-md ${
-              aMessage.role != "assistant"
+              aMessage.role !== "assistant"
                 ? "justify-self-end bg-green-200 hover:bg-green-300"
                 : "justify-self-start bg-blue-200 hover:bg-blue-300"
             }`}
@@ -53,7 +42,6 @@ function MessageBox(props: {
           </div>
         ))}
       </div>
-      {/* <div className="justify-self-end"> */}
       <div className="flex items-center rounded-b-lg bg-gray-200 px-4 py-2 dark:bg-gray-700">
         <textarea
           id="chat"
@@ -61,9 +49,7 @@ function MessageBox(props: {
           className="mx-2 block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           placeholder="Your message..."
           value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
+          onChange={(e) => setValue(e.target.value)}
         ></textarea>
         <button
           onClick={handle}
@@ -80,23 +66,6 @@ function MessageBox(props: {
           </svg>
           <span className="sr-only">Send message</span>
         </button>
-
-        {/* <input
-          type="text"
-          placeholder="Type your message here..."
-          className="w-100 rounded-md border border-gray-300 p-2 dark:bg-gray-700 dark:text-white"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
-        />
-
-        <button
-          className="ml-4 mt-2 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          onClick={handle}
-        >
-          Send
-      </button> */}
       </div>
     </div>
   );

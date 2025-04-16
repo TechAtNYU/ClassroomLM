@@ -189,36 +189,44 @@ async function createChatAssistant(
 }
 
 export async function getOrCreateSession(
-  userID: string,
+  ragflowUserId: string, // “generate_<uuid>”
   chatAssistantId: string,
-  classroomId: ClassroomId
+  classroomId: number,
+  localUserId: string // the real Supabase user UUID
 ) {
-  const existingSession = await findSessionID(classroomId, userID);
+  // Check local DB for a session using the REAL userId
+  const existingSession = await findSessionID(classroomId, localUserId);
   console.log("Found an existing session:", existingSession);
   if (existingSession) {
     return existingSession;
   }
-
-  return await createSession(chatAssistantId, userID, classroomId);
+  return await createSession(
+    chatAssistantId,
+    ragflowUserId,
+    classroomId,
+    localUserId
+  );
 }
 
-async function findSessionID(classroomId: ClassroomId, userID: string) {
+// Now findSessionID uses localUserId to match the user’s row.
+async function findSessionID(classroomId: number, localUserId: string) {
   try {
-    // find it from the supabase
     const supabase = await createClient();
-
     const sessionID = await supabase
       .from("Classroom_Members")
       .select("ragflow_session_id")
       .eq("classroom_id", classroomId)
-      .eq("user_id", userID);
+      .eq("user_id", localUserId);
 
     if (sessionID.error) {
       console.error("Error fetching session:", sessionID.error);
       return null;
     }
 
-    return sessionID.data[0].ragflow_session_id; // Return the first session if available
+    if (!sessionID.data || sessionID.data.length === 0) {
+      return null;
+    }
+    return sessionID.data[0].ragflow_session_id;
   } catch (error) {
     console.error("Error fetching session:", error);
     return null;
@@ -227,16 +235,18 @@ async function findSessionID(classroomId: ClassroomId, userID: string) {
 
 async function createSession(
   assistantID: string,
-  userID: string,
-  classroomId: ClassroomId
+  ragflowUserId: string,
+  classroomId: number,
+  localUserId: string
 ) {
   const newSession = {
     assistant_id: assistantID,
-    user_id: userID,
-    name: `Session_${userID}`,
+    user_id: ragflowUserId,
+    name: `Session_${ragflowUserId}`,
   };
 
   try {
+    // 1) Create session in Ragflow
     const res = await fetch(`${API_URL}/v1/chats/${assistantID}/sessions`, {
       method: "POST",
       headers: {
@@ -246,21 +256,20 @@ async function createSession(
       body: JSON.stringify(newSession),
     });
 
-    if (!res.ok) throw new Error("Failed to create session");
-
+    if (!res.ok) throw new Error("Failed to create session in Ragflow");
     const resJson = await res.json();
 
-    // update that in supabase
+    // 2) Save that session ID in your local DB with the REAL user’s UUID
     const supabase = createServiceClient();
-
     const supabaseRes = await supabase
       .from("Classroom_Members")
       .update({ ragflow_session_id: resJson.data.id })
       .eq("classroom_id", classroomId)
-      .eq("user_id", userID)
-      .select();
+      .eq("user_id", localUserId);
 
     if (supabaseRes.error) {
+      console.error("Supabase error message:", supabaseRes.error.message);
+      console.error("Supabase error details:", supabaseRes.error.details);
       throw new Error(`Failed to update classroom: ${supabaseRes.error}`);
     }
 
@@ -381,4 +390,34 @@ export async function retrieveMessageHistory(
     console.error("Error sending message:", error);
     return null;
   }
+}
+
+export async function autogenerateMaterial(classroomId: number) {
+  // Real user UUID from Supabase
+  const realUserId = await getCurrentUserId();
+
+  // “generate_...” string for Ragflow’s user_id
+  const ragflowUserId = "generate_" + realUserId;
+
+  const datasetId = await getRagflowDatasetId(classroomId);
+  const assistantResponse = await getOrCreateAssistant(classroomId, datasetId!);
+  if (!assistantResponse.id) {
+    throw new Error("Failed to get assistant");
+  }
+  const assistantId = assistantResponse.id;
+
+  const sessionId = await getOrCreateSession(
+    ragflowUserId, // for Ragflow
+    assistantId,
+    classroomId,
+    realUserId // for local DB
+  );
+
+  if (!sessionId) {
+    throw new Error("Failed to create session");
+  }
+  const prompt =
+    "Generate sample multiple choice questions for me with answers please";
+  const generatedMaterial = await sendMessage(prompt, assistantId, sessionId);
+  return generatedMaterial;
 }

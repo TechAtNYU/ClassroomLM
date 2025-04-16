@@ -283,3 +283,16 @@ export async function unarchiveClassroom(classroom_id: number) {
 
   return { success: true, data };
 }
+
+export async function insertRandom() {
+  // Notice how we use a createServiceClient instead of createClient from server
+  // this BYPASSES ALL RLS in the case that you have to do some more complex things and we don't
+  // want to write RLS rules for all of it. See our project doc Resources section for more info
+  const supabase = createServiceClient();
+
+  const { error } = await supabase.from("Classroom_Members").insert({
+    classroom_id: 17,
+    user_id: "05929f55-42bb-42d4-86bd-ddc0c7d12685",
+  });
+  console.log(error);
+}

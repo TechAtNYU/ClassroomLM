@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 
-const API_URL = process.env.RAGFLOW_API_URL + "/api" || "";
+const API_URL = `${process.env.RAGFLOW_API_URL}/api` || "";
 const API_KEY = process.env.RAGFLOW_API_KEY;
 
 export async function GET(request: NextRequest) {
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
           "Content-Type": "application/json",
         },
       });
-      // const resJson = await res.json();
       return Response.json({ success: 200 });
     case "delete_sessions":
       await fetch(`${API_URL}/v1/chats/${assistant}/sessions`, {
@@ -49,19 +48,7 @@ export async function GET(request: NextRequest) {
         }
       );
       return Response.json((await sessions.json()).data);
+    default:
+      return Response.json({ error: "Invalid method" }, { status: 400 });
   }
-
-  // const res = await fetch(
-  //   `${API_URL}/v1/chats/`,
-  //   {
-  //     method: "DELETE",
-  //     headers: {
-  //       Authorization: `Bearer ${API_KEY}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   }
-  // );
-  // const resJson = await res.json();
-
-  // return Response.json(resJson.data);
 }

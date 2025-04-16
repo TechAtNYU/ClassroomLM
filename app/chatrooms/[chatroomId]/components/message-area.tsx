@@ -236,7 +236,7 @@ const MessageArea = ({
   }
   let previousMessageTime: Date | undefined = undefined;
   return (
-    <div className="mt-10 flex h-[80vh] min-h-[400px] w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
+    <div className="mt-5 flex min-h-[400px] w-11/12 flex-1 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
       <Logo
         className={
           "size-[6vmin] h-fit min-w-10 place-self-center fill-foreground stroke-foreground stroke-[10px]"

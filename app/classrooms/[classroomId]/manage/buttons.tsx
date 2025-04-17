@@ -208,7 +208,7 @@ export default function ClassroomManagementButtons({
       </button> */}
 
       <AlertDialog>
-        <AlertDialogTrigger>
+        <AlertDialogTrigger asChild>
           {/* <TooltipUtil
               trigger={
                 <Button

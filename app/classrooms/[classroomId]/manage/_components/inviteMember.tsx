@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { TooltipUtil } from "@/app/classrooms/clientUtils";
+import { Input } from "@/shared/components/ui/input";
 
 export default function InviteMember({ classroomId }: { classroomId: number }) {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
 
   return (
     <div className="my-3 flex gap-5">
-      <input
+      {/* <input
         type="email"
         placeholder="Enter Email"
         value={email}
@@ -36,7 +37,9 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
         className={
           "block w-5/12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
         }
-      />
+      /> */}
+
+      <Input type="email" placeholder="Email" />
 
       <TooltipUtil
         trigger={

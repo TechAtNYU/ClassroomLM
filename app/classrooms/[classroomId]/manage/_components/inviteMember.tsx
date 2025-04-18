@@ -39,7 +39,11 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
         }
       /> */}
 
-      <Input type="email" placeholder="Email" />
+      <Input
+        type="email"
+        placeholder="Email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
       <TooltipUtil
         trigger={

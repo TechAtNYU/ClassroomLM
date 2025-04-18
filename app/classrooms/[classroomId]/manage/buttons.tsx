@@ -186,6 +186,8 @@ export default function ClassroomManagementButtons({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <InviteMember classroomId={classroomData.id} />
       </div>
 
       <SaveClassroomDialog
@@ -195,7 +197,7 @@ export default function ClassroomManagementButtons({
         actionText="update"
       />
       {/* <p>Invite Member:</p> */}
-      <InviteMember classroomId={classroomData.id} />
+
       {classroomData.Classroom_Members &&
       classroomData.Classroom_Members.length > 0 ? (
         <MemberList

@@ -30,18 +30,29 @@ export const optimisticUpdateAndFetchClassroomData = async <
   newValue:
     | { [k in K]: ClassroomWithMembers[k] }
     | ClassroomWithMembers
-    | "remove",
+    | "remove"
+    | "memberRemove",
   setUserAndClassDataFunction: React.Dispatch<
     React.SetStateAction<UserWithClassroomsData>
   >,
   classroomId?: number,
-  refreshFunction?: () => Promise<unknown>
+  refreshFunction?: () => Promise<unknown>,
+  removeMemberId?: string
 ) => {
   setUserAndClassDataFunction((prevData) => ({
     userData: prevData.userData,
     classroomsData: prevData.classroomsData
       .flatMap((classroom) => {
         if (classroom.id === classroomId) {
+          if (newValue == "memberRemove") {
+            return {
+              ...classroom,
+              Classroom_Members:
+                classroom?.Classroom_Members?.filter(
+                  (member) => member.Users.id !== removeMemberId
+                ) ?? [],
+            };
+          }
           return newValue === "remove" ? [] : { ...classroom, ...newValue };
         }
         return classroom;

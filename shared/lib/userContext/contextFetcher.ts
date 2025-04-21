@@ -7,18 +7,19 @@ import { User } from "@supabase/supabase-js";
 // export interface ClassroomWithMembers extends Tables<"Classrooms"> {
 //     Classroom_Members?: Tables<"Classroom_Members"> extends Tables<"Users">
 // }
+export interface ClassroomMember {
+  id: number;
+  classroom_id: number;
+  Users: {
+    id: string;
+    email: string;
+    full_name: string | null;
+    avatar_url: string | null;
+  };
+}
 
 export interface ClassroomWithMembers extends Tables<"Classrooms"> {
-  Classroom_Members?: Array<{
-    id: number;
-    classroom_id: number;
-    Users: {
-      id: string;
-      email: string;
-      full_name: string | null;
-      avatar_url: string | null;
-    };
-  }>;
+  Classroom_Members?: Array<ClassroomMember>;
 }
 export type UserWithClassroomsData = {
   userData: User;

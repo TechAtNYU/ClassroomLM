@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-[linear-gradient(0deg,_#FFF4D9,_#FFEFD2_52%,_#67C5FF)] text-center dark:bg-[linear-gradient(0deg,_#443461,_#130F5A_38%,_#1F1F1F)]">
+    <div className="flex min-h-screen w-full items-center justify-center text-center">
       <div className="flex h-[50vh] min-h-fit max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
         <div className="mb-3 flex flex-col gap-2">
           <h1 className="mb-3 text-5xl font-bold tracking-tight lg:text-8xl">

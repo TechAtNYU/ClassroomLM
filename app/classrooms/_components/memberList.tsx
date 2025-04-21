@@ -11,7 +11,7 @@ import { columns } from "./columns";
 import { DataTable } from "@shared/components/ui/data-table";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
 import { Trash2, Users } from "lucide-react";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -21,7 +21,7 @@ import {
 import { Button } from "@shared/components/ui/button";
 import { Tables } from "@shared/utils/supabase/database.types";
 import { Row } from "@tanstack/react-table";
-import { removeMember } from "../actions";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 /**
  *
@@ -31,37 +31,104 @@ import { removeMember } from "../actions";
 export default function MemberList({
   classroom,
   userId,
-  enableDeletion,
+  newRowLoading,
   triggerButton,
+  optimisticRemoveCallback,
 }: {
   classroom: ClassroomWithMembers;
   userId: string;
-  enableDeletion: boolean;
+  newRowLoading: boolean;
   triggerButton?: ReactNode;
+  optimisticRemoveCallback?: (email: string) => Promise<unknown>;
 }) {
-  const [members, setMembers] = useState<Tables<"Users">[]>([]);
+  // const [members, setMembers] = useState<Tables<"Users">[]>([]);
 
-  useEffect(() => {
-    if (classroom.Classroom_Members) {
-      setMembers(classroom.Classroom_Members.map((x) => x.Users));
-    }
-  }, [classroom.Classroom_Members]);
+  // useEffect(() => {
+  //   if (classroom.Classroom_Members) {
+  //     setMembers(classroom.Classroom_Members.map((x) => x.Users));
+  //   }
+  // }, [classroom.Classroom_Members]);
 
   if (!classroom.Classroom_Members) {
     return <h1>No members found!</h1>;
   }
 
-  // const handleDelete = (memberId: string) => {
-  //   console.log("ID:" + memberId);
-  // };
+  function MemberTable() {
+    return (
+      <DataTable
+        columns={[
+          ...columns,
+          ...(optimisticRemoveCallback
+            ? [
+                {
+                  id: "actions",
+                  cell: ({ row }: { row: Row<Tables<"Users">> }) => {
+                    // const adminId = getCurrentUserId();
+                    const isAdmin = row.original.id === userId; // Check if the current row is the admin
 
-  const removeMemberFunction = async (memberId: string) => {
-    await removeMember(classroom.id, memberId);
-    setMembers((prev) => prev.filter((member) => member.id !== memberId));
-  };
+                    // Only render the delete button if the current row is NOT the admin
+                    if (
+                      isAdmin ||
+                      row.renderValue("avatar_url") === "loading"
+                    ) {
+                      return null; // Return null, which removes the button from the row
+                    }
 
+                    return (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              type="button"
+                              variant={"destructiveGhost"}
+                              size={"iconLg"}
+                              onClick={() =>
+                                optimisticRemoveCallback(row.original.id)
+                              }
+                            >
+                              <Trash2 />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Remove user</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    );
+                  },
+                },
+              ]
+            : []),
+        ]}
+        data={(classroom?.Classroom_Members?.map((x) => x.Users) ?? [])
+          .sort((x, y) => {
+            if (x.id && x.id === userId) {
+              return -1;
+            }
+            if (y.id && y.id === userId) {
+              return 1;
+            }
+            return (x?.full_name ?? "")
+              .toLowerCase()
+              .localeCompare((y?.full_name ?? "").toLowerCase());
+          })
+          .concat(
+            newRowLoading
+              ? [
+                  {
+                    full_name: (
+                      <Skeleton className="h-[2em] w-full rounded-md" />
+                    ),
+                    avatar_url: "loading",
+
+                    // email: <Skeleton className="h-[2em] w-full rounded-md"/>,
+                  } as unknown as Tables<"Users">,
+                ]
+              : []
+          )}
+      />
+    );
+  }
   // other table implementation: https://data-table.openstatus.dev/
-  if (!enableDeletion) {
+  if (!optimisticRemoveCallback) {
     return (
       <Sheet>
         {triggerButton ? (
@@ -89,48 +156,7 @@ export default function MemberList({
 
             {/* todo future, for smaller screens, make the width even smaller */}
             <div className="w-[50vw]">
-              <DataTable
-                columns={[
-                  ...columns,
-                  ...(enableDeletion
-                    ? [
-                        {
-                          id: "actions",
-                          cell: ({ row }: { row: Row<Tables<"Users">> }) => {
-                            // const adminId = getCurrentUserId();
-                            const isAdmin = row.original.id === userId; // Check if the current row is the admin
-
-                            // Only render the delete button if the current row is NOT the admin
-                            if (isAdmin) {
-                              return null; // Return null, which removes the button from the row
-                            }
-
-                            return (
-                              <TooltipProvider>
-                                <Tooltip delayDuration={300}>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      type="button"
-                                      variant={"destructiveGhost"}
-                                      size={"iconLg"}
-                                      onClick={() =>
-                                        removeMemberFunction(row.original.id)
-                                      }
-                                    >
-                                      <Trash2 />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Remove user</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            );
-                          },
-                        },
-                      ]
-                    : []),
-                ]}
-                data={members}
-              />
+              <MemberTable />
             </div>
           </SheetHeader>
         </SheetContent>
@@ -139,48 +165,7 @@ export default function MemberList({
   } else {
     return (
       <div className="w-[50vw]">
-        <DataTable
-          columns={[
-            ...columns,
-            ...(enableDeletion
-              ? [
-                  {
-                    id: "actions",
-                    cell: ({ row }: { row: Row<Tables<"Users">> }) => {
-                      // const adminId = getCurrentUserId();
-                      const isAdmin = row.original.id === userId; // Check if the current row is the admin
-
-                      // Only render the delete button if the current row is NOT the admin
-                      if (isAdmin) {
-                        return null; // Return null, which removes the button from the row
-                      }
-
-                      return (
-                        <TooltipProvider>
-                          <Tooltip delayDuration={300}>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant={"destructiveGhost"}
-                                size={"iconLg"}
-                                onClick={() =>
-                                  removeMemberFunction(row.original.id)
-                                }
-                              >
-                                <Trash2 />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Remove user</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      );
-                    },
-                  },
-                ]
-              : []),
-          ]}
-          data={members}
-        />
+        <MemberTable />
       </div>
     );
   }

@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { inviteMemberToClassroom } from "../../../actions";
+import { ReactNode, useState } from "react";
+import { InviteActionResults } from "../../../actions";
 import { toast } from "sonner";
-import { UserPlus } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 // import { TooltipUtil } from "@/app/classrooms/clientUtils";
 import { Input } from "@/shared/components/ui/input";
@@ -25,34 +25,56 @@ import { Label } from "@/shared/components/ui/label";
 //   DialogTrigger,
 // } from "@/components/ui/dialog";
 
-export default function InviteMember({ classroomId }: { classroomId: number }) {
+export default function InviteMember({
+  optimisticUpdateCallback,
+  dialogTrigger,
+}: {
+  optimisticUpdateCallback: (email: string) => Promise<unknown>;
+  dialogTrigger?: ReactNode;
+}) {
   const [email, setEmail] = useState("");
-  const handleInvite = async () => {
-    try {
-      await inviteMemberToClassroom(email, classroomId);
-      setEmail("");
-      toast.success("Added Member Successfully", {
-        description: `${email} was added to the class.`,
-      });
-    } catch (error: unknown) {
-      //type unknown for typescript lint
-      if (error instanceof Error) {
-        toast.error("The user is already part of the classroom.");
-        // console.error(error.message);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
+  const inviteCallback = async () => {
+    setIsDialogOpen(false);
+    setIsPending(true);
+    // startTransition(async () => {
+    const result: InviteActionResults = (await optimisticUpdateCallback(
+      email
+    )) as InviteActionResults;
+    if (!result.supabaseInsertSuccess) {
+      if (result.userDoesNotExist) {
+        toast.error(`User does not exist!`);
+      } else if (result.userAlreadyInClass) {
+        toast.error(`User already in class!`);
       } else {
-        console.error("Error Occured");
+        toast.error(
+          `Uh oh! Something went wrong when inviting member to classroom.`,
+          {
+            description: `Please refresh and try again`,
+          }
+        );
       }
+    } else {
+      toast.success(`Invited user with email ${email} successfully!`);
     }
+    setIsDialogOpen(false);
+    setIsPending(false);
+    setEmail("");
+    return;
   };
 
   return (
     <div className="my-3 flex gap-5">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline">
-            Invite Member <UserPlus />
-          </Button>
-        </DialogTrigger>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        {dialogTrigger ?? (
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              Invite Member <UserPlus />
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Invite Member</DialogTitle>
@@ -75,50 +97,13 @@ export default function InviteMember({ classroomId }: { classroomId: number }) {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleInvite} type="submit">
+            <Button onClick={inviteCallback} type="submit">
+              {isPending && <Loader2 className="animate-spin" />}
               Invite
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* <input
-        type="email"
-        placeholder="Enter Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className={
-          "block w-5/12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        }
-      /> */}
-
-      {/* <Input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      /> */}
-      {/* 
-      <TooltipUtil
-        trigger={
-          <Button
-            type="button"
-            variant={"ghost"}
-            size={"iconLg"}
-            asChild
-            onClick={handleInvite}
-            // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-          >
-            <UserPlus className="scale-[50%]" />
-          </Button>
-        }
-        content={"Invite Member"} */}
-      {/* /> */}
-      {/* <button
-        onClick={handleInvite}
-        className="flex w-full items-center justify-center rounded-lg bg-blue-700 px-2.5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-      >
-        <Plus />
-        <User />
-      </button> */}
     </div>
   );
 }

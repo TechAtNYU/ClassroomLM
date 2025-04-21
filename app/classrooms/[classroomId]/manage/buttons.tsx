@@ -9,6 +9,8 @@ import Link from "next/link";
 import {
   changeClassroomName,
   deleteClassroom,
+  inviteMemberToClassroom,
+  removeMember,
   setArchiveStatusClassroom,
 } from "../../actions";
 import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
@@ -29,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@shared/components/ui/alert-dialog";
-import { Dispatch, SetStateAction, useTransition } from "react";
+import { Dispatch, SetStateAction, useState, useTransition } from "react";
 import { User } from "@supabase/supabase-js";
 import SaveClassroomDialog from "../../_components/saveClassroomDialog";
 import { Skeleton } from "@shared/components/ui/skeleton";
@@ -50,7 +52,7 @@ export default function ClassroomManagementButtons({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
+  const [newRowLoading, setNewRowLoading] = useState(false);
   //   optimisticUpdateAndFetchClassroomData(
   //     classroomId,
   //     async () => changeClassroomName(classroomId, newName),
@@ -73,6 +75,49 @@ export default function ClassroomManagementButtons({
       setUserAndClassCallback,
       classroomData.id,
       refreshClassrooms
+    );
+  };
+
+  const inviteMember = async (email: string) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => {
+        setNewRowLoading(true);
+        const result = await inviteMemberToClassroom(classroomData.id, email);
+        return result;
+      },
+      {
+        Classroom_Members: [
+          ...(classroomData.Classroom_Members ?? []),
+          // skeletons not working, so just going to skip for now
+          //  ({
+          //   Users: {
+          //     id: <Skeleton className="size-4 rounded-md"/>,
+          //     avatar_url: <Skeleton className="size-4 rounded-md"/>,
+          //     email: email,
+          //     full_name: <Skeleton className="size-4 rounded-md"/>
+          //   },
+          //   id: 0,
+          //   classroom_id: classroomData.id,
+          // } as unknown as ClassroomMember),
+        ],
+      },
+      setUserAndClassCallback,
+      classroomData.id,
+      async () => {
+        await refreshClassrooms();
+        setNewRowLoading(false);
+      }
+    );
+  };
+
+  const removeMemberFunction = async (memberId: string) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => removeMember(classroomData.id, memberId),
+      "memberRemove",
+      setUserAndClassCallback,
+      classroomData.id,
+      refreshClassrooms,
+      memberId
     );
   };
 
@@ -115,29 +160,6 @@ export default function ClassroomManagementButtons({
   return (
     <div>
       <h1>Managing Classroom - {classroomData.name}</h1>
-      {/* <Link href={`upload`} passHref>
-        <button
-          type="button"
-          className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-        >
-          Upload Materials
-        </button>
-      </Link> */}
-      {/* <TooltipUtil
-              trigger={
-                <Button
-                  type="button"
-                  variant={"ghost"}
-                  size={"iconLg"}
-                  asChild
-                  // className="me-2 rounded-lg border px-5 py-2.5 text-center text-sm font-medium hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-                >
-                  <Link href={`upload`} passHref><Upload /></Link>
-                  
-                </Button>
-              }
-              content={"Upload Materials"}
-            /> */}
       <div className="mb-4 mt-4 flex items-center gap-4">
         <Button
           variant="outline"
@@ -187,7 +209,7 @@ export default function ClassroomManagementButtons({
           </AlertDialogContent>
         </AlertDialog>
 
-        <InviteMember classroomId={classroomData.id} />
+        <InviteMember optimisticUpdateCallback={inviteMember} />
       </div>
 
       <SaveClassroomDialog
@@ -202,8 +224,9 @@ export default function ClassroomManagementButtons({
       classroomData.Classroom_Members.length > 0 ? (
         <MemberList
           classroom={classroomData}
-          enableDeletion={true}
           userId={userData.id}
+          optimisticRemoveCallback={removeMemberFunction}
+          newRowLoading={newRowLoading}
         />
       ) : (
         <Skeleton></Skeleton>

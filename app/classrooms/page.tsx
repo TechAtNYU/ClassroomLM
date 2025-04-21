@@ -263,7 +263,6 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               classroom.Classroom_Members.length > 0 && (
                 <MemberList
                   classroom={classroom}
-                  enableDeletion={false}
                   triggerButton={
                     <TooltipUtil
                       trigger={
@@ -280,6 +279,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                       useSheetTrigger
                     />
                   }
+                  newRowLoading={false}
                   userId={userId}
                 />
               )}

@@ -3,6 +3,7 @@ import { createServiceClient } from "@shared/utils/supabase/service-server";
 import { createClient } from "@shared/utils/supabase/server";
 import { deleteDataset } from "@shared/lib/ragflow/dataset-client";
 import { deleteAssistant } from "@shared/lib/ragflow/chat/chat-client";
+import { Tables } from "@/shared/utils/supabase/database.types";
 
 // const RAGFLOW_SERVER_URL = process.env.RAGFLOW_API_URL || "";
 // const RAGFLOW_API_KEY = process.env.RAGFLOW_API_KEY;
@@ -136,46 +137,84 @@ export async function leaveClassroom(classroom_id: number, user_id: string) {
 //   }
 //   return data || [];
 // }
+export type InviteActionResults = {
+  supabaseCallSuccess: boolean;
+  userDoesNotExist: boolean;
+  userAlreadyInClass: boolean;
+  supabaseInsertSuccess: boolean;
+  insertResult?: Tables<"Classroom_Members">;
+};
 
 export async function inviteMemberToClassroom(
-  email: string,
-  classroom_id: number
-) {
+  classroomId: number,
+  email: string
+): Promise<InviteActionResults> {
   const supabase = createServiceClient();
 
   const { data: users, error: userError } = await supabase
     .from("Users")
     .select("id")
-    .eq("email", email)
-    .single();
+    .eq("email", email);
 
   if (userError || !users) {
-    throw new Error("User does not exist");
+    return {
+      supabaseCallSuccess: false,
+      userDoesNotExist: false,
+      userAlreadyInClass: false,
+      supabaseInsertSuccess: false,
+    };
+  }
+
+  if (users.length == 0) {
+    return {
+      supabaseCallSuccess: true,
+      userDoesNotExist: true,
+      userAlreadyInClass: false,
+      supabaseInsertSuccess: false,
+    };
   }
 
   //checks for duplicate
   const { data: member } = await supabase
     .from("Classroom_Members")
     .select("id")
-    .eq("classroom_id", classroom_id)
-    .eq("user_id", users.id);
+    .eq("classroom_id", classroomId)
+    .eq("user_id", users[0].id);
 
   if (member && member.length > 0) {
-    throw new Error("User already in the classroom");
+    return {
+      supabaseCallSuccess: true,
+      userDoesNotExist: false,
+      userAlreadyInClass: true,
+      supabaseInsertSuccess: false,
+    };
   }
 
   //insert if no errors
-  const { error: insertError } = await supabase
+  const { data: insertResult, error: insertError } = await supabase
     .from("Classroom_Members")
     .insert({
-      classroom_id: classroom_id,
-      user_id: users.id,
-    });
+      classroom_id: classroomId,
+      user_id: users[0].id,
+    })
+    .select()
+    .single();
 
   if (insertError) {
-    throw new Error("Error inserting classroom member");
+    return {
+      supabaseCallSuccess: true,
+      userDoesNotExist: false,
+      userAlreadyInClass: false,
+      supabaseInsertSuccess: false,
+    };
   }
-  return true;
+  return {
+    supabaseCallSuccess: true,
+    userDoesNotExist: false,
+    userAlreadyInClass: false,
+    supabaseInsertSuccess: true,
+    insertResult: insertResult,
+  };
 }
 
 export async function changeClassroomName(

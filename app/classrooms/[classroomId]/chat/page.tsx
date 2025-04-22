@@ -84,7 +84,7 @@ export default async function ChatPage({
     if (chatClient.failBecauseDatasetEmpty) {
       return user.id === classroomInfo.admin_user_id ? (
         <>
-          <div className="flex gap-4 flex-col">
+          <div className="flex flex-col gap-4">
             <h2 className="text-3xl font-bold tracking-tight">
               {classroomInfo.name}
             </h2>
@@ -92,7 +92,7 @@ export default async function ChatPage({
               <SpeechIcon className="mb-8 self-center" /> Personal Assistant
             </h1>
           </div>
-          <div className="col-span-full py-8 text-center flex flex-col gap-4 items-center justify-center">
+          <div className="col-span-full flex flex-col items-center justify-center gap-4 py-8 text-center">
             <p className="text-gray-500">
               Empty dataset, please upload materials to the classroom:
             </p>
@@ -101,7 +101,7 @@ export default async function ChatPage({
               // variant={"ghost"}
               // size={"iconLg"}
               asChild
-              className="flex gap-2 w-1/5 min-w-fit"
+              className="flex w-1/5 min-w-fit gap-2"
             >
               <Link href={`./upload`} passHref className="flex gap-4">
                 Upload <Upload className="scale-[200%]" />
@@ -110,11 +110,11 @@ export default async function ChatPage({
           </div>
         </>
       ) : (
-        <div className="col-span-full py-8 text-center flex flex-col items-center justify-center">
-            <p className="text-gray-500">
-              Classroom dataset empty, please ask your instructor to add some
-              resources!
-            </p>
+        <div className="col-span-full flex flex-col items-center justify-center py-8 text-center">
+          <p className="text-gray-500">
+            Classroom dataset empty, please ask your instructor to add some
+            resources!
+          </p>
         </div>
       );
     }

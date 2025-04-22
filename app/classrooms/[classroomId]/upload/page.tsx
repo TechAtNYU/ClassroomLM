@@ -32,11 +32,11 @@ export default async function UploadPage({
   return (
     <>
       <div>
-          <h1 className="text-3xl font-bold tracking-tight">{data.name}</h1>
-          <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
-            <Upload className="self-center" /> Upload materials
-          </h2>
-        </div>
+        <h1 className="text-3xl font-bold tracking-tight">{data.name}</h1>
+        <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+          <Upload className="self-center" /> Upload materials
+        </h2>
+      </div>
       <UploadComponent classroomId={classroomId} classroomName={data.name} />
     </>
   );

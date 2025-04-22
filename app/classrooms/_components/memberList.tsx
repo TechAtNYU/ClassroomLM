@@ -82,6 +82,7 @@ export default function MemberList({
                               type="button"
                               variant={"destructiveGhost"}
                               size={"iconLg"}
+                              className="place-content-end"
                               onClick={() =>
                                 optimisticRemoveCallback(row.original.id)
                               }
@@ -164,7 +165,7 @@ export default function MemberList({
     );
   } else {
     return (
-      <div className="w-[50vw]">
+      <div className="w-full">
         <MemberTable />
       </div>
     );

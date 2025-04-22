@@ -9,6 +9,7 @@ import { UserContext } from "@shared/lib/userContext/userContext";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
+import { Edit } from "lucide-react";
 
 export default function ClassroomManagementPage() {
   const { classroomId } = useParams<{ classroomId: string }>();
@@ -62,8 +63,16 @@ export default function ClassroomManagementPage() {
   }
 
   return (
-    <div>
-      {/* <h1>Classroom {classroomId}</h1> */}
+    <div className="flex flex-col gap-7">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {classToRender.name}
+        </h1>
+        <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+          <Edit className="self-center" /> Manage classroom
+        </h2>
+      </div>
+
       <ClassroomManagementButtons
         classroomData={classToRender}
         setUserAndClassCallback={setUserAndClassData}

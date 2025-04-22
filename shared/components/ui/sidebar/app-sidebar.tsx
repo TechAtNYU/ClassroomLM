@@ -149,7 +149,7 @@ export function AppSidebar() {
       isActive: false,
     },
     manage: {
-      title: "Manage Dashboard",
+      title: "Manage Classroom",
       suffixURL: "manage",
       icon: Edit,
       isActive: false,

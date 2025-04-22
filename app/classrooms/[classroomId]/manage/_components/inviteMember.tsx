@@ -70,7 +70,7 @@ export default function InviteMember({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         {dialogTrigger ?? (
           <DialogTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" effect={"hoverUnderline"}>
               Invite Member <UserPlus />
             </Button>
           </DialogTrigger>

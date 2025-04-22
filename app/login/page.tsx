@@ -9,10 +9,10 @@ export default async function LoginPage() {
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-clip text-center dark:bg-[linear-gradient(0deg,_#443461,_#130F5A_38%,_#1F1F1F)]">
       <div className="absolute left-0 top-0 ml-[100px] mt-[100px] h-[1080px] w-[1920px]">
-        <StarSwoop className="absolute right-[10px] top-[-300px] z-10 rotate-[15deg] scale-50" />
-        <Star className="absolute left-[40px] top-[-50px] z-10 scale-50" />
-        <Balloon className="absolute left-[40px] top-[400px] z-10 size-[20em]" />
-        <PurpleBalloon className="absolute bottom-[200px] right-[40px] z-10 size-[15em]" />
+        <StarSwoop className="absolute right-[10px] top-[-300px] z-[5] rotate-[15deg] scale-50" />
+        <Star className="absolute left-[40px] top-[-50px] z-[5] scale-50" />
+        <Balloon className="absolute left-[40px] top-[400px] z-[5] size-[20em]" />
+        <PurpleBalloon className="absolute bottom-[200px] right-[40px] z-[5] size-[15em]" />
       </div>
       <StarsBackground minTwinkleSpeed={0.8} twinkleProbability={0.9} />
       <div className="relative left-[20px] z-20 break-words">

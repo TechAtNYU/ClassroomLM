@@ -15,7 +15,7 @@ export default function Home() {
         <Balloon className="absolute left-[40px] top-[400px] z-10 size-[20em]" />
         <PurpleBalloon className="absolute bottom-[200px] right-[40px] z-10 size-[15em]" />
       </div>
-      <StarsBackground minTwinkleSpeed={0.8} twinkleProbability={0.9} />
+
       <div className="relative z-20 break-words">
         <div className="relative left-[20px] flex h-[50vh] min-h-fit min-w-[55vw] max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
           <div className="mb-3 flex flex-col gap-2">

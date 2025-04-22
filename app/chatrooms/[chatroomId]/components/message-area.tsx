@@ -23,6 +23,7 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import Logo from "@/shared/components/Logo";
 import { Separator } from "@/shared/components/ui/separator";
+import { notFound } from "next/navigation";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -170,10 +171,7 @@ const MessageArea = ({
     console.log(
       "Error rendering chatroom page, member of chatroom but didn't find information about the underlying classroom"
     );
-    return (
-      // TODO: make 404 page since this is a classroom not found
-      <h1> 404 </h1>
-    );
+    notFound();
   }
 
   // Send the message directly from the browser, and also tell the server action if an LLM is involved

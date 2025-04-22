@@ -5,11 +5,11 @@
 
 import { useContext, useEffect, useState } from "react";
 import ClassroomManagementButtons from "./buttons";
-import Link from "next/link";
 import { UserContext } from "@shared/lib/userContext/userContext";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import { ClassroomWithMembers } from "@shared/lib/userContext/contextFetcher";
+import { Edit } from "lucide-react";
 
 export default function ClassroomManagementPage() {
   const { classroomId } = useParams<{ classroomId: string }>();
@@ -63,21 +63,21 @@ export default function ClassroomManagementPage() {
   }
 
   return (
-    <div>
-      <h1>Hello this is classroom {classroomId}</h1>
+    <div className="flex flex-col gap-7">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {classToRender.name}
+        </h1>
+        <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+          <Edit className="self-center" /> Manage classroom
+        </h2>
+      </div>
+
       <ClassroomManagementButtons
         classroomData={classToRender}
         setUserAndClassCallback={setUserAndClassData}
         userData={userAndClassData.userData}
       />
-      <Link href={`/classrooms`} passHref>
-        <button
-          type="button"
-          className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-        >
-          Classroom Page
-        </button>
-      </Link>
     </div>
   );
 }

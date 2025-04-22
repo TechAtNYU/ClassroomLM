@@ -222,11 +222,15 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
           <CardDescription animated>
             <div className="flex flex-row gap-3">
               Created:{" "}
-              {new Date(classroom.created_at).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              }) || <Skeleton className="h-5 w-5/12 self-center" />}
+              {classroom.created_at ? (
+                new Date(classroom.created_at).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              ) : (
+                <Skeleton className="h-5 w-5/12 self-center" />
+              )}
             </div>
           </CardDescription>
         </CardHeader>
@@ -263,7 +267,6 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               classroom.Classroom_Members.length > 0 && (
                 <MemberList
                   classroom={classroom}
-                  enableDeletion={false}
                   triggerButton={
                     <TooltipUtil
                       trigger={
@@ -280,6 +283,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                       useSheetTrigger
                     />
                   }
+                  newRowLoading={false}
                   userId={userId}
                 />
               )}

@@ -58,7 +58,11 @@ export default function InviteInfoDialog({
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       {dialogTrigger ?? (
         <DialogTrigger asChild className="">
-          <Button variant="outline" className="flex gap-2">
+          <Button
+            variant="outline"
+            effect={"hoverUnderline"}
+            className="flex gap-2"
+          >
             <Share2 /> Share
           </Button>
         </DialogTrigger>

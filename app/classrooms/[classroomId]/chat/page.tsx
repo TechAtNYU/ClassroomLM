@@ -83,27 +83,46 @@ export default async function ChatPage({
   if (!chatClient.client) {
     if (chatClient.failBecauseDatasetEmpty) {
       return user.id === classroomInfo.admin_user_id ? (
-        <div className="flex gap-4">
-          <h1>Empty dataset, go upload files for classroom: </h1>
-          <Button
-            type="button"
-            // variant={"ghost"}
-            // size={"iconLg"}
-            asChild
-          >
-            <Link href={`./upload`} passHref>
-              <Upload className="scale-[200%]" />
-            </Link>
-          </Button>
-        </div>
+        <>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-3xl font-bold tracking-tight">
+              {classroomInfo.name}
+            </h2>
+            <h1 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+              <SpeechIcon className="mb-8 self-center" /> Personal Assistant
+            </h1>
+          </div>
+          <div className="col-span-full flex flex-col items-center justify-center gap-4 py-8 text-center">
+            <p className="text-gray-500">
+              Empty dataset, please upload materials to the classroom:
+            </p>
+            <Button
+              type="button"
+              // variant={"ghost"}
+              // size={"iconLg"}
+              asChild
+              className="flex w-1/5 min-w-fit gap-2"
+            >
+              <Link href={`./upload`} passHref className="flex gap-4">
+                Upload <Upload className="scale-[200%]" />
+              </Link>
+            </Button>
+          </div>
+        </>
       ) : (
-        <h1>
-          Classroom dataset empty, please ask your instructor to add some
-          resources!
-        </h1>
+        <div className="col-span-full flex flex-col items-center justify-center py-8 text-center">
+          <p className="text-gray-500">
+            Classroom dataset empty, please ask your instructor to add some
+            resources!
+          </p>
+        </div>
       );
     }
-    return <h1>Server error! </h1>; //TODO fixthis
+    return (
+      <div className="col-span-full py-8 text-center">
+        <p className="text-gray-500">Server error!</p>
+      </div>
+    );
   }
 
   return (

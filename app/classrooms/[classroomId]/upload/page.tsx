@@ -3,6 +3,7 @@ import { createClient } from "@shared/utils/supabase/server";
 
 import UploadComponent from "./uploadComponent";
 import { isUserAdminForClassroom } from "./actions";
+import { Upload } from "lucide-react";
 
 export default async function UploadPage({
   params,
@@ -30,7 +31,12 @@ export default async function UploadPage({
 
   return (
     <>
-      <h1>Classroom: {data.name}</h1>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{data.name}</h1>
+        <h2 className="flex flex-row gap-4 text-2xl font-medium tracking-tight text-muted-foreground">
+          <Upload className="self-center" /> Upload materials
+        </h2>
+      </div>
       <UploadComponent classroomId={classroomId} classroomName={data.name} />
     </>
   );

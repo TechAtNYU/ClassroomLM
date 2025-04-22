@@ -7,6 +7,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@shared/components/ui/avatar";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export const columns: ColumnDef<Tables<"Users">>[] = [
   {
@@ -15,13 +16,17 @@ export const columns: ColumnDef<Tables<"Users">>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2 font-bold">
         <div>
-          <Avatar className="size-5">
-            <AvatarImage
-              src={row.renderValue("avatar_url")}
-              referrerPolicy="no-referrer"
-            />
-            <AvatarFallback>{row.original.full_name} Avatar</AvatarFallback>
-          </Avatar>
+          {row.renderValue("avatar_url") === "loading" ? (
+            <Skeleton className="size-6 rounded-md" />
+          ) : (
+            <Avatar className="size-5">
+              <AvatarImage
+                src={row.renderValue("avatar_url")}
+                referrerPolicy="no-referrer"
+              />
+              <AvatarFallback>{row.original.full_name} Avatar</AvatarFallback>
+            </Avatar>
+          )}
         </div>
         {row.original.full_name}
       </div>

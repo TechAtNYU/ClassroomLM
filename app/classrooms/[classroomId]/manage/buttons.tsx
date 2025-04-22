@@ -9,6 +9,8 @@ import Link from "next/link";
 import {
   changeClassroomName,
   deleteClassroom,
+  inviteMemberToClassroom,
+  removeMember,
   setArchiveStatusClassroom,
 } from "../../actions";
 import { optimisticUpdateAndFetchClassroomData } from "../../clientUtils";
@@ -29,14 +31,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@shared/components/ui/alert-dialog";
-import { Dispatch, SetStateAction, useTransition } from "react";
+import { Dispatch, SetStateAction, useState, useTransition } from "react";
 import { User } from "@supabase/supabase-js";
 import SaveClassroomDialog from "../../_components/saveClassroomDialog";
 import { Skeleton } from "@shared/components/ui/skeleton";
 import MemberList from "../../_components/memberList";
 import InviteMember from "./_components/inviteMember";
-import { Loader2 } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  Edit3,
+  Loader2,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/shared/components/ui/button";
+import { DialogTrigger } from "@/shared/components/ui/dialog";
 
 export default function ClassroomManagementButtons({
   userData,
@@ -49,7 +60,7 @@ export default function ClassroomManagementButtons({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
+  const [newRowLoading, setNewRowLoading] = useState(false);
   //   optimisticUpdateAndFetchClassroomData(
   //     classroomId,
   //     async () => changeClassroomName(classroomId, newName),
@@ -75,12 +86,42 @@ export default function ClassroomManagementButtons({
     );
   };
 
+  const inviteMember = async (email: string) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => {
+        setNewRowLoading(true);
+        const result = await inviteMemberToClassroom(classroomData.id, email);
+        return result;
+      },
+      {
+        Classroom_Members: [...(classroomData.Classroom_Members ?? [])],
+      },
+      setUserAndClassCallback,
+      classroomData.id,
+      async () => {
+        await refreshClassrooms();
+        setNewRowLoading(false);
+      }
+    );
+  };
+
+  const removeMemberFunction = async (memberId: string) => {
+    return await optimisticUpdateAndFetchClassroomData(
+      async () => removeMember(classroomData.id, memberId),
+      "memberRemove",
+      setUserAndClassCallback,
+      classroomData.id,
+      refreshClassrooms,
+      memberId
+    );
+  };
+
   const deleteClassroomFunction = async () => {
-    router.push(`/classrooms`);
+    router.push(`/classrooms?tab=admin`);
     startTransition(async () => {
       await deleteClassroom(classroomData.id);
     });
-    toast.success("Successfully deleted classroom");
+    toast.success(`Successfully deleted classroom ${classroomData.name}`);
     // const confirmation = window.confirm(
     //   "Are you sure? This action can't be undone."
     // );
@@ -104,82 +145,116 @@ export default function ClassroomManagementButtons({
     //   setUserAndClassData,
     //   refreshClassrooms
     // );
-    setArchiveStatusClassroom(classroomData.id, true);
-    toast.success("Successfully archived classroom");
-    router.push(`/classrooms`);
-    // router.push(`/classroom?archive_success=${classroomData.id.toString()}`);
-    refreshClassrooms();
+    const action = classroomData.archived ? "unarchive" : "archive";
+    const result = await setArchiveStatusClassroom(
+      classroomData.id,
+      !classroomData.archived
+    );
+    if (result.success) {
+      toast.success(`Successfully ${action}d classroom ${classroomData.name}`);
+      router.push(`/classrooms?tab=admin`);
+      refreshClassrooms();
+    } else {
+      toast.error(`Couldn't ${action} classroom, refresh and try again`);
+    }
   };
 
   return (
-    <div>
-      {"Look at the class info: " + classroomData.name}
-      <Link href={`upload`} passHref>
-        <button
-          type="button"
-          className="me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-900"
-        >
-          Upload Materials
-        </button>
-      </Link>
-      {/* ARCHIVE BUTTON */}
-      <button
-        type="button"
-        className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-        onClick={() => archiveClassroomCallback()}
-      >
-        Archive
-      </button>
+    <div className="flex flex-col">
+      <div className="flex justify-between">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="default"
+            className="flex w-fit items-center gap-2 px-4 py-2"
+            effect={"hoverUnderlineInvert"}
+            asChild
+          >
+            <Link href="upload" passHref className="flex items-center gap-2">
+              <Upload /> Upload materials
+            </Link>
+          </Button>
+          <InviteMember optimisticUpdateCallback={inviteMember} />
+          <SaveClassroomDialog
+            optimisticUpdateCallback={handleChangeClassroomName}
+            actionText="update"
+            dialogTrigger={
+              <DialogTrigger asChild className="">
+                <Button
+                  variant="outline"
+                  className="flex gap-2"
+                  effect={"hoverUnderline"}
+                >
+                  <Edit3 /> Update info
+                </Button>
+              </DialogTrigger>
+            }
+          />
+        </div>
 
-      {/* <button
-        type="button"
-        className="me-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-        onClick={() => deleteClassroomFunction(classroomIdNumber)}
-      >
-        Delete
-      </button> */}
+        <div className="flex items-center justify-end gap-4">
+          <Button
+            variant={
+              classroomData.archived ? "successGhost" : "destructiveGhost"
+            }
+            className="flex gap-2"
+            effect={"hoverUnderline"}
+            onClick={() => archiveClassroomCallback()}
+          >
+            {classroomData.archived ? (
+              <>
+                <ArchiveRestore /> {"Unarchive"}
+              </>
+            ) : (
+              <>
+                <Archive /> {"Archive"}
+              </>
+            )}
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className="flex gap-2"
+                effect={"hoverUnderlineInvert"}
+              >
+                <Trash2 /> Delete
+              </Button>
+            </AlertDialogTrigger>
 
-      <AlertDialog>
-        <AlertDialogTrigger>Delete</AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this
-              classroom.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={isPending}
-              onClick={() => deleteClassroomFunction()}
-            >
-              {isPending && <Loader2 className="animate-spin" />} Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <SaveClassroomDialog
-        // isDialogOpen={isDialogOpen}
-        // setIsDialogOpen={setIsDialogOpen}
-        optimisticUpdateCallback={handleChangeClassroomName}
-        actionText="update"
-      />
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  this classroom.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={isPending}
+                  onClick={() => deleteClassroomFunction()}
+                >
+                  {isPending && <Loader2 className="animate-spin" />} Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+      {/* <p>Invite Member:</p> */}
 
       {classroomData.Classroom_Members &&
       classroomData.Classroom_Members.length > 0 ? (
         <MemberList
           classroom={classroomData}
-          enableDeletion={true}
           userId={userData.id}
+          optimisticRemoveCallback={removeMemberFunction}
+          newRowLoading={newRowLoading}
         />
       ) : (
         <Skeleton></Skeleton>
       )}
-      <p>Invite Member:</p>
-      <InviteMember classroomId={classroomData.id} />
     </div>
   );
 }

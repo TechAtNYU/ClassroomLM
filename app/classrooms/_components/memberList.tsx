@@ -22,6 +22,7 @@ import { Button } from "@shared/components/ui/button";
 import { Tables } from "@shared/utils/supabase/database.types";
 import { Row } from "@tanstack/react-table";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { notFound } from "next/navigation";
 
 /**
  *
@@ -50,7 +51,7 @@ export default function MemberList({
   // }, [classroom.Classroom_Members]);
 
   if (!classroom.Classroom_Members) {
-    return <h1>No members found!</h1>;
+    notFound();
   }
 
   function MemberTable() {

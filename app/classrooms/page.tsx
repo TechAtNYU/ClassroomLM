@@ -364,7 +364,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
               {archClassrooms.map((cm) => (
                 <li
                   key={cm.name}
-                  className="flex w-full justify-between rounded-md border p-3 text-xl"
+                  className="flex w-full justify-between rounded-md border bg-background p-3 text-xl"
                 >
                   <div>
                     {cm.name}

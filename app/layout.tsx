@@ -15,6 +15,7 @@ import { cn } from "@shared/lib/utils";
 import { Separator } from "@shared/components/ui/separator";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { BackButton } from "@/shared/components/ui/sidebar/back-button";
+import { StarsBackground } from "@/shared/components/background/StarBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,23 +74,23 @@ export default async function RootLayout({
                 <SidebarInset
                   // className="md:peer-data-[variant=inset]:mr-7 md:peer-data-[variant=inset]:mt-10 md:peer-data-[variant=inset]:shadow-lg md:peer-data-[variant=inset]:border-accent  md:peer-data-[variant=inset]:border"
                   // bg-[linear-gradient(0deg,_#FFEFD2,_#67c5ff_38%,background)]
-                  className="dark:bg-[linear-gradient(0deg,_#443461,_#130F5A_38%,_#1F1F1F)] md:peer-data-[variant=inset]:mr-7 md:peer-data-[variant=inset]:mt-10 md:peer-data-[variant=inset]:shadow-md"
+                  className="z-10 bg-[linear-gradient(0deg,_rgba(234,225,245,0.6),_rgba(228,228,245,0.6)_38%,_#FFFFFF)] dark:bg-[linear-gradient(0deg,_#443461,_#130F5A_38%,_#1F1F1F)] md:peer-data-[variant=inset]:mr-7 md:peer-data-[variant=inset]:mt-10 md:peer-data-[variant=inset]:shadow-md"
                 >
-                  <main>
-                    <header className="flex h-16 shrink-0 items-center gap-2">
-                      <div className="flex items-center gap-1 px-4">
-                        <SidebarTrigger className="-ml-1" />
-                        <Separator
-                          orientation="vertical"
-                          className="mr-2 h-4"
-                        />
-                        <BackButton />
-                      </div>
-                    </header>
-                    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                      {children}
+                  <header className="z-10 flex h-16 shrink-0 items-center gap-2">
+                    <div className="flex items-center gap-1 px-4">
+                      <SidebarTrigger className="-ml-1" />
+                      <Separator orientation="vertical" className="mr-2 h-4" />
+                      <BackButton />
                     </div>
-                  </main>
+                  </header>
+                  <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                    <StarsBackground
+                      minTwinkleSpeed={0.8}
+                      twinkleProbability={0.9}
+                      className="z-[-1]"
+                    />
+                    {children}
+                  </div>
                 </SidebarInset>
               </UserContextProvider>
             </SidebarProvider>

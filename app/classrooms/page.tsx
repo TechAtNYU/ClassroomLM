@@ -33,7 +33,6 @@ import {
   MessagesSquareIcon,
   UserPlus,
   Users,
-  FileText,
 } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
@@ -288,7 +287,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 />
               )}
 
-            <TooltipUtil
+            {/* <TooltipUtil
               trigger={
                 <Button type="button" variant={"ghost"} size={"iconLg"} asChild>
                   <Link href={`/classrooms/${classroom.id}/augment`} passHref>
@@ -297,7 +296,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 </Button>
               }
               content={"Augment Notes"}
-            />
+            /> */}
           </div>
           {isAdmin ? (
             <TooltipUtil
@@ -363,8 +362,8 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
             <ul className="my-2 space-y-2">
               {archClassrooms.map((cm) => (
                 <li
-                  key={cm.name}
-                  className="flex w-full justify-between rounded-md border p-3 text-xl"
+                  key={`${cm.name}_${cm.id}`}
+                  className="flex w-full justify-between rounded-md border bg-background p-3 text-xl"
                 >
                   <div>
                     {cm.name}
@@ -463,7 +462,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 .filter((x) => !x.archived)
                 .map((classroom) => (
                   <ClassroomCard
-                    key={classroom.id}
+                    key={`${classroom.name}_${classroom.id}`}
                     classroom={classroom}
                     isAdmin={true}
                   />
@@ -482,7 +481,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 .filter((x) => !x.archived)
                 .map((classroom) => (
                   <ClassroomCard
-                    key={classroom.id}
+                    key={`${classroom.name}_${classroom.id}`}
                     classroom={classroom}
                     isAdmin={false}
                   />

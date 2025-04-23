@@ -15,10 +15,10 @@ const StarSwoop = ({ className }: { className: string }) => (
     xmlSpace="preserve"
     // filter={"drop-shadow(0 0 3px white) drop-shadow(0 0 30px white) drop-shadow(0 0 200px white)"}
   >
-    <rect width="100%" height="100%" fill="transparent" />
+    {/* <rect width="100%" height="100%" fill="transparent" />
 
     <g transform="translate(540 540)" />
-    <g transform="translate(540 540)" />
+    <g transform="translate(540 540)" /> */}
     <path
       style={{
         stroke: "none",

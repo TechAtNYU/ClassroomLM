@@ -1,6 +1,5 @@
 import Balloon, { PurpleBalloon } from "@/shared/components/background/Balloon";
 import Star from "@/shared/components/background/Star";
-import { StarsBackground } from "@/shared/components/background/StarBackground";
 import StarSwoop from "@/shared/components/background/StarSwoop";
 import { Button } from "@/shared/components/ui/button";
 import { ArrowRightCircle } from "lucide-react";
@@ -8,16 +7,16 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-clip text-center">
-      <div className="absolute left-0 top-0 ml-[100px] mt-[100px] h-[1080px] w-[1920px]">
-        <StarSwoop className="absolute right-[10px] top-[-300px] z-10 rotate-[15deg] scale-50" />
-        <Star className="absolute left-[40px] top-[-50px] z-10 scale-50" />
-        <Balloon className="absolute left-[40px] top-[400px] z-10 size-[20em]" />
+    <div className="relative flex w-full flex-1 items-center justify-center overflow-clip text-center">
+      <div className="absolute left-[50px] h-[1080px] w-[1920px]">
+        <StarSwoop className="invisible absolute right-[25%] top-[-17%] z-10 rotate-[15deg] scale-[0.3] dark:visible" />
+        <Star className="invisible absolute left-[3%] top-[20%] z-10 scale-[0.4] dark:visible" />
+        <Balloon className="absolute bottom-[30%] left-[-2%] z-10 size-[10em]" />
         <PurpleBalloon className="absolute bottom-[200px] right-[40px] z-10 size-[15em]" />
       </div>
-      <StarsBackground minTwinkleSpeed={0.8} twinkleProbability={0.9} />
-      <div className="relative z-20 break-words">
-        <div className="relative left-[20px] flex h-[50vh] min-h-fit min-w-[55vw] max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
+
+      <div className="relative z-20 flex content-center justify-center break-words">
+        <div className="relative flex h-[50vh] min-h-fit min-w-[55vw] max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
           <div className="mb-3 flex flex-col gap-2">
             <h1 className="mb-3 text-5xl font-bold tracking-tight lg:text-8xl">
               Learn and grow

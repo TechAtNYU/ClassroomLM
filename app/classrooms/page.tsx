@@ -33,7 +33,6 @@ import {
   MessagesSquareIcon,
   UserPlus,
   Users,
-  FileText,
 } from "lucide-react";
 import { Button } from "@shared/components/ui/button";
 import SaveClassroomDialog from "./_components/saveClassroomDialog";
@@ -288,7 +287,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 />
               )}
 
-            <TooltipUtil
+            {/* <TooltipUtil
               trigger={
                 <Button type="button" variant={"ghost"} size={"iconLg"} asChild>
                   <Link href={`/classrooms/${classroom.id}/augment`} passHref>
@@ -297,7 +296,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 </Button>
               }
               content={"Augment Notes"}
-            />
+            /> */}
           </div>
           {isAdmin ? (
             <TooltipUtil

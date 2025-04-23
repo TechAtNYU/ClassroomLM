@@ -67,7 +67,7 @@ export default function MessageBox({
   }
   // console.log(messages);
   return (
-    <div className="mt-3 flex min-h-[400px] w-11/12 flex-1 flex-col place-self-center rounded border bg-background p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
+    <div className="mt-3 flex min-h-[400px] w-11/12 flex-1 flex-col place-self-center rounded border bg-background/95 p-4 text-gray-800 shadow dark:text-white max-[500px]:w-full">
       <Logo
         className={
           "size-[6vmin] h-fit min-w-10 place-self-center fill-foreground stroke-foreground stroke-[10px]"
@@ -98,7 +98,11 @@ export default function MessageBox({
                     variant={msg.role === "assistant" ? "received" : "sent"}
                     className="p-2"
                   >
-                    <MathJax dynamic hideUntilTypeset="every" className="prose w-fit !whitespace-normal  font-medium marker:text-inherit">
+                    <MathJax
+                      dynamic
+                      hideUntilTypeset="every"
+                      className="prose w-fit !whitespace-normal font-medium marker:text-inherit"
+                    >
                       <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
                     </MathJax>
                   </ChatBubbleMessage>

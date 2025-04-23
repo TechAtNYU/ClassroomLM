@@ -96,9 +96,9 @@ export default function MessageBox({
 
                   <ChatBubbleMessage
                     variant={msg.role === "assistant" ? "received" : "sent"}
-                    className="prose w-fit !whitespace-normal p-2 font-medium marker:text-inherit"
+                    className="p-2"
                   >
-                    <MathJax dynamic hideUntilTypeset="every">
+                    <MathJax dynamic hideUntilTypeset="every" className="prose w-fit !whitespace-normal  font-medium marker:text-inherit">
                       <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
                     </MathJax>
                   </ChatBubbleMessage>
@@ -114,7 +114,7 @@ export default function MessageBox({
           </ChatMessageList>
         </div>
       </MathJaxContext>
-      <div className="flex w-full items-center justify-between gap-2 rounded-lg border bg-background p-1">
+      <div className="flex w-full items-center justify-between gap-3 rounded-lg border bg-background p-1">
         <ChatInput
           value={value}
           onChange={(e) => setValue(e.target.value)}

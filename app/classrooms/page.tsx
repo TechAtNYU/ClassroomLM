@@ -363,7 +363,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
             <ul className="my-2 space-y-2">
               {archClassrooms.map((cm) => (
                 <li
-                  key={cm.name}
+                  key={`${cm.name}_${cm.id}`}
                   className="flex w-full justify-between rounded-md border bg-background p-3 text-xl"
                 >
                   <div>
@@ -463,7 +463,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 .filter((x) => !x.archived)
                 .map((classroom) => (
                   <ClassroomCard
-                    key={classroom.id}
+                    key={`${classroom.name}_${classroom.id}`}
                     classroom={classroom}
                     isAdmin={true}
                   />
@@ -482,7 +482,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
                 .filter((x) => !x.archived)
                 .map((classroom) => (
                   <ClassroomCard
-                    key={classroom.id}
+                    key={`${classroom.name}_${classroom.id}`}
                     classroom={classroom}
                     isAdmin={false}
                   />

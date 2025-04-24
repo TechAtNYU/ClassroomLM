@@ -17,7 +17,7 @@ export async function GET(
   const { data: classroom, error: classroomError } = await supabase
     .from("Classrooms")
     .select("*")
-    .eq("join_code", code)
+    .eq("join_code", code.toLowerCase())
     .single();
 
   if (classroomError || !classroom) {

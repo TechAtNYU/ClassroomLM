@@ -24,7 +24,9 @@ import { toast } from "sonner";
 import Logo from "@/shared/components/Logo";
 import { Separator } from "@/shared/components/ui/separator";
 import { notFound } from "next/navigation";
-import { MathJax, MathJaxContext } from "better-react-mathjax";
+import "katex/dist/katex.min.css";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
 
 interface Message extends Tables<"Messages"> {
   user_id: string;
@@ -242,95 +244,93 @@ const MessageArea = ({
         }
       />
       {/* <div className="mt-10 flex w-11/12 flex-col place-self-center rounded border p-4 text-gray-800 shadow dark:text-white"> */}
-      <MathJaxContext>
-        <div className="flex-1 overflow-auto">
-          <ChatMessageList smooth className="max-[500px]:px-0">
-            {messages.flatMap((message) => {
-              const variant =
-                message.user_id === userAndClassData.userData.id
-                  ? "sent"
-                  : "received";
+      <div className="flex-1 overflow-auto">
+        <ChatMessageList smooth className="max-[500px]:px-0">
+          {messages.flatMap((message) => {
+            const variant =
+              message.user_id === userAndClassData.userData.id
+                ? "sent"
+                : "received";
 
-              // Format the timestamp
-              const messageTime = new Date(message.created_at);
-              const formattedTime = messageTime.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "numeric",
-              });
-              const formattedDay = new Date(
-                message.created_at
-              ).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              });
-              const elements = [];
-              if (
-                !previousMessageTime ||
-                isDifferentDay(messageTime, previousMessageTime)
-              ) {
-                elements.push(
-                  <div
-                    key={messageTime.getMilliseconds()}
-                    className="flex items-center justify-center gap-4"
-                  >
-                    <Separator className="w-[20%]" />
-                    <span className="text-muted-foreground">
-                      {formattedDay}
-                    </span>
-                    <Separator className="w-[20%]" />
-                  </div>
-                );
-              }
-              previousMessageTime = messageTime;
+            // Format the timestamp
+            const messageTime = new Date(message.created_at);
+            const formattedTime = messageTime.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+            });
+            const formattedDay = new Date(
+              message.created_at
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+            const elements = [];
+            if (
+              !previousMessageTime ||
+              isDifferentDay(messageTime, previousMessageTime)
+            ) {
               elements.push(
-                <ChatBubble
-                  key={message.id}
-                  variant={variant}
-                  className="max-w-[80%]"
+                <div
+                  key={messageTime.getMilliseconds()}
+                  className="flex items-center justify-center gap-4"
                 >
-                  {!message?.member_id ? (
-                    <AIAvatar />
-                  ) : (
-                    <ChatBubbleAvatar src={message.avatar_url!} fallback="Me" />
-                  )}
-                  <div className="flex flex-col">
-                    <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                      {message?.member_id
-                        ? (message.full_name ?? "Unknown")
-                        : AIFullNameFormatted("AI Assistant")}{" "}
-                      • {formattedTime}
-                      {message.is_ask && (
-                        <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                          Ask LLM
-                        </span>
-                      )}
-                    </div>
-                    <ChatBubbleMessage className="p-2" variant={variant}>
-                      <MathJax
-                        dynamic
-                        hideUntilTypeset="every"
-                        className="prose w-fit !whitespace-normal font-medium marker:text-inherit"
-                      >
-                        <ReactMarkdown>
-                          {cleanMessage(message.content)}
-                        </ReactMarkdown>
-                      </MathJax>
-                    </ChatBubbleMessage>
-                  </div>
-                </ChatBubble>
+                  <Separator className="w-[20%]" />
+                  <span className="text-muted-foreground">{formattedDay}</span>
+                  <Separator className="w-[20%]" />
+                </div>
               );
-              return elements;
-            })}
-            {isLoading && (
-              <ChatBubble variant="received">
-                <AIAvatar />
-                <ChatBubbleMessage isLoading variant="received" />
+            }
+            previousMessageTime = messageTime;
+            elements.push(
+              <ChatBubble
+                key={message.id}
+                variant={variant}
+                className="max-w-[80%]"
+              >
+                {!message?.member_id ? (
+                  <AIAvatar />
+                ) : (
+                  <ChatBubbleAvatar src={message.avatar_url!} fallback="Me" />
+                )}
+                <div className="flex flex-col">
+                  <div className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    {message?.member_id
+                      ? (message.full_name ?? "Unknown")
+                      : AIFullNameFormatted("AI Assistant")}{" "}
+                    • {formattedTime}
+                    {message.is_ask && (
+                      <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                        Ask LLM
+                      </span>
+                    )}
+                  </div>
+                  <ChatBubbleMessage
+                    className="prose w-fit max-w-[50vw] !whitespace-normal p-2 font-medium marker:text-inherit"
+                    variant={variant}
+                  >
+                    <ReactMarkdown
+                      remarkPlugins={[
+                        [remarkMath, { singleDollarTextMath: false }],
+                      ]}
+                      rehypePlugins={[rehypeKatex]}
+                    >
+                      {cleanMessage(message.content)}
+                    </ReactMarkdown>
+                  </ChatBubbleMessage>
+                </div>
               </ChatBubble>
-            )}
-          </ChatMessageList>
-        </div>
-      </MathJaxContext>
+            );
+            return elements;
+          })}
+          {isLoading && (
+            <ChatBubble variant="received">
+              <AIAvatar />
+              <ChatBubbleMessage isLoading variant="received" />
+            </ChatBubble>
+          )}
+        </ChatMessageList>
+      </div>
       <div className="relative mt-4 flex items-center justify-between gap-2 rounded-lg border bg-background p-1">
         <ChatInput
           value={messageBoxValue}

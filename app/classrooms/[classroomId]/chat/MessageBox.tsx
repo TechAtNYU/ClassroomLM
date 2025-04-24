@@ -19,7 +19,9 @@ import { toast } from "sonner";
 import Logo from "@/shared/components/Logo";
 import { SendIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { MathJax, MathJaxContext } from "better-react-mathjax";
+import "katex/dist/katex.min.css";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
 
 interface MessageBoxProps {
   chatClient: ChatClientWithSession;
@@ -73,51 +75,50 @@ export default function MessageBox({
           "size-[6vmin] h-fit min-w-10 place-self-center fill-foreground stroke-foreground stroke-[10px]"
         }
       />
-      <MathJaxContext>
-        <div className="flex-1 overflow-auto">
-          <ChatMessageList smooth className="max-[500px]:px-0">
-            {messages.map((msg, index) => (
-              <ChatBubble
-                key={index}
-                variant={msg.role === "assistant" ? "received" : "sent"}
-                className="max-w-[80%]"
-              >
-                {msg.role === "assistant" ? (
-                  <AIAvatar />
-                ) : (
-                  <ChatBubbleAvatar fallback="Me" />
-                )}
-                <div className="flex flex-col">
-                  <span className="mx-2">
-                    {msg?.created_at &&
-                      getTimeDate(msg.created_at) &&
-                      getTimeDate(msg.created_at)}
-                  </span>
-
-                  <ChatBubbleMessage
-                    variant={msg.role === "assistant" ? "received" : "sent"}
-                    className="p-2"
-                  >
-                    <MathJax
-                      dynamic
-                      hideUntilTypeset="every"
-                      className="prose w-fit !whitespace-normal font-medium marker:text-inherit"
-                    >
-                      <ReactMarkdown>{cleanMessage(msg.content)}</ReactMarkdown>
-                    </MathJax>
-                  </ChatBubbleMessage>
-                </div>
-              </ChatBubble>
-            ))}
-            {isLoading && (
-              <ChatBubble variant="received">
+      <div className="flex-1 overflow-auto">
+        <ChatMessageList smooth className="max-[500px]:px-0">
+          {messages.map((msg, index) => (
+            <ChatBubble
+              key={index}
+              variant={msg.role === "assistant" ? "received" : "sent"}
+              className="max-w-[80%]"
+            >
+              {msg.role === "assistant" ? (
                 <AIAvatar />
-                <ChatBubbleMessage isLoading variant="received" />
-              </ChatBubble>
-            )}
-          </ChatMessageList>
-        </div>
-      </MathJaxContext>
+              ) : (
+                <ChatBubbleAvatar fallback="Me" />
+              )}
+              <div className="flex flex-col">
+                <span className="mx-2">
+                  {msg?.created_at &&
+                    getTimeDate(msg.created_at) &&
+                    getTimeDate(msg.created_at)}
+                </span>
+
+                <ChatBubbleMessage
+                  variant={msg.role === "assistant" ? "received" : "sent"}
+                  className="prose w-fit max-w-[50vw] !whitespace-normal p-2 font-medium marker:text-inherit"
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[
+                      [remarkMath, { singleDollarTextMath: false }],
+                    ]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {cleanMessage(msg.content)}
+                  </ReactMarkdown>
+                </ChatBubbleMessage>
+              </div>
+            </ChatBubble>
+          ))}
+          {isLoading && (
+            <ChatBubble variant="received">
+              <AIAvatar />
+              <ChatBubbleMessage isLoading variant="received" />
+            </ChatBubble>
+          )}
+        </ChatMessageList>
+      </div>
       <div className="flex w-full items-center justify-between gap-3 rounded-lg border bg-background p-1">
         <ChatInput
           value={value}
@@ -142,3 +143,7 @@ function getTimeDate(created_at_seconds: number) {
     minute: "numeric",
   });
 }
+
+// function escapeLatex(message: string){
+//   return message.replace("$","\\$").replace("\\\\(", "$").replace("\\\\)", "$").replace("\\$\\$","$$")
+// }

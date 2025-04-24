@@ -33,7 +33,7 @@ export default function JoinDialog({
 
   const joinButtonCallback = () => {
     if (joinValue.length == 8) {
-      router.push(`/classrooms/join/${joinValue}`);
+      router.push(`/classrooms/join/${joinValue.toLowerCase()}`);
       setIsDialogOpen(false);
     }
   };

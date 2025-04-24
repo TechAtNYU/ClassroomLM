@@ -129,6 +129,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
             { duration: 10000 }
           );
         }
+        refreshClassrooms();
       }
     }
     // const deleteSuccess = searchParams.get("delete_success");

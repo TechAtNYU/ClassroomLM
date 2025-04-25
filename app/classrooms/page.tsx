@@ -455,7 +455,7 @@ function ClassroomList({ userContext }: { userContext: UserContextType }) {
             />
           </div>
         </div>
-        <Separator className="my-4 mb-10" />
+        <Separator className="my-4 mb-10 bg-accent" />
         <TabsContent value="admin">
           <div>
             <div className="grid auto-rows-min gap-4 min-[940px]:grid-cols-2 min-[1270px]:grid-cols-3 min-[1665px]:grid-cols-4">

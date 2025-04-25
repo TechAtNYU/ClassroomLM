@@ -148,7 +148,7 @@ export default function MemberList({
         )}
 
         {/* not used: https://github.com/shadcn-ui/ui/issues/16#issuecomment-1602565563 */}
-        <SheetContent className="flex w-[55vw] items-center justify-center align-middle sm:max-w-5xl">
+        <SheetContent className="flex w-[55vw] items-center justify-center align-middle sm:max-w-[55vw]">
           <SheetHeader>
             <SheetTitle>{classroom.name} Members</SheetTitle>
             {/* <SheetDescription>

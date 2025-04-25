@@ -145,7 +145,7 @@ export default function UploadComponent({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-[35vw]">
         <CardHeader>
           <CardTitle>File Upload</CardTitle>
         </CardHeader>
@@ -193,11 +193,11 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
   const pathname = usePathname();
   return (
     uploadedFiles.length > 0 && (
-      <ScrollArea className="mt-5 max-h-[50vh]">
+      <ScrollArea className="mt-5 w-full flex h-fit max-h-[50vh] flex-col ">
         <div className="mt-6">
           <h2 className="text-lg font-semibold">Uploaded Files</h2>
           <ul className="my-2 space-y-2">
-            {uploadedFiles.map((file) => (
+            {uploadedFiles.flatMap(f => [f,f,f,f,f]).map((file) => (
               <li key={file.id} className="rounded-md border p-3">
                 <Link
                   href={`${pathname}/preview?documentId=${file.id}&datasetId=${file.datasetId}`}

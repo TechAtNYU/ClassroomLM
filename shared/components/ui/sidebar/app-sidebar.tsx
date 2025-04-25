@@ -216,11 +216,8 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="p-0">
               <Link href="/" className="flex">
-                <div className="flex aspect-square h-[100%] items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
-                  {/* <div className="relative h-[90%] w-[90%] object-contain"> */}
-                  {/* <Image src={"/logo.svg"} fill alt="Logo" className="fill-red-600"/> */}
-                  <Logo className="fill-sidebar-primary-foreground size-full" />
-                  {/* </div> */}
+                <div className="flex aspect-square h-[100%] items-center justify-center rounded-xl bg-sidebar-primary p-1 text-sidebar-primary-foreground">
+                  <Logo className="size-full fill-sidebar-primary-foreground" />
                 </div>
                 <div className="grid flex-1 text-left text-lg leading-tight">
                   <span className="truncate font-semibold">ClassroomLM</span>
@@ -244,7 +241,7 @@ export function AppSidebar() {
                   size="default"
                 >
                   <Link href={item.url}>
-                    {item.icon && <item.icon className="scale-150"/>}
+                    {item.icon && <item.icon className="scale-150" />}
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>

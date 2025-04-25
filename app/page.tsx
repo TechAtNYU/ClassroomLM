@@ -6,6 +6,7 @@ import CloudLeft from "@/shared/components/background/CloudLeft";
 import CloudRight from "@/shared/components/background/CloudRight";
 import Star from "@/shared/components/background/Star";
 import StarSwoop from "@/shared/components/background/StarSwoop";
+import Logo from "@/shared/components/Logo";
 import { Button } from "@/shared/components/ui/button";
 import { ArrowRightCircle } from "lucide-react";
 import Link from "next/link";
@@ -13,21 +14,23 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      <CloudLeft className="z-9 absolute bottom-[0%] left-[0%] origin-bottom-left scale-[0.15] " />
-      <CloudRight className="z-9 absolute bottom-[0%] right-[0%] origin-bottom-right scale-[0.15] " />
-      {/* <CloudLeft className="z-9 absolute  scale-x-[-1] bottom-[0%] left-[0%] origin-bottom-left scale-[0.15] overflow-visible group-data-[state=collapsed]:left-[0px]" /> */}
+      <CloudLeft className="z-9 absolute bottom-0 left-0 origin-bottom-left scale-[0.35] min-[500px]:scale-[0.25] min-[1270px]:scale-[0.15]" />
+      <CloudRight className="z-9 absolute bottom-0 right-0 origin-bottom-right scale-[0.35] min-[500px]:scale-[0.25] min-[1270px]:scale-[0.15]" />
+
       <div className="relative flex w-full flex-1 items-center justify-center overflow-clip text-center">
         <div className="absolute left-[50px] h-[1080px] w-[1920px] overflow-visible">
-          <StarSwoop className="absolute right-[25%] top-[-17%] z-10 rotate-[15deg] scale-[0.3] dark:visible" />
-          <Star className="invisible absolute left-[3%] top-[20%] z-10 scale-[0.4] dark:visible" />
+          <StarSwoop className="absolute right-[25%] top-[-19%] z-10 rotate-[15deg] scale-[0.3] dark:visible" />
+          <Star className="invisible absolute left-[-5%] top-[20%] z-10 scale-[0.4] dark:visible" />
           <Balloon className="absolute bottom-[30%] left-[-2%] z-10 size-[10em]" />
           <PurpleBalloon className="absolute bottom-[25%] right-[25%] z-10 size-[9em]" />
           <GreenBalloon className="absolute bottom-[22%] left-[35%] z-10 size-[3em]" />
-          {/* <CloudLeft className="absolute static -translate-x-3 bottom-[20%] z-9 left-[-5%] origin-bottom-left scale-[0.15] overflow-visible group-data-[state=collapsed]:left-[0px]" /> */}
         </div>
         <div className="relative z-20 flex content-center justify-center break-words">
           <div className="relative flex h-[50vh] min-h-fit min-w-[55vw] max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
-            <div className="mb-3 flex flex-col gap-2">
+            <div className="justify-content mb-3 flex flex-col items-center gap-2">
+              <div className="w-fit rounded-xl border-[4px] border-border bg-muted/50 px-2 text-center dark:border-none dark:bg-inherit">
+                <Logo className="size-[9vh] fill-foreground stroke-foreground stroke-[1em]" />
+              </div>
               <h1 className="mb-3 text-5xl font-bold tracking-tight lg:text-8xl">
                 Learn and grow
               </h1>

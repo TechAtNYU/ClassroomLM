@@ -145,7 +145,7 @@ export default function UploadComponent({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
-      <Card className="w-full max-w-[35vw]">
+      <Card className="w-[95vw] min-[925px]:w-[35vw]">
         <CardHeader>
           <CardTitle>File Upload</CardTitle>
         </CardHeader>
@@ -154,8 +154,8 @@ export default function UploadComponent({
             <div className="flex items-center space-x-4">
               <Skeleton className="h-12 w-12 rounded-full" />
               <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
+                <Skeleton className="h-4 w-[30vw]" />
+                <Skeleton className="h-4 w-[25vw]" />
               </div>
             </div>
           ) : (

@@ -66,44 +66,48 @@ export default function InviteMember({
   };
 
   return (
-    <div className="my-3 flex gap-5">
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        {dialogTrigger ?? (
-          <DialogTrigger asChild>
-            <Button variant="outline" effect={"hoverUnderline"}>
-              Invite Member <UserPlus />
-            </Button>
-          </DialogTrigger>
-        )}
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Invite Member</DialogTitle>
-            <DialogDescription>
-              Enter the email of the member you would like to invite to your
-              classroom here.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Email
-              </Label>
-              <Input
-                id="email"
-                value={email}
-                className="col-span-3"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+    // <div className="my-3 flex gap-5">
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {dialogTrigger ?? (
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            effect={"hoverUnderline"}
+            className="max-[740px]:w-3/5"
+          >
+            Invite Member <UserPlus />
+          </Button>
+        </DialogTrigger>
+      )}
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Invite Member</DialogTitle>
+          <DialogDescription>
+            Enter the email of the member you would like to invite to your
+            classroom here.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Email
+            </Label>
+            <Input
+              id="email"
+              value={email}
+              className="col-span-3"
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
-          <DialogFooter>
-            <Button onClick={inviteCallback} type="submit">
-              {isPending && <Loader2 className="animate-spin" />}
-              Invite
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </div>
+        <DialogFooter>
+          <Button onClick={inviteCallback} type="submit">
+            {isPending && <Loader2 className="animate-spin" />}
+            Invite
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    // </div>
   );
 }

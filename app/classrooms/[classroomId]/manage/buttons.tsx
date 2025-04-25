@@ -44,6 +44,7 @@ import {
   Loader2,
   Trash2,
   Upload,
+  UserPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
@@ -160,20 +161,38 @@ export default function ClassroomManagementButtons({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-2">
       <div className="flex justify-between">
+        {/* max-[740px]:flex-col"> */}
         <div className="flex items-center gap-2">
+          {/* //max-[740px]:flex-col" */}
           <Button
             variant="default"
             className="flex w-fit items-center gap-2 px-4 py-2"
+            //  max-[740px]:w-3/5"
             effect={"hoverUnderlineInvert"}
             asChild
           >
             <Link href="upload" passHref className="flex items-center gap-2">
-              <Upload /> Upload materials
+              <Upload />
+              <span className="max-[740px]:hidden">Upload materials</span>
             </Link>
           </Button>
-          <InviteMember optimisticUpdateCallback={inviteMember} />
+          <InviteMember
+            optimisticUpdateCallback={inviteMember}
+            dialogTrigger={
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  effect={"hoverUnderline"}
+                  className="max-[740px]:w-3/5"
+                >
+                  <UserPlus />{" "}
+                  <span className="max-[740px]:hidden">Invite Member</span>
+                </Button>
+              </DialogTrigger>
+            }
+          />
           <SaveClassroomDialog
             optimisticUpdateCallback={handleChangeClassroomName}
             actionText="update"
@@ -182,9 +201,11 @@ export default function ClassroomManagementButtons({
                 <Button
                   variant="outline"
                   className="flex gap-2"
+                  // max-[740px]:w-3/5"
                   effect={"hoverUnderline"}
                 >
-                  <Edit3 /> Update info
+                  <Edit3 />{" "}
+                  <span className="max-[740px]:hidden">Update info</span>
                 </Button>
               </DialogTrigger>
             }
@@ -192,21 +213,26 @@ export default function ClassroomManagementButtons({
         </div>
 
         <div className="flex items-center justify-end gap-4">
+          {/* "
+         //max-[740px]:flex-col  max-[740px]:w-full "> */}
           <Button
             variant={
               classroomData.archived ? "successGhost" : "destructiveGhost"
             }
             className="flex gap-2"
+            //max-[740px]:w-3/5 bg-accent/50"
             effect={"hoverUnderline"}
             onClick={() => archiveClassroomCallback()}
           >
             {classroomData.archived ? (
               <>
-                <ArchiveRestore /> {"Unarchive"}
+                <ArchiveRestore />{" "}
+                <span className="max-[740px]:hidden">{"Unarchive"}</span>
               </>
             ) : (
               <>
-                <Archive /> {"Archive"}
+                <Archive />{" "}
+                <span className="max-[740px]:hidden">{"Archive"}</span>
               </>
             )}
           </Button>
@@ -215,9 +241,10 @@ export default function ClassroomManagementButtons({
               <Button
                 variant="destructive"
                 className="flex gap-2"
+                //max-[740px]:w-3/5"
                 effect={"hoverUnderlineInvert"}
               >
-                <Trash2 /> Delete
+                <Trash2 /> <span className="max-[740px]:hidden">Delete</span>
               </Button>
             </AlertDialogTrigger>
 

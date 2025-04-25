@@ -193,27 +193,29 @@ function FileList({ uploadedFiles }: { uploadedFiles: UploadedFile[] }) {
   const pathname = usePathname();
   return (
     uploadedFiles.length > 0 && (
-      <ScrollArea className="mt-5 w-full flex h-fit max-h-[50vh] flex-col ">
+      <ScrollArea className="mt-5 flex h-fit max-h-[50vh] w-full flex-col">
         <div className="mt-6">
           <h2 className="text-lg font-semibold">Uploaded Files</h2>
           <ul className="my-2 space-y-2">
-            {uploadedFiles.flatMap(f => [f,f,f,f,f]).map((file) => (
-              <li key={file.id} className="rounded-md border p-3">
-                <Link
-                  href={`${pathname}/preview?documentId=${file.id}&datasetId=${file.datasetId}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  className="font-medium hover:underline"
-                >
-                  {file.name}
-                  <SquareArrowOutUpRight className="inline scale-75" />
-                </Link>
-                <p className="text-sm text-muted-foreground">
-                  {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
-                  <strong>{file.status}</strong>
-                </p>
-              </li>
-            ))}
+            {uploadedFiles
+              .flatMap((f) => [f])
+              .map((file) => (
+                <li key={file.id} className="rounded-md border p-3">
+                  <Link
+                    href={`${pathname}/preview?documentId=${file.id}&datasetId=${file.datasetId}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="font-medium hover:underline"
+                  >
+                    {file.name}
+                    <SquareArrowOutUpRight className="inline scale-75" />
+                  </Link>
+                  <p className="text-sm text-muted-foreground">
+                    {(file.size / 1024).toFixed(2)} KB - {file.type} -{" "}
+                    <strong>{file.status}</strong>
+                  </p>
+                </li>
+              ))}
           </ul>
         </div>
       </ScrollArea>

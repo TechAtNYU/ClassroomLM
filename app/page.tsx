@@ -1,4 +1,9 @@
-import Balloon, { PurpleBalloon } from "@/shared/components/background/Balloon";
+import Balloon, {
+  GreenBalloon,
+  PurpleBalloon,
+} from "@/shared/components/background/Balloon";
+import CloudLeft from "@/shared/components/background/CloudLeft";
+import CloudRight from "@/shared/components/background/CloudRight";
 import Star from "@/shared/components/background/Star";
 import StarSwoop from "@/shared/components/background/StarSwoop";
 import { Button } from "@/shared/components/ui/button";
@@ -7,43 +12,49 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="relative flex w-full flex-1 items-center justify-center overflow-clip text-center">
-      <div className="absolute left-[50px] h-[1080px] w-[1920px]">
-        <StarSwoop className="invisible absolute right-[25%] top-[-17%] z-10 rotate-[15deg] scale-[0.3] dark:visible" />
-        <Star className="invisible absolute left-[3%] top-[20%] z-10 scale-[0.4] dark:visible" />
-        <Balloon className="absolute bottom-[30%] left-[-2%] z-10 size-[10em]" />
-        <PurpleBalloon className="absolute bottom-[200px] right-[40px] z-10 size-[15em]" />
-      </div>
-
-      <div className="relative z-20 flex content-center justify-center break-words">
-        <div className="relative flex h-[50vh] min-h-fit min-w-[55vw] max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
-          <div className="mb-3 flex flex-col gap-2">
-            <h1 className="mb-3 text-5xl font-bold tracking-tight lg:text-8xl">
-              Learn and grow
-            </h1>
-            <h2 className="text-2xl font-medium tracking-tight lg:text-4xl">
-              with your personalized classroom agent
-            </h2>
-          </div>
-          <div className="flex w-2/5 min-w-[50vw] flex-col items-center gap-10">
-            <h3 className="text-lg italic lg:text-xl">
-              A collaborative space for students and teachers to interact with
-              the future of LLM-enhanced education.
-            </h3>
-            <Button
-              effect="hoverUnderlineWhiteExpand"
-              icon={ArrowRightCircle}
-              iconPlacement="right"
-              className="h-12 w-full min-w-fit max-w-[20vw] bg-[#200092] text-white shadow-[0px_0px_45px_1px_#6083FF] hover:bg-[#200092]/90"
-            >
-              <Link href="classrooms" className="text-lg">
-                Start your journey today
-              </Link>
-            </Button>
+    <>
+      <CloudLeft className="z-9 absolute bottom-[0%] left-[0%] origin-bottom-left scale-[0.15] " />
+      <CloudRight className="z-9 absolute bottom-[0%] right-[0%] origin-bottom-right scale-[0.15] " />
+      {/* <CloudLeft className="z-9 absolute  scale-x-[-1] bottom-[0%] left-[0%] origin-bottom-left scale-[0.15] overflow-visible group-data-[state=collapsed]:left-[0px]" /> */}
+      <div className="relative flex w-full flex-1 items-center justify-center overflow-clip text-center">
+        <div className="absolute left-[50px] h-[1080px] w-[1920px] overflow-visible">
+          <StarSwoop className="absolute right-[25%] top-[-17%] z-10 rotate-[15deg] scale-[0.3] dark:visible" />
+          <Star className="invisible absolute left-[3%] top-[20%] z-10 scale-[0.4] dark:visible" />
+          <Balloon className="absolute bottom-[30%] left-[-2%] z-10 size-[10em]" />
+          <PurpleBalloon className="absolute bottom-[25%] right-[25%] z-10 size-[9em]" />
+          <GreenBalloon className="absolute bottom-[22%] left-[35%] z-10 size-[3em]" />
+          {/* <CloudLeft className="absolute static -translate-x-3 bottom-[20%] z-9 left-[-5%] origin-bottom-left scale-[0.15] overflow-visible group-data-[state=collapsed]:left-[0px]" /> */}
+        </div>
+        <div className="relative z-20 flex content-center justify-center break-words">
+          <div className="relative flex h-[50vh] min-h-fit min-w-[55vw] max-w-[80%] flex-col items-center justify-around rounded-xl bg-foreground/20 p-5">
+            <div className="mb-3 flex flex-col gap-2">
+              <h1 className="mb-3 text-5xl font-bold tracking-tight lg:text-8xl">
+                Learn and grow
+              </h1>
+              <h2 className="text-2xl font-medium tracking-tight lg:text-4xl">
+                with your personalized classroom agent
+              </h2>
+            </div>
+            <div className="flex w-2/5 min-w-[50vw] flex-col items-center gap-10">
+              <h3 className="text-lg italic lg:text-xl">
+                A collaborative space for students and teachers to interact with
+                the future of LLM-enhanced education.
+              </h3>
+              <Button
+                effect="hoverUnderlineWhiteExpand"
+                icon={ArrowRightCircle}
+                iconPlacement="right"
+                className="h-12 w-full min-w-fit max-w-[20vw] bg-[#200092] text-white shadow-[0px_0px_45px_1px_#6083FF] hover:bg-[#200092]/90"
+              >
+                <Link href="classrooms" className="text-lg">
+                  Start your journey today
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 
   {

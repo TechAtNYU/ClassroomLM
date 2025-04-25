@@ -4,7 +4,7 @@ const StarSwoop = ({ className }: { className: string }) => (
   <svg
     className={cn(
       "fill-[#fff89c]",
-      "[filter:drop-shadow(0_0_3px_gray)_drop-shadow(0_0_30px_gray)]",
+      "[filter:drop-shadow(0_0_15px_gray)]",
       "dark:[filter:drop-shadow(0_0_3px_white)_drop-shadow(0_0_30px_white)_drop-shadow(0_0_200px_white)]",
       className
     )}

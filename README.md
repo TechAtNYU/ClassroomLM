@@ -1,7 +1,9 @@
-# ClassroomLM
+# ![Logo](.github/assets/logo-text.png)
+
+---
 
 ![ClassroomLM Banner](.github/assets/main-banner.png)
-ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom. 
+ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom.
 
 ???? add more to above about generating material, etc
 
@@ -11,50 +13,39 @@ The core feature and main value that ClassroomLM provides is the application's f
 
 [video walktrhough of everything]
 
+2038 x 3200 at 37%
+
 ## Features
 
 ### **Classroom-Style Structure**
 
 Teachers can create classrooms, upload documents (PDFs, slides, handwritten notes), and invite students.
 
-Diagram of docs to classes (maybe add it sidebyside to main classroom page screenshot?)
+![Classroom page screenshot and diagram of knowledge base per classroom](.github/assets/classrooms.png)
 
 ### **Classroom-Specific AI Assistants**
 
 Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and smarter at retrieving information from the class' resources unlocking greater potential for engaging learning, peer interaction, and more.
 
+![Personal Assistant Example](.github/assets/personal-example.png)
+
 #### **Advantages over current user-facing AI assistant systems with use case examples**
 
-**More accurate, specific, and grounded**: The assistant can now operate in niche and specific or even specially created context just for classrooms.
+????**More accurate, specific, and grounded**: The assistant can now operate in niche, specific, and even specially created context just for classrooms.
   > **Use case example**: An NYU Professor has a variation of assembly created specifically for the classroom, called E20. Putting the E20 manual into the shared classroom dataset gave all students within this classroom access to an assistant that is now specialized, knowledgeable, and with full context of this niche, not-seen-before language personally created by a professor. \
   > Comparing it to existing systems, they gave vague, non-specific, and non-accurate answers relevant to other assembly variants.
 
 **Logistical and practical benefits**: Created knowledge bases are shared across the entire classroom.
 
-> Rather than an entire classroom's worth of students across all of their individual classes having to upload their documents individually, keep it up to date with new resources, and separate it from other classes, having a shared (but siloed) knowledge base for an entire classroom reduces the overhead, friction, and allows for superior use of resources.\
-\
-Implementing this core mechanism now provides a foundation for all the features that could benefit from having shared knowledge bases for subgroups.
+Rather than an entire classroom's worth of students across all of their individual classes having to upload their documents individually, keep it up to date with new resources, and separate it from other classes, having a shared (but siloed) knowledge base for an entire classroom reduces the overhead, friction, and allows for superior use of resources.
 
-**Diverse abilities and potential contexts**: Your imagination is the only limit on what is possible with your RAG-enabled LLM assistant
+> Implementing this core mechanism now provides a foundation for all the features that could benefit from having shared knowledge bases for subgroups.
+
+**Diverse abilities and potential contexts**: Your imagination is the only limit on what is possible with your RAG-enabled LLM assistant ???
 
 > We use the existing power of LLMs and bring out their full potential for educators and students.
 The assistant can be used to generate exam questions, review material, interrogate the classroom documents, have a discussion about the content, judge and correct your understanding, etc. with many other abilities tested, and many more possible. And again, all of these will be more accurate and specific because of the grounding that comes from the classroom's resource dataset.\
 In terms of contexts, ClassroomLM was tested to be useful for subjects ranging from physics, different math topics, computer science, and also the humanities. For something like philosophy or other classes with many readings, ClassroomLM can shine because it's able to synthesize across the many readings, and without each student having to reupload all documents.
-
-
-
-    <!-- Building conversation context            |  Continues and LLM triggered with /ask | LLM responds
-  :-------------------------:|:-------------------------: |:-------------------------:
-   border: black 2px solid; 
-    ![]() | ![]() 
-    <!-- <p float="center" align="middle" style="
-   <!-- padding-top: 5px; border-radius: 10px;">
-    <img src=".github/assets/collab-1.png" style="border-radius: 10px;" width="300" />
-    <img src=".github/assets/collab-2.png" 
-    style="border-radius: 10px;"
-    width="335" /> <br>
-    <img src=".github/assets/collab-3.png" style="border-radius: 10px;" width="700" />
-  </p> --> -->
 
 ### **Collaborative AI Chats**
 
@@ -63,7 +54,7 @@ Group chat support with other students the AI can participate with full chat con
 - Students can create multiple chatrooms per classroom and choose who to invite within each chatroom.
 - Within the chatroom, students can pull the LLM into the conversation in the manner of a group chat with the **`/ask [message]`** command.
 - The assistant in this case retains all the benefits described above for the personal chat, as it is also RAG enabled.
-
+  ???? can we move this out of quote
   > To be clear, this isn’t the common implementation of a "group chat with an assistant" very often found in company Slacks, etc. where the LLM is just responding to the message that triggered it. In that case, it's only more useful than just doing asking the LLM personally since the answer is visible to everyone. Instead here, when triggered with the `/ask` command the LLM will have knowledge of all the previous conversation and respond accordingly, as if it’s just part of the conversation.
 
   ![Collaborative Chat Example](.github/assets/collab-full.png)
@@ -72,25 +63,13 @@ Group chat support with other students the AI can participate with full chat con
   ![Collaborative chat with interactivity](.github/assets/example2-full.png)
   ??? add commentts to this
 
-
 ## Technical Overview
 
-Diagram showing where evrything is stored
-RagFlow has knowkedge bases, stores actual docs
-Stores personal chat history
+![Technical overview](.github/assets/tech-overview.png)
 
-Supabase stores user information, classroom/chatroom metadata, collaborative chat history as realtime database
-
-Node JS Shadcn ui
-
-Then on the side we have dev stack
-
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **Testing**: Vitest with React Testing Library
-- **Database**: Supabase
-- **Deployment**: Docker and Kubernetes support
+**ClassroomLM builds on top of the [RAGFlow](https://github.com/infiniflow/ragflow) engine.**  This is an open-source RAG (Retrieval-Augmented Generation) engine with the benefits of being polished, actively-maintained, and mature. \
+This is especially true in terms of handling bugs and having a comprehensive and [well-documented HTTPS API](https://ragflow.io/docs/v0.19.0/http_api_reference) for the ClassroomLM application to utilize.
+As seen above in the diagram, the RAGFlow instance (note that this is self-hosted) is responsible for storing the documents within the knowledge base and handling the RAG functionality with the LLMs. **The application links the corresponding siloed datasets within RAGFlow to the correct classroom during all assistant functionality.**
 
 ### Repository contents
 
@@ -130,7 +109,6 @@ git clone https://github.com/TechAtNYU/dev-team-spring-25.git
 cd dev-team-spring-25
 ```
 
-
 #### Provision Supabase instance
 
 First, [install the Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started). If you already have the `npm` dependencies installed from the development setup, then you should already have it.
@@ -139,6 +117,7 @@ Next, get the *`CONNECTION_STRING`*. You can either use the dashboard and press 
 
 If you don't already have it, [get the Postgres CLI.](https://www.postgresql.org/download/)
 And finally, run the following command to automatically set up the tables, functions, trigger, realtime functionality, etc. Replace `[CONNECTION_STRING]` with what you determined above.
+
 ```bash
 psql --single-transaction -variable ON_ERROR_STOP=1 --file supabase-setup.sql --dbname [CONNECTION_STRING]
 ```
@@ -150,15 +129,16 @@ Even if you self-hosted, you can access the Supabase dashboard (exposed at port 
 
 #### Add allowed domains to database
 
-Either by connecting to the database through the `psql` CLI or through the Supabase dashboard (recommended), add.\
-Add a domain (or multiple) in the following manner:
+Either by connecting to the database through the `psql` CLI or through the Supabase dashboard (recommended), add any allowable domains to the `Allowed_Domains` table.\
+When a user signs in with Google, it will only work if their Google account's address is found in table. E.g. for `user@domain.com`, `domain.com` must be an entry in `Allowed_Domains`.
+
+Add a domain (or multiple) in the following manner to `Allowed_Domains`:
 
 | id    | domain  |
 | ----- | ------- |
 | 1     | nyu.edu |
 
-**Note**: in the section below, you'll see that you need to add the allowed domains to the `.env` file as well.
-
+**Note**: In the section below, you'll see that you need to add the allowed domains to the `.env` file as well.
 
 ### 3. Add config info
 
@@ -171,7 +151,7 @@ Explanation of each variable:
 | NEXT_PUBLIC_SUPABASE_URL          | Use either the given URL from the hosted version or a custom URL from your self-hosted solution                                                          |
 | NEXT_PUBLIC_SUPABASE_ANON_KEY     | Should be available somewhere in Supabase's settings                                                                                                     |
 | NEXT_PUBLIC_SITE_URL              | The root URL for the site, to be used for callbacks after authentication                                                                                 |
-| NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS | When users login with Google, these are the only email domains allowed to sign up.&#10;**Note that this is also needs to be configured within Supabase** |
+| NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS | When users login with Google, these are the only email domains allowed to sign up.&#10;**Note that this is also needs to be configured in a table within Supabase** |
 | NEXT_PUBLIC_ORGANIZATION_NAME     | The name of the organization                                                                                                                             |
 | SUPABASE_SERVICE_ROLE_KEY         | Should be available somewhere in Supabase's settings                                                                                                     |
 | RAGFLOW_API_KEY                   | Go back section 2 to make this key                                                                                                                       |

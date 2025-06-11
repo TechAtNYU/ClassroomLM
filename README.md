@@ -1,6 +1,8 @@
-# ![Logo](.github/assets/logo-text.png)
-
----
+<div align="center">
+  <a href="https://github.com/TechAtNYU/dev-team-spring-25">
+  <img src=".github/assets/logo-text.png" width="520" alt="logo">
+  </a>
+</div>
 
 ![ClassroomLM Banner](.github/assets/main-banner.png)
 ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom.

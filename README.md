@@ -1,11 +1,13 @@
 # ClassroomLM
 
 ![ClassroomLM Banner](.github/assets/main-banner.png)
-ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom.
+ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom. 
 
-> ???? Makes sense for classrooms in primary education or universities, and even for other adjacent organizations like clubs and student associations that want easy access to giving an AI assistant to their members specific to their documents.
+???? add more to above about generating material, etc
 
 The core feature and main value that ClassroomLM provides is the application's framework of having siloed knowledge bases per classroom to conduct Retrieval Augmented Generation (RAG) on, with the additional features like collaborative chat layered on top of this.
+
+> ???? Makes sense for classrooms in primary education or universities, and even for other adjacent organizations like clubs and student associations that want easy access to giving an AI assistant to their members specific to their documents.
 
 [video walktrhough of everything]
 
@@ -19,31 +21,40 @@ Diagram of docs to classes (maybe add it sidebyside to main classroom page scree
 
 ### **Classroom-Specific AI Assistants**
 
-Each classroom has access to an LLM assistant that is enabled by RAG, allowing it to be more specific and accurate, while also being better and smarter at retrieving information from the class' resources.
+Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and smarter at retrieving information from the class' resources unlocking greater potential for engaging learning, peer interaction, and more.
 
 #### **Advantages over current user-facing AI assistant systems with use case examples**
 
-- **More accurate and specific**: can operate in specific or even specially created context just for classrooms.
-  > **Use case example**: An NYU Professor has a variation of assembly created specifically for the classroom, called e20. Putting the e20 manual into the shared classroom dataset gave all students within this classroom access to an assistant that is now specialized, knowledgeable, and with full context of this niche, not-seen-before language personally created by a professor. \
+**More accurate, specific, and grounded**: The assistant can now operate in niche and specific or even specially created context just for classrooms.
+  > **Use case example**: An NYU Professor has a variation of assembly created specifically for the classroom, called E20. Putting the E20 manual into the shared classroom dataset gave all students within this classroom access to an assistant that is now specialized, knowledgeable, and with full context of this niche, not-seen-before language personally created by a professor. \
   > Comparing it to existing systems, they gave vague, non-specific, and non-accurate answers relevant to other assembly variants.
-- **Logistical and practical benefits**: knowledge bases shared across entire classroom
-  - Rather than an entire classroom's worth of students across all of their individual classes having to upload their documents individually, keep it up to date with new resources, and separate it from other classes, having a shared (but siloed) knowledge base for an entire classroom reduces the overhead, friction, and allows for superior use of resources.
-- \*\*Diverse ability and
 
-  - Humanities, etc.
+**Logistical and practical benefits**: Created knowledge bases are shared across the entire classroom.
+
+> Rather than an entire classroom's worth of students across all of their individual classes having to upload their documents individually, keep it up to date with new resources, and separate it from other classes, having a shared (but siloed) knowledge base for an entire classroom reduces the overhead, friction, and allows for superior use of resources.\
+\
+Implementing this core mechanism now provides a foundation for all the features that could benefit from having shared knowledge bases for subgroups.
+
+**Diverse abilities and potential contexts**: Your imagination is the only limit on what is possible with your RAG-enabled LLM assistant
+
+> We use the existing power of LLMs and bring out their full potential for educators and students.
+The assistant can be used to generate exam questions, review material, interrogate the classroom documents, have a discussion about the content, judge and correct your understanding, etc. with many other abilities tested, and many more possible. And again, all of these will be more accurate and specific because of the grounding that comes from the classroom's resource dataset.\
+In terms of contexts, ClassroomLM was tested to be useful for subjects ranging from physics, different math topics, computer science, and also the humanities. For something like philosophy or other classes with many readings, ClassroomLM can shine because it's able to synthesize across the many readings, and without each student having to reupload all documents.
+
+
 
     <!-- Building conversation context            |  Continues and LLM triggered with /ask | LLM responds
   :-------------------------:|:-------------------------: |:-------------------------:
    border: black 2px solid; 
-    ![]() | ![]() -->
+    ![]() | ![]() 
     <!-- <p float="center" align="middle" style="
-   padding-top: 5px; border-radius: 10px;">
+   <!-- padding-top: 5px; border-radius: 10px;">
     <img src=".github/assets/collab-1.png" style="border-radius: 10px;" width="300" />
     <img src=".github/assets/collab-2.png" 
     style="border-radius: 10px;"
     width="335" /> <br>
     <img src=".github/assets/collab-3.png" style="border-radius: 10px;" width="700" />
-  </p> -->
+  </p> --> -->
 
 ### **Collaborative AI Chats**
 
@@ -55,7 +66,12 @@ Group chat support with other students the AI can participate with full chat con
 
   > To be clear, this isn’t the common implementation of a "group chat with an assistant" very often found in company Slacks, etc. where the LLM is just responding to the message that triggered it. In that case, it's only more useful than just doing asking the LLM personally since the answer is visible to everyone. Instead here, when triggered with the `/ask` command the LLM will have knowledge of all the previous conversation and respond accordingly, as if it’s just part of the conversation.
 
-  ![Collaboration Chat Example](.github/assets/collab-full.png)
+  ![Collaborative Chat Example](.github/assets/collab-full.png)
+  ??? add commentts to this
+
+  ![Collaborative chat with interactivity](.github/assets/example2-full.png)
+  ??? add commentts to this
+
 
 ## Technical Overview
 
@@ -75,6 +91,13 @@ Then on the side we have dev stack
 - **Testing**: Vitest with React Testing Library
 - **Database**: Supabase
 - **Deployment**: Docker and Kubernetes support
+
+### Repository contents
+
+- `app`: Under the NextJS app router paradigm, everything within this directory matches the structure of the actual routes for the application.
+- `shared/components`: Components used multiple times within the app directory, including those from [ShadCN](https://ui.shadcn.com/)
+- `shared/lib`: Shared code for Supabase, an abstraction layer for RagFlow, and a React ContextProvider to give user and classroom information to pages
+- `shared/utils/supabase`: Used for the creation of different types of clients, typing Supabase calls, and handling middleware. Most code here is sourced from [Supabase's Server-Side Auth for NextJS reference](https://supabase.com/docs/guides/auth/server-side/nextjs?queryGroups=router&router=app).
 
 ## Usage
 
@@ -100,18 +123,44 @@ Otherwise, you can choose to use Supabase's hosted service, which also [has a fr
 
 If you're only developing locally, you can take a look at [this section on the Supabase docs.](https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=platform&platform=npm#running-supabase-locally)
 
-#### Provision Supabase instance
-
-First, [install the Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started). If you already have the `npm` dependencies installed from the development setup, then you should already have it.
-
-Run the commanmd !!!!! to provision it
-
-### 3. Clone repository and config info
+#### Clone the repository
 
 ```bash
 git clone https://github.com/TechAtNYU/dev-team-spring-25.git
 cd dev-team-spring-25
 ```
+
+
+#### Provision Supabase instance
+
+First, [install the Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started). If you already have the `npm` dependencies installed from the development setup, then you should already have it.
+
+Next, get the *`CONNECTION_STRING`*. You can either use the dashboard and press **Connect** on the top left. Or see the `Accessing Postgres` [section of the self-hosted Supabase docs.](https://supabase.com/docs/guides/self-hosting/docker#accessing-postgres)
+
+If you don't already have it, [get the Postgres CLI.](https://www.postgresql.org/download/)
+And finally, run the following command to automatically set up the tables, functions, trigger, realtime functionality, etc. Replace `[CONNECTION_STRING]` with what you determined above.
+```bash
+psql --single-transaction -variable ON_ERROR_STOP=1 --file supabase-setup.sql --dbname [CONNECTION_STRING]
+```
+
+#### Set up Supabase Auth with Google OAuth
+
+Follow the [instructions on the Supabase docs to set up Google OAuth](https://supabase.com/docs/guides/auth/social-login/auth-google?queryGroups=platform&platform=web#configuration) since it's required to add users.\
+Even if you self-hosted, you can access the Supabase dashboard (exposed at port 8000 by default).
+
+#### Add allowed domains to database
+
+Either by connecting to the database through the `psql` CLI or through the Supabase dashboard (recommended), add.\
+Add a domain (or multiple) in the following manner:
+
+| id    | domain  |
+| ----- | ------- |
+| 1     | nyu.edu |
+
+**Note**: in the section below, you'll see that you need to add the allowed domains to the `.env` file as well.
+
+
+### 3. Add config info
 
 Create a `.env` file in the root of the repository based on [`.env.example`](https://github.com/TechAtNYU/dev-team-spring-25/blob/main/.env.example).
 
@@ -130,6 +179,8 @@ Explanation of each variable:
 
 ### Deployment
 
+This section is for deploying ClassroomLM, scroll down below to see the setup for [Development](#development). Currently, only Kubernetes is supported as a deployment option.
+
 #### Add configuration info to kubernetes files
 
 Put that same information from `.env` into the `k8s/config.yaml` and `k8s/secret.yaml` (the info is split among those two files.)\
@@ -140,7 +191,7 @@ Note: the same info is duplicated because NextJS requires the environment variab
 Next, we build the image with the following command, with your registry information filled in (or omitted). What's important is that it matches the deployment file later.
 
 ```bash
-docker build -f Dockerfile -t [registry host]:[registry port]/classroom-lm/classroom-lm-app:latest .
+  docker build -f Dockerfile -t [registry host]:[registry port]/classroom-lm/classroom-lm-app:latest .
 ```
 
 #### Change `k8s/deployment.yaml` and deploy
@@ -149,9 +200,9 @@ Change the **container image** within `k8s/deployment.yaml` to match the image t
 
 Then deploy:
 
-```bash
-kubectl apply -f k8s
-```
+  ```bash
+  kubectl apply -f k8s
+  ```
 
 ### Development
 
@@ -159,15 +210,15 @@ kubectl apply -f k8s
    Assuming NPM is installed, we [recommend installing `pnpm`](https://pnpm.io/installation).\
    Then, run the following in the root directory:
 
-   ```bash
-   pnpm install
-   ```
+    ```bash
+    pnpm install
+    ```
 
 2. Start the development server:
 
-   ```bash
-   pnpm dev
-   ```
+    ```bash
+    pnpm dev
+    ```
 
    The application will be available at [http://localhost:8080](http://localhost:8080)
 
@@ -192,14 +243,6 @@ kubectl apply -f k8s
 - TypeScript ensures type safety throughout the application
 - Git hooks (via Husky) ensure code quality before commits
 - Prettier and ESLint maintain consistent code style
-
-## Deployment
-
-The application can be deployed using Docker and Kubernetes. The project includes:
-
-- Dockerfile for containerization
-- Kubernetes manifests in the `k8s` directory
-- Tekton pipelines for CI/CD
 
 ## Credits
 

@@ -1,5 +1,6 @@
 
 # ClassroomLM
+
 ![ClassroomLM Banner](.github/assets/main-banner.png)
 
 **ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom.**
@@ -24,14 +25,14 @@ Teachers can create classrooms, upload documents (PDFs, slides, handwritten note
 
 ### **Classroom-Specific AI Assistants**
 
-Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and smarter at retrieving information from the class' resources, unlocking greater potential for engaging learning, peer interaction, and more.
+Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and capable of retrieving information from the class' resources, unlocking greater potential for engaging learning, peer interaction, and more.
 
 ![Personal Assistant Example](.github/assets/personal-example.png)
 
-#### **Advantages over current user-facing AI assistant systems with use case examples**
+#### **Advantages over current user-facing AI assistant systems**
 
 **More accurate, specific, and grounded**: ClassroomLM's LLM assistant
-provides responses with full awareness and knowledge of the classroom's specific or niche context through the use of the instructor's documents, rather than operate in the default context of LLMs: "the entire world's knowledge."
+provides responses with full awareness and knowledge of the classroom's specific or niche context, rather than operating in the default context of LLMs: the entire world/internet's knowledge.
 
   > **Use case example**: An NYU Professor has a variation of assembly created specifically for the classroom, called E20. Putting the E20 manual into the shared classroom dataset gave all students within this classroom access to **an assistant that is now specialized, knowledgeable, and with full context of this niche, not-seen-before language personally created by a professor.** \
   > Compared to ClassroomLM, other user-facing assistant systems gave vague, nonspecific, and non-accurate answers relevant to other assembly variants.
@@ -46,44 +47,46 @@ Rather than an entire classroom's worth of students having to upload their docum
 
 ---
 
-**Powerful and highly flexible abilities**: Your imagination is the only limit on what is possible with your RAG-enabled LLM assistant.\
-**ClassroomLM brings out the full potential of LLM assistants for educators and students, so the existing, highly flexible powers and capabilities of LLMs that people expect are not only retained, but enhanced.**
+**Powerful and highly flexible abilities**:
+**ClassroomLM brings out the full potential of LLM assistants** for educators and students, meaning the **existing,** highly flexible **powers** and capabilities of LLMs that people expect are not only **retained, but enhanced.**
 
- The assistant can be used to generate exam questions, review material, interrogate the classroom documents, have a discussion about the content, judge and correct your own understanding, and many other tested abilities, and with even more possible.\
- And again, **in comparison to existing user-facing systems, all of these will be more accurate and specific because of the grounding that comes from the classroom's resource dataset.**
+- The assistant can be used to generate exam questions, review material, interrogate the classroom documents, have a discussion about the content, judge and correct your own understanding, and many other tested abilities, and with even more possible.
+- And again, **in comparison to existing user-facing systems, all of these will be more accurate and specific because of the grounding that comes from the classroom's resource dataset.**
 
 ---
 **Tested in diverse contexts**:
-In terms of contexts, ClassroomLM was tested to be useful for subjects ranging from physics, different math topics, computer science, different topics within the humanities, etc. As an example, for something like philosophy or other classes with many readings, ClassroomLM shines because it's able to synthesize across the many readings, and without each student having to reupload all documents.
+In terms of contexts, ClassroomLM was tested to be useful for subjects ranging from physics, different math topics, computer science, different topics within the humanities, etc. As an example, for something like philosophy, a class with many texts, ClassroomLM shines because it's able to synthesize across the many readings, and without each student having to reupload all documents.
 
-### **Collaborative AI Chats**
+### **Collaborative Chats with ClassroomLM**
 
-Group chat support with other students the AI can participate with full chat context.
+***Group chats with other class members and an AI assistant that's a full conversation participant, not just a bot responding to one-off Q&As***
 
 - Students can create multiple chatrooms per classroom and choose who to invite within each chatroom.
 - Within the chatroom, students can pull the LLM into the conversation in the manner of a group chat with the **`/ask [message]`** command.
 - The assistant in this case retains all the benefits described above for the personal chat, as it is also RAG enabled.
-- To be clear, this isn’t the common implementation of a "group chat with an assistant" very often found in company Slacks, etc. where the LLM is just responding to the message that triggered it.\
-That case is only more useful than just asking the LLM personally since now everyone can benefit from seeing the answer.\
-Instead here, when triggered with the `/ask` command the LLM will have knowledge of all the previous conversation and respond accordingly, as if it’s just part of the conversation.
+
+#### Unique to ClassroomLM: Collaborative chat with full conversation context *and* grounded with RAG on a classroom's resources
+
+- With ClassroomLM, when triggered with the `/ask` command the LLM will have knowledge of the previous conversation and respond accordingly.
+  - Will make corrections to messages long ago and otherwise **act like a full participant in the conversation, rather than just a bot that you Q&A one-off messages.**
+- This is **unlike the common implementations of a "group chat with an AI assistant" idea very often found in company Slacks, etc.** where the LLM is only aware of the message that triggered it and responds just to that.
+The only benefit of those implementations is that everyone in the chat witnesses the Q&A, compared to just personally asking it.
+
+#### Collaborative chat example
 
   ![Collaborative Chat Example](.github/assets/collab-full.png)
   
-  First, spots a correction to make many messages ago.
-
-  Proceeds to answer the question triggered with the /ask
-  Note: answer is grounded in information from the knowledge base as seen in  
-
   <!-- <details>
   <summary>
   test
   </summary>
    -->
+#### Another collaborative chat example
+<!-- markdownlint-disable MD033 -->
+- We see the ClassroomLM assistant as an actual conversation participant, <ins>**understanding that it needs to keep giving new questions within a group review session one-by-one and waiting till the end to evaluate**</ins>.
+- We also see that the **questions are rooted in the knowledge base**, and that the **evaluation correctly and faithfully sticks to the resources** to provide the additional relevant context and give feedback.
   ![Collaborative chat with interactivity](.github/assets/example2-full.png)
 
-  ??? add commentts to this, it comes from the main doc
-
-  <!-- </details> -->
 
 ## Technical Overview
 
@@ -94,7 +97,7 @@ This is especially true in terms of handling bugs and having a comprehensive and
 
 ### RAGFlow vs. ClassroomLM's responsibilities
 
-As seen above in the diagram, the **RAGFlow** instance (note that this is self-hosted) **is responsible for storing the documents within knowledge bases and handling  RAG functionality during LLM chats.\ ClassroomLM is responsible for the layer above this in terms of managing classrooms, collaborative chats, etc. For example, the ClassroomLM application is what links the siloed datasets within RAGFlow to the corresponding classroom for all LLM assistant functionality.**
+As seen above in the diagram, the **RAGFlow** instance (note that it's self-hosted) is responsible for storing the documents within knowledge bases and handling  RAG functionality during LLM chats. **ClassroomLM is responsible for the layer above this in terms of managing classrooms, collaborative chats, etc**. For example, the ClassroomLM application is what links the siloed datasets within RAGFlow to the corresponding classroom for all LLM assistant functionality.
 
 ### Repository contents
 
@@ -246,6 +249,6 @@ Then deploy:
 ClassroomLM was initially created by the first cohort of [Tech@NYU's](https://techatnyu.org) Dev Team Program in the Spring 2025 semester.
 
 **Tech Lead**: Safi Patel\
-**Program manager**: Sanjay Chunduru\
+**Program Manager**: Sanjay Chunduru\
 **Developers**: Yixiang Chen, Joseph Cheng, Pranit Singh Gandhi, Xiaomin Liu, Shubham Parab, Emily Silkina, Kavya Srikumar, Austin Tan, Benjamin Tian, Chenxin Yan\
 **Product design**: Jennifer Huang, Haley Ngai

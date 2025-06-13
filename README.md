@@ -3,15 +3,16 @@
 
 ![ClassroomLM Banner](.github/assets/main-banner.png)
 
-**ClassroomLM provides each of the many classrooms within an organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of that particular classroom.**
+**ClassroomLM provides each classroom within an educational organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of its particular classroom.**
 
-???? add more to above about generating material, etc
+---
 
-The core feature and main value that ClassroomLM provides is the application's framework of having siloed knowledge bases per classroom to conduct Retrieval Augmented Generation (RAG) on, with the additional features like collaborative chat layered on top of this.
-
-> ???? Makes sense for classrooms in primary education or universities, and even for other adjacent organizations like clubs and student associations that want easy access to giving an AI assistant to their members specific to their documents.
+The core feature and main value that ClassroomLM provides is the application's framework of having a siloed knowledge base per classroom to conduct Retrieval Augmented Generation (RAG) on, with the additional features like collaborative chat layered on top of this.
 
 [video walktrhough of everything]
+
+> ClassroomLM can be used by educational instutions  of all levels for their classrooms, for subgroups conducting research, and even for other adjacent organizations like clubs and student associations that want to easily give access to an assistant that's specific to their documents and resources.
+
 
 2038 x 3200 at 37%
 
@@ -25,7 +26,7 @@ Teachers can create classrooms, upload documents (PDFs, slides, handwritten note
 
 ### **Classroom-Specific AI Assistants**
 
-Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and capable of retrieving information from the class' resources, unlocking greater potential for engaging learning, peer interaction, and more.
+***Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and capable of retrieving information from the class' resources, unlocking greater potential for engaging learning, peer interaction, and more.***
 
 ![Personal Assistant Example](.github/assets/personal-example.png)
 
@@ -70,7 +71,7 @@ In terms of contexts, ClassroomLM was tested to be useful for subjects ranging f
 - With ClassroomLM, when triggered with the `/ask` command the LLM will have knowledge of the previous conversation and respond accordingly.
   - Will make corrections to messages long ago and otherwise **act like a full participant in the conversation, rather than just a bot that you Q&A one-off messages.**
 - This is **unlike the common implementations of a "group chat with an AI assistant" idea very often found in company Slacks, etc.** where the LLM is only aware of the message that triggered it and responds just to that.
-The only benefit of those implementations is that everyone in the chat witnesses the Q&A, compared to just personally asking it.
+  - The only benefit of those implementations, compared to just personally asking an LLM, is that everyone in the chat witnesses the Q&A. **ClassroomLM is much more powerful than this simplistic approach**.
 
 #### Collaborative chat example
 

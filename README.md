@@ -11,8 +11,8 @@ ClassroomLM's main value comes from its core application framework. Retrieval Au
 
 ### Application Walkthrough
 
-<!-- markdownlint-disable MD033 -->
-<video src=".github/assets/walkthrough.mp4" controls></video>
+<!-- markdownlint-disable MD034 -->
+https://github.com/user-attachments/assets/8bb5d5d7-0dcc-4b4f-91ed-88f8aeecee3e
 
 > ClassroomLM can enhance learning, access to information, ease of use of AI systems across all kinds and levels of educational institutions. While geared towards classrooms, once ClassroomLM is in place at an institution it can also help subgroups conducting research, administrators with internal documentation, and even for other adjacent organizations, like clubs and student associations that want to easily give access to an assistant specific to their documents and resources.
 

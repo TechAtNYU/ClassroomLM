@@ -1,4 +1,3 @@
-
 # ClassroomLM
 
 ![ClassroomLM Banner](.github/assets/main-banner.png)
@@ -9,9 +8,10 @@
 
 ClassroomLM's main value comes from its core application framework. Retrieval Augmented Generation (RAG) makes AI assistants more accurate, grounded, and specific by basing their answers on a knowledge base. ClassroomLM is unique in its mechanism of having a siloed knowledge base per classroom so that RAG can be conducted separately on specific classroom contexts. The additional features (like the collaborative chat, auto-generating review materials, etc.) are layered on top of this core mechanism.
 
-### Application Walkthrough
+## Application Walkthrough
 
 <!-- markdownlint-disable MD034 -->
+
 https://github.com/user-attachments/assets/8bb5d5d7-0dcc-4b4f-91ed-88f8aeecee3e
 
 > ClassroomLM can enhance learning, access to information, ease of use of AI systems across all kinds and levels of educational institutions. While geared towards classrooms, once ClassroomLM is in place at an institution it can also help subgroups conducting research, administrators with internal documentation, and even for other adjacent organizations, like clubs and student associations that want to easily give access to an assistant specific to their documents and resources.
@@ -26,7 +26,7 @@ Teachers can create classrooms, upload documents (PDFs, slides, handwritten note
 
 ### **Classroom-Specific AI Assistants**
 
-***Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and capable of retrieving information from the class' resources, unlocking greater potential for engaging learning, peer interaction, and more.***
+**_Each classroom has access to an LLM assistant that is RAG-enabled, allowing it to be more specific and accurate, while also being more grounded and capable of retrieving information from the class' resources, unlocking greater potential for engaging learning, peer interaction, and more._**
 
 ![Personal Assistant Example](.github/assets/personal-example.png)
 
@@ -35,8 +35,8 @@ Teachers can create classrooms, upload documents (PDFs, slides, handwritten note
 **More accurate, specific, and grounded**: ClassroomLM's LLM assistant
 provides responses with full awareness and knowledge of the classroom's specific or niche context, rather than operating in the default context of LLMs: the entire world/internet's knowledge.
 
-  > **Use case example**: An NYU Professor has a variation of assembly created specifically for the classroom, called E20. Putting the E20 manual into the shared classroom dataset gave all students within this classroom access to **an assistant that is now specialized, knowledgeable, and with full context of this niche, not-seen-before language personally created by a professor.** \
-  > Compared to ClassroomLM, other user-facing assistant systems gave vague, nonspecific, and non-accurate answers relevant to other assembly variants.
+> **Use case example**: An NYU Professor has a variation of assembly created specifically for the classroom, called E20. Putting the E20 manual into the shared classroom dataset gave all students within this classroom access to **an assistant that is now specialized, knowledgeable, and with full context of this niche, not-seen-before language personally created by a professor.** \
+> Compared to ClassroomLM, other user-facing assistant systems gave vague, nonspecific, and non-accurate answers relevant to other assembly variants.
 
 ---
 
@@ -55,35 +55,39 @@ Rather than an entire classroom's worth of students having to upload their docum
 - And again, **in comparison to existing user-facing systems, all of these will be more accurate and specific because of the grounding that comes from the classroom's resource dataset.**
 
 ---
+
 **Tested in diverse contexts**:
 In terms of contexts, ClassroomLM was tested to be useful for subjects ranging from physics, different math topics, computer science, different topics within the humanities, etc. As an example, for something like philosophy, a class with many texts, ClassroomLM shines because it's able to synthesize across the many readings, and without each student having to reupload all documents.
 
 ### **Collaborative Chats with ClassroomLM**
 
-***Group chats with other class members and an AI assistant that's a full conversation participant, not just a bot responding to one-off Q&As***
+**_Group chats with other class members and an AI assistant that's a full conversation participant, not just a bot responding to one-off Q&As_**
 
 - Students can create multiple chatrooms per classroom and choose who to invite within each chatroom.
 - Within the chatroom, students can pull the LLM into the conversation in the manner of a group chat with the **`/ask [message]`** command.
 - The assistant in this case retains all the benefits described above for the personal chat, as it is also RAG enabled.
 
-#### Unique to ClassroomLM: Collaborative chat with full conversation context *and* grounded with RAG on a classroom's resources
+#### Unique to ClassroomLM: Collaborative chat with full conversation context _and_ grounded with RAG on a classroom's resources
 
 - With ClassroomLM, when triggered with the `/ask` command the LLM will have knowledge of the previous conversation and respond accordingly.
-  - Will make corrections to messages even if other discussion occurred in the meantime  and otherwise **act like a full participant in the conversation, rather than just a bot that you Q&A one-off messages.**
+  - Will make corrections to messages even if other discussion occurred in the meantime and otherwise **act like a full participant in the conversation, rather than just a bot that you Q&A one-off messages.**
 - This is **unlike the common implementations of a "group chat with an AI assistant" idea very often found in company Slacks, etc.** where the LLM is only aware of the message that triggered it and responds just to that.
   - The only benefit of those implementations, compared to just personally asking an LLM, is that everyone in the chat witnesses the Q&A. **ClassroomLM is much more powerful than this simplistic approach**.
 
 #### Collaborative chat example
 
-  ![Collaborative Chat Example](.github/assets/collab-full.png)
-  
+![Collaborative Chat Example](.github/assets/collab-full.png)
+
   <!-- <details>
   <summary>
   test
   </summary>
    -->
+
 #### Collaborative chat, advanced interactivity example
+
 <!-- markdownlint-disable MD033 -->
+
 - Here, we see the ClassroomLM assistant behaving as an actual conversation participant—in this example, <ins>**it successfully understands that it needs to keep giving new questions one-by-one within a group review session and waiting till the end to evaluate**</ins>.
 - We also see that the **questions are rooted in the knowledge base**, and that the **evaluation correctly and faithfully sticks to the resources** to provide additional relevant context and give feedback.
   ![Collaborative chat with interactivity](.github/assets/example2-full.png)
@@ -97,7 +101,7 @@ This is especially true in terms of handling bugs and having a comprehensive and
 
 ### RAGFlow vs. ClassroomLM's responsibilities
 
-As seen above in the diagram, the **RAGFlow** instance (note that it's self-hosted) is responsible for storing the documents within knowledge bases and handling  RAG functionality during LLM chats. **ClassroomLM is responsible for the layer above this in terms of managing classrooms, collaborative chats, etc**. For example, the ClassroomLM application is what links the siloed datasets within RAGFlow to the corresponding classroom for all LLM assistant functionality.
+As seen above in the diagram, the **RAGFlow** instance (note that it's self-hosted) is responsible for storing the documents within knowledge bases and handling RAG functionality during LLM chats. **ClassroomLM is responsible for the layer above this in terms of managing classrooms, collaborative chats, etc**. For example, the ClassroomLM application is what links the siloed datasets within RAGFlow to the corresponding classroom for all LLM assistant functionality.
 
 ## Usage
 
@@ -108,7 +112,7 @@ For both development and deployment, the **instructions below need to be followe
 Follow [the instructions on the Ragflow docs](https://ragflow.io/docs/dev/) to **deploy and configure** it. This includes choosing the LLM to use, with many supported options to choose from.\
 Note the deployment method they detail in the docs are with Docker Compose. Alternatively, they also have a [helm chart](https://github.com/infiniflow/ragflow/tree/main/helm) to deploy RagFlow onto a Kubernetes cluster.
 
-> Note: since we're deploying our web app onto port 8080 as per our [Dockerfile](https://github.com/TechAtNYU/dev-team-spring-25/blob/main/Dockerfile), depending on whether or not your RagFlow engine is deployed on the same machine/network as the ClassroomLM application, you might need to change  the port for RagFlow's web interface.
+> Note: since we're deploying our web app onto port 8080 as per our [Dockerfile](https://github.com/TechAtNYU/dev-team-spring-25/blob/main/Dockerfile), depending on whether or not your RagFlow engine is deployed on the same machine/network as the ClassroomLM application, you might need to change the port for RagFlow's web interface.
 > Follow the instructions [here to update the HTTP and HTTPS port](<https://ragflow.io/docs/dev/configurations#:~:text=To%20update%20the%20default%20HTTP%20serving%20port%20(80)%2C>) away from 80 and 443 if you would not like RagFlow's web interface to occupy them.
 
 #### Create a RagFlow API Key
@@ -134,7 +138,7 @@ cd dev-team-spring-25
 
 First, [install the Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started). If you already have the `npm` dependencies installed from the development setup, then you should already have it.
 
-Next, get the *`CONNECTION_STRING`*. You can either use the dashboard and press **Connect** on the top left. Or see the `Accessing Postgres` [section of the self-hosted Supabase docs.](https://supabase.com/docs/guides/self-hosting/docker#accessing-postgres)
+Next, get the _`CONNECTION_STRING`_. You can either use the dashboard and press **Connect** on the top left. Or see the `Accessing Postgres` [section of the self-hosted Supabase docs.](https://supabase.com/docs/guides/self-hosting/docker#accessing-postgres)
 
 If you don't already have it, [get the Postgres CLI.](https://www.postgresql.org/download/)
 And finally, run the following command to automatically set up the tables, functions, trigger, realtime functionality, etc. Replace `[CONNECTION_STRING]` with what you determined above.
@@ -155,9 +159,9 @@ When a user signs in with Google, it will only work if their Google account's ad
 
 Add a domain (or multiple) in the following manner to `Allowed_Domains`:
 
-| id    | domain  |
-| ----- | ------- |
-| 1     | nyu.edu |
+| id  | domain  |
+| --- | ------- |
+| 1   | nyu.edu |
 
 **Note**: In the section below, you'll see that you need to add the allowed domains to the `.env` file as well.
 
@@ -167,16 +171,16 @@ Create a `.env` file in the root of the repository based on [`.env.example`](htt
 
 Explanation of each variable:
 
-| Env Variable                      | Description                                                                                                                                              |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| NEXT_PUBLIC_SUPABASE_URL          | Use either the given Supabase URL from the hosted version or a custom URL from your self-hosted solution                                       |
-| NEXT_PUBLIC_SUPABASE_ANON_KEY     | Available  in Supabase's dashboard or CLI                                          |
-| NEXT_PUBLIC_SITE_URL              | The root URL for the site, to be used for callbacks after authentication          |
+| Env Variable                      | Description                                                                                                                                                                                                                 |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NEXT_PUBLIC_SUPABASE_URL          | Use either the given Supabase URL from the hosted version or a custom URL from your self-hosted solution                                                                                                                    |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY     | Available in Supabase's dashboard or CLI                                                                                                                                                                                    |
+| NEXT_PUBLIC_SITE_URL              | The root URL for the site, to be used for callbacks after authentication                                                                                                                                                    |
 | NEXT_PUBLIC_ALLOWED_EMAIL_DOMAINS | When users login with Google, these are the only email domains allowed to sign up.&#10;**Note that this is also needs to be [configured in the `Allowed_Domains` table within Supabase](#add-allowed-domains-to-database)** |
-| NEXT_PUBLIC_ORGANIZATION_NAME     | The name of the organization for display purposes                              |
-| SUPABASE_SERVICE_ROLE_KEY         |  Available  in Supabase's dashboard or CLI                                         |
-| RAGFLOW_API_KEY                   | [See above](#create-a-ragflow-api-key) on how to make this key                                            |
-| RAGFLOW_API_URL                   | Publicly available hostname to access RagFlow's API                  |
+| NEXT_PUBLIC_ORGANIZATION_NAME     | The name of the organization for display purposes                                                                                                                                                                           |
+| SUPABASE_SERVICE_ROLE_KEY         | Available in Supabase's dashboard or CLI                                                                                                                                                                                    |
+| RAGFLOW_API_KEY                   | [See above](#create-a-ragflow-api-key) on how to make this key                                                                                                                                                              |
+| RAGFLOW_API_URL                   | Publicly available hostname to access RagFlow's API                                                                                                                                                                         |
 
 ### Deployment
 
@@ -201,9 +205,9 @@ Change the **container image** within `k8s/deployment.yaml` to match the image t
 
 Then deploy:
 
-  ```bash
-  kubectl apply -f k8s
-  ```
+```bash
+kubectl apply -f k8s
+```
 
 ### Development
 
@@ -211,15 +215,15 @@ Then deploy:
    Assuming NPM is installed, we [recommend installing `pnpm`](https://pnpm.io/installation).\
    Then, run the following in the root directory:
 
-    ```bash
-    pnpm install
-    ```
+   ```bash
+   pnpm install
+   ```
 
 2. Start the development server:
 
-    ```bash
-    pnpm dev
-    ```
+   ```bash
+   pnpm dev
+   ```
 
    The application will be available at [http://localhost:8080](http://localhost:8080)
 

@@ -1,6 +1,6 @@
 # ClassroomLM
 
-![ClassroomLM Banner](.github/assets/main-banner.png)
+[![ClassroomLM Banner](.github/assets/main-banner.png)](https://github.com/TechAtNYU/ClassroomLM)
 
 **ClassroomLM provides each classroom within an educational organization a specialized LLM assistant that is specific and accurate to the subject matter and resources of its particular classroom.**
 

@@ -11,8 +11,8 @@ ClassroomLM's main value comes from its core application framework. Retrieval Au
 ## Application Walkthrough
 
 <!-- markdownlint-disable MD034 -->
-https://github.com/user-attachments/assets/1590164c-c0c2-4bba-baf9-2134f5f5a069
 
+https://github.com/user-attachments/assets/b7ad1a0c-9046-400d-9c53-89554de16738
 
 > ClassroomLM can enhance learning, access to information, ease of use of AI systems across all kinds and levels of educational institutions. While geared towards classrooms, once ClassroomLM is in place at an institution it can also help subgroups conducting research, administrators with internal documentation, and even for other adjacent organizations, like clubs and student associations that want to easily give access to an assistant specific to their documents and resources.
 
@@ -121,7 +121,7 @@ Follow the [instructions on the RagFlow docs](https://ragflow.io/docs/dev/acquir
 
 ### 2. Set up Supabase
 
-[Supabase](https://supabase.com/) can be self-hosted. Most likely, this is the better option since you'll need to host RagFlow somewhere anyway. Follow the [instructions here](https://supabase.com/docs/guides/self-hosting) to see how to self host a Supabase instance using Docker Compose, Kuberenetes, etc.
+[Supabase](https://supabase.com/) can be self-hosted. Most likely, this is the better option since you'll need to host RagFlow somewhere anyway. Follow the [instructions here](https://supabase.com/docs/guides/self-hosting) to see how to self host a Supabase instance using Docker Compose, Kubernetes, etc.
 
 Otherwise, you can choose to use Supabase's hosted service, which also [has a free tier](https://supabase.com/pricing).
 

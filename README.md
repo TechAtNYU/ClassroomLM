@@ -249,7 +249,7 @@ kubectl apply -f k8s
 - `pnpm format:check` - Check code formatting
 
 ## Credits
-
+<a href="https://techatnyu.org"><img src="https://github.com/user-attachments/assets/fc8e46d8-b714-43ee-b823-d79ed8d5bafa" alt="tech@nyu logo" width=108 height=27 /></a>\
 ClassroomLM was initially created by the first cohort of [Tech@NYU's](https://techatnyu.org) Dev Team Program in the Spring 2025 semester.
 
 **Tech Lead**: Safi Patel\

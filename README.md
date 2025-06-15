@@ -40,16 +40,16 @@ provides responses with full awareness and knowledge of the classroom's specific
 
 ---
 
-**Logistical and practical benefits**: Created knowledge bases are shared across the entire classroom eliminating a need to individually upload.
+**Logistical and practical benefits**: Created knowledge bases are shared across the entire classroom eliminating a need to individually upload resources.
 
-Rather than an entire classroom's worth of students having to upload their documents individually, keep it up to date with new resources, and separate it from other classes (and repeat all that across all classrooms in an org), **having a shared knowledge base for an entire classroom (but siloed from other classes) reduces the overhead, friction, and effort, while also allowing for superior use of those resources.**
+Rather than an entire classroom's worth of students having to upload their documents individually, keep it up to date with new resources, and separate it from other classes (and repeat all that across all classrooms in an org), **having a shared knowledge base for an entire classroom (but siloed from other classes) reduces the overhead, friction, and effort of accessing an LLM assistant, on top of allowing for superior use of those resources.**
 
 > Implementing this core mechanism now provides a foundation for all the features that could benefit from having shared knowledge bases for subgroups.
 
 ---
 
 **Powerful and highly flexible abilities**:
-**ClassroomLM brings out the full potential of LLM assistants** for educators and students, meaning the **existing,** highly flexible **powers** and capabilities of LLMs that people expect are not only **retained, but enhanced.**
+**ClassroomLM brings out the full potential of LLM assistants** for educators and students, meaning the **existing,** highly flexible **powers and capabilities of LLMs** that people expect are not only **retained, but enhanced.**
 
 - The assistant can be used to generate exam questions, review material, interrogate the classroom documents, have a discussion about the content, judge and correct your own understanding, and many other tested abilities, and with even more possible.
 - And again, **in comparison to existing user-facing systems, all of these will be more accurate and specific because of the grounding that comes from the classroom's resource dataset.**
